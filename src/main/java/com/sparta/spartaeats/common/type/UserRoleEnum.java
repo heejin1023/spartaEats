@@ -2,7 +2,7 @@ package com.sparta.spartaeats.common.type;
 
 public enum UserRoleEnum {
     USER(Authority.USER),       // 사용자 권한
-    ORNER(Authority.OWNER),     // 가게 주인
+    OWNER(Authority.OWNER),     // 가게 주인
     ADMIN(Authority.ADMIN);     // 관리자 권한
 
     private final String authority;
