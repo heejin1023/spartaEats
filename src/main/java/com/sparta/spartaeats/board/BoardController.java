@@ -26,14 +26,17 @@ public class BoardController extends CustomApiController {
         private final BoardService boardService;
 
         @GetMapping
-        public ApiResult getBoardList(Errors errors) {
+        public ApiResult getBoardList(
+                @RequestParam int pageNumber,
+                @RequestParam int pageSize) {
 
             ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-            if (errors.hasErrors()) { // 파라미터 바인딩 오류시 리턴
-                return bindError(errors, apiResult);
-            }
+            // TODO : BaseSearchDTO 작업
+//            if (errors.hasErrors()) { // 파라미터 바인딩 오류시 리턴
+//                return bindError(errors, apiResult);
+//            }
 
-            Pageable pageable = PageRequest.of(2,10);
+            Pageable pageable = PageRequest.of(pageNumber, pageSize);
             Page<BoardVO> data =  boardService.getBoards(pageable);
 
             apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);
