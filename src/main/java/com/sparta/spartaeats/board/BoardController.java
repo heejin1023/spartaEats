@@ -1,10 +1,9 @@
 package com.sparta.spartaeats.board;
 
+import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.controller.CustomApiController;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,7 @@ public class BoardController extends CustomApiController {
 
         private final BoardService boardService;
 
+        @ApiLogging
         @GetMapping
         public ApiResult getBoardList(
                 @RequestParam int pageNumber,
@@ -43,6 +43,7 @@ public class BoardController extends CustomApiController {
             return apiResult;
         }
 
+        @ApiLogging
         @GetMapping("/get")
         public ApiResult getBoard(@RequestParam long boardId) {
             BoardVO board = boardService.getBoardById(boardId);
@@ -53,6 +54,7 @@ public class BoardController extends CustomApiController {
             return apiResult;
         }
 
+        @ApiLogging
         @PostMapping
         public ApiResult createBoard(@RequestBody BoardVO board, Errors errors) {
             ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
