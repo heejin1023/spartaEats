@@ -1,5 +1,8 @@
-package com.sparta.spartaeats.entity;
+package com.sparta.spartaeats.domain.address.core;
 
+import com.sparta.spartaeats.entity.Order;
+import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +13,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @Table(name = "p_delivery")
-public class Delivery extends TimeStamped{
+public class Address extends TimeStamped {
 
     @Id
     @GeneratedValue
@@ -45,4 +48,4 @@ public class Delivery extends TimeStamped{
 
     @Column(name = "use_yn", nullable = false)
     private Character useYn = 'Y';
-    }
+}
