@@ -89,7 +89,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         int end = Math.min((start + pageable.getPageSize()), content.size());
         Page<OrderListResponseDto> page = new PageImpl<>(content.subList(start, end), pageable, content.size());
 
-        MultiResponseDto<OrderListResponseDto> response = new MultiResponseDto<>(
+        return new MultiResponseDto<>(
                 ApiResultError.NO_ERROR.getCode(),
                 "Order List 조회",
                 page.getContent(),
@@ -102,7 +102,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         page.hasNext()
                 )
         );
-        return response;
     }
 
     private BooleanExpression productNameEq(String productName) {
