@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<com.sparta.spartaeats.entity.Product, UUID> {
 
-    @Query("select p from Product p where p.id = :productId and p.delYn = 'N'")
+    @Query("select p from Product p where p.id = :productId and (p.delYn = 'N' or p.delYn = 'n')")
     Optional<Product> findByIdWithDel(UUID productId);
 }

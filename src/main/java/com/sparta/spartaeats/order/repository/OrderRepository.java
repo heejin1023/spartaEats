@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID>, OrderRepositoryCustom {
 
-    @Query("select o from Order o where o.id = :orderId and o.user.id = :userId and o.user.delYn='N'")
+    @Query("select o from Order o where o.id = :orderId and o.user.id = :userId and (o.user.delYn='N' or o.user.delYn='n')")
     Optional<Object> findByIdWithAuthDel(@Param("orderId") UUID orderId, @Param("userId") Long userId);
 
 }

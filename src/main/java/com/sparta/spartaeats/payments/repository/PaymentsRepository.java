@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface PaymentsRepository extends JpaRepository<Payment, UUID>, PaymentsRepositoryCustom {
 
-    @Query("select p from Payment p where p.id = :paymentId and p.delYn = 'N'")
+    @Query("select p from Payment p where p.id = :paymentId and (p.delYn = 'N' or p.delYn = 'n')")
     Optional<Payment> findByIdWithDel(@Param("paymentId") UUID paymentId);
 }
