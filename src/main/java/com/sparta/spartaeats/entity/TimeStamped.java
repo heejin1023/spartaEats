@@ -1,6 +1,7 @@
 package com.sparta.spartaeats.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@Getter
 public class TimeStamped {
 
     @CreatedDate
@@ -31,6 +33,6 @@ public class TimeStamped {
     @Column(updatable = false)
     private Long modifiedBy;
 
-    private LocalDateTime deletedAt;
-    private Long deletedBy;
+    protected LocalDateTime deletedAt;
+    protected Long deletedBy;
 }
