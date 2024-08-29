@@ -1,4 +1,4 @@
-package com.sparta.spartaeats.order.repository;
+package com.sparta.spartaeats.delivery;
 
 import com.sparta.spartaeats.entity.Delivery;
 import org.springframework.data.jpa.repository.JpaRepository;
