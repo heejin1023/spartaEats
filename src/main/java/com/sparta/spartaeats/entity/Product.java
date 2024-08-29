@@ -23,6 +23,6 @@ public class Product extends TimeStamped{
     private Integer price;
     private String productDescription;
 
-    private Character use_yn;
-    private Character del_yn;
+    private Character useYn;
+    private Character delYn;
 }

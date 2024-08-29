@@ -2,13 +2,16 @@ package com.sparta.spartaeats.entity;
 
 import com.sparta.spartaeats.types.PaymentStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "p_payments")
+@AllArgsConstructor @NoArgsConstructor
 public class Payment extends TimeStamped{
 
     @Id
@@ -19,6 +22,7 @@ public class Payment extends TimeStamped{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+    private Integer payment_amount;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
@@ -31,7 +35,24 @@ public class Payment extends TimeStamped{
     @Column(name = "payment_fail_data", columnDefinition = "CLOB")
     private String paymentFailData;
 
-    private Character del_yn;
+    private Character delYn;
     private String pgType;
 
+    public Payment(Order order, Integer payment_amount, PaymentStatus paymentStatus, String paymentData, String paymentFailData, Character del_yn, String pgType) {
+        this.order = order;
+        this.payment_amount = payment_amount;
+        this.paymentStatus = paymentStatus;
+        this.paymentData = paymentData;
+        this.paymentFailData = paymentFailData;
+        this.delYn = del_yn;
+        this.pgType = pgType;
+    }
+
+    public void changeStatus(PaymentStatus status) {
+        this.paymentStatus = status;
+    }
+
+    public void deletePayment() {
+        this.delYn = 'Y';
+    }
 }
