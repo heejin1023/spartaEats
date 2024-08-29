@@ -9,5 +9,4 @@ public class OrderSearchCondition {
     private String storeName;
     private String category;
     private String username;
-
 }
