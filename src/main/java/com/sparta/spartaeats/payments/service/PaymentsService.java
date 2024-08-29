@@ -42,7 +42,7 @@ public class PaymentsService {
         if (order.getOrderStatus() != OrderStatus.PENDING) {
             throw new IllegalStateException("이미 결제 완료된 주문입니다. orderId : " + payRequestDto.getOrderId());
         }
-            Payment payment = new Payment(order, order.getOrderPrice(), PaymentStatus.REQUESTED, null, null, 'N', payRequestDto.getPgType() );
+            Payment payment = new Payment(order, order.getOrderPrice(), PaymentStatus.APPROVED, null, null, 'N', payRequestDto.getPgType() );
             paymentsRepository.save(payment);
             order.changeOrderStatus(order.getId(), OrderStatus.PREPARING);
             PaymentResponseDto paymentResponseDto = getPaymentResponseDto(payment);
