@@ -4,11 +4,13 @@ import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.controller.CustomApiController;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ public class BoardController extends CustomApiController {
 
         private final BoardService boardService;
 
+        //@Secured(UserRoleEnum.Authority.ADMIN)
         @ApiLogging
         @GetMapping
         public ApiResult getBoardList(
@@ -43,6 +46,7 @@ public class BoardController extends CustomApiController {
             return apiResult;
         }
 
+        @Secured(UserRoleEnum.Authority.ADMIN)
         @ApiLogging
         @GetMapping("/get")
         public ApiResult getBoard(@RequestParam long boardId) {

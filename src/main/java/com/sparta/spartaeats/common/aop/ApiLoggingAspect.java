@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.spartaeats.common.aop.domain.ApiLogVO;
 import com.sparta.spartaeats.common.aop.service.ApiLogService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -31,6 +32,9 @@ public class ApiLoggingAspect {
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private HttpServletResponse response;
+
     @Before("@annotation(apiLogging)")
     public void logBefore(JoinPoint joinPoint, ApiLogging apiLogging) {
         ApiLogVO log = new ApiLogVO();
@@ -50,15 +54,6 @@ public class ApiLoggingAspect {
             log.setResponseBody(result != null ? result.toString() : "No response");
             apiLogService.createLog(log);
         }
-    }
-
-    private String getHttpMethod(JoinPoint joinPoint) {
-        return Arrays.stream(joinPoint.getSignature().getDeclaringType().getAnnotations())
-                .filter(annotation -> annotation instanceof RequestMapping)
-                .map(annotation -> ((RequestMapping) annotation).method())
-                .findFirst()
-                .map(methods -> methods.length > 0 ? methods[0].name() : "UNKNOWN")
-                .orElse("UNKNOWN");
     }
 
     private String getRequestPayload(JoinPoint joinPoint) {
