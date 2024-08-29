@@ -12,8 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.sparta.spartaeats.entity.QOrder.order;
 import static com.sparta.spartaeats.entity.QPayment.*;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -39,7 +41,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                 .where(
                         paymentStatusEq(cond.getStatus()),
                         createdByEq(cond.getCreatedBy()),
-                        pgTypeEq(cond.getPgType())
+                        pgTypeEq(cond.getPgType()),
+                        createdDateBetween(cond.getStartDate(), cond.getEndDate())
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -67,5 +70,12 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
     private BooleanExpression pgTypeEq(String pgType) {
         return hasText(pgType) ? payment.pgType.eq(pgType) : null;
+    }
+
+    private BooleanExpression createdDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate == null || endDate == null) {
+            return null;
+        }
+        return order.createdAt.between(startDate, endDate);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         storeNameEq(cond.getStoreName()),
                         categoryEq(cond.getCategory()),
                         userNameEq(cond.getUsername()),
+                        createdDateBetween(cond.getStartDate(), cond.getEndDate()),
                         order.delYn.eq('N')
                 )
                 .fetch();
@@ -123,5 +125,12 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
     private BooleanExpression userNameEq(String userName) {
         return hasText(userName) ? order.user.userName.eq(userName) : null;
+    }
+
+    private BooleanExpression createdDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate == null || endDate == null) {
+            return null;
+        }
+        return order.createdAt.between(startDate, endDate);
     }
 }
