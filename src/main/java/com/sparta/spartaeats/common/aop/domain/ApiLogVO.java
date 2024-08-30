@@ -1,12 +1,14 @@
-package com.sparta.spartaeats.common.aop;
+package com.sparta.spartaeats.common.aop.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -18,22 +20,29 @@ import java.util.UUID;
 public class ApiLogVO {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID apiId;
 
+    @Column(columnDefinition = "TEXT")
     private String apiName;
 
+    @Column(columnDefinition = "TEXT")
     private String httpMethod;
 
+    @Column(columnDefinition = "TEXT")
     private String endpoint;
 
+    @Column(columnDefinition = "TEXT")
     private String requestBody;
 
+    @Column(columnDefinition = "TEXT")
     private String responseBody;
 
+    @Column(columnDefinition = "TEXT")
     private String responseCode;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     private Long clientId;
 }

@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 //    implementation 'com.querydsl:querydsl-jpa'
 //    annotationProcessor 'com.querydsl:querydsl-apt' 쿼리 DSL 아래 추가
-    //implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
