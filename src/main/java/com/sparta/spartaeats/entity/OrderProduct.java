@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.entity;
 
+import com.sparta.spartaeats.product.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 

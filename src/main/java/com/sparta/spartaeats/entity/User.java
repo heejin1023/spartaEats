@@ -3,6 +3,7 @@ package com.sparta.spartaeats.entity;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "p_user")
 public class User extends TimeStamped{
 
@@ -22,6 +24,7 @@ public class User extends TimeStamped{
     private String userName;
     private String userContact;
     private String userEmail;
+    @Enumerated(EnumType.STRING)
     private UserRoleEnum userRole;
 
     @OneToMany(mappedBy = "user")

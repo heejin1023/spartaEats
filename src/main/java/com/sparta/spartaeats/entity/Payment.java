@@ -23,12 +23,10 @@ public class Payment extends TimeStamped{
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    @Lob
-    @Column(name = "payment_data", columnDefinition = "CLOB")
+    @Column(name = "payment_data")
     private String paymentData;
 
-    @Lob
-    @Column(name = "payment_fail_data", columnDefinition = "CLOB")
+    @Column(name = "payment_fail_data")
     private String paymentFailData;
 
     private Character del_yn;

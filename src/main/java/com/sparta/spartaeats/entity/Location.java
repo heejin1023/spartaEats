@@ -17,4 +17,7 @@ public class Location extends TimeStamped{
     private Character useYn;
     private Character delYn;
 
+    public Location (UUID id){
+        this.id = id;
+    }
 }

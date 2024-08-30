@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.entity;
 
+import com.sparta.spartaeats.store.Store;
 import com.sparta.spartaeats.types.OrderStatus;
 import com.sparta.spartaeats.types.OrderType;
 import jakarta.persistence.*;
