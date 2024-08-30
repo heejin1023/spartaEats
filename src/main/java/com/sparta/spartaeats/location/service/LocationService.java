@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.location.service;
 
-import com.sparta.spartaeats.entity.*;
+import com.sparta.spartaeats.location.domain.Location;
 import com.sparta.spartaeats.location.dto.LocationRequestDto;
 import com.sparta.spartaeats.location.dto.LocationResponseDto;
 import com.sparta.spartaeats.location.repository.LocationRepository;

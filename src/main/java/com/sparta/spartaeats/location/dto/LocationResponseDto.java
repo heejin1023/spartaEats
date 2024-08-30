@@ -1,6 +1,7 @@
 package com.sparta.spartaeats.location.dto;
 
-import com.sparta.spartaeats.entity.*;
+
+import com.sparta.spartaeats.location.domain.Location;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
