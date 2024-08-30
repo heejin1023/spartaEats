@@ -6,6 +6,7 @@ import com.sparta.spartaeats.address.dto.AddressResponseDto;
 import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -62,7 +63,7 @@ public class AddressController {
             @RequestParam int pageNumber,
             @RequestParam int pageSize,
             @RequestHeader(value = "X-User-Id", required = true) Long userIdx,
-            @RequestHeader(value = "X-Role", required = true) String role,
+            @RequestHeader(value = "X-Role", required = true) UserRoleEnum role,
             @RequestParam(value = "local", required = false) String local,
             @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "useYn", required = false) Character useYn) {

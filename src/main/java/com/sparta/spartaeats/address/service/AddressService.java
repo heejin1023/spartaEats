@@ -1,6 +1,7 @@
 package com.sparta.spartaeats.address.service;
 
 import com.sparta.spartaeats.entity.*;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.address.dto.AddressRequestDto;
 import com.sparta.spartaeats.address.dto.AddressResponseDto;
 import com.sparta.spartaeats.address.repository.AddressRepository;
@@ -33,7 +34,7 @@ public class AddressService {
         return new AddressResponseDto(savedAddress);
     }
 
-    public List<AddressResponseDto> getAddresses(Pageable pageable, Long userIdx, String role, String local, Long orderId, Character useYn) {
+    public List<AddressResponseDto> getAddresses(Pageable pageable, Long userIdx, UserRoleEnum role, String local, Long orderId, Character useYn) {
         List<Delivery> addresses;
         // DB 조회 및 변환
         // 역할별 조회 차이
@@ -41,7 +42,7 @@ public class AddressService {
         // 사용자  > 내 주문만
         // 정렬조건 생성일순, 수정일순
         // 검색필드 : 지역 주문id 활성화여부
-        if ("ADMIN".equals(role) || "STORE_OWNER".equals(role)) {
+        if (role == UserRoleEnum.ADMIN || role == UserRoleEnum.OWNER) {
             // 관리자나 가게 주인이라면 모든 주소를 조회
             addresses = addressRepository.findAll(pageable).getContent();
         } else {

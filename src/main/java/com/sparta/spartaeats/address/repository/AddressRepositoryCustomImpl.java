@@ -20,7 +20,7 @@ public class AddressRepositoryCustomImpl implements AddressRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public List<Delivery> findByUserIdAndConditions(Long userIdx, String local, Long orderId, Character useYn, Pageable pageable) {
+    public List<Delivery> findByUserIdAndLocalAndOrderIdAndUseYn(Long userIdx, String local, Long orderId, Character useYn, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Delivery> query = cb.createQuery(Delivery.class);
         Root<Delivery> address = query.from(Delivery.class);

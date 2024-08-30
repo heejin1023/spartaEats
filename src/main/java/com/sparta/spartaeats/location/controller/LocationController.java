@@ -42,11 +42,6 @@ public class LocationController {
     }
 
     //지역코드 목록 조회
-//    @ApiLogging
-//    @GetMapping
-//    public ApiResult getAllLocations(@RequestParam int pageNumber,@RequestParam int pageSize) {
-//        return locationService.getAllLocations();
-//    }
     @ApiLogging
     @GetMapping
     public ApiResult getAllLocations(
