@@ -1,20 +1,16 @@
 package com.sparta.spartaeats.user.domain;
 
-import com.sparta.spartaeats.common.type.UserRoleEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Entity
 @Getter
 @Table(name = "p_user")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class User {
 
     @Id
@@ -43,7 +39,7 @@ public class User {
 
 
     @Builder(builderClassName = "SignUpUserInfoBuilder", builderMethodName = "SignUpUserInfoBuilder")
-    public User(LoginRequestDto loginRequestDto) {
+    public User(UserRequestDto loginRequestDto) {
         this.userId = loginRequestDto.getUserId();
         this.password = loginRequestDto.getPassword();
         this.userName = loginRequestDto.getUserName();

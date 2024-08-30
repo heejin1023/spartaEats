@@ -8,14 +8,15 @@ import com.sparta.spartaeats.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,9 +24,9 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Aspect
-@Component
+//@Component
 @RequiredArgsConstructor
-public class ApiLoggingAspect {
+public class ApiLoggingAspect2 {
 
     private final ApiLogService apiLogService;
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -34,12 +35,9 @@ public class ApiLoggingAspect {
     private HttpServletRequest request;
 
     @Around("@annotation(apiLogging)")
-    public Object logAround(ProceedingJoinPoint joinPoint, ApiLogging apiLogging) throws Throwable {
+    public void logBefore(JoinPoint joinPoint, ApiLogging apiLogging) {
         ApiLogVO log = new ApiLogVO();
 
-        ContentCachingRequestWrapper cachedRequest = new ContentCachingRequestWrapper(request);
-
-        // 메서드 실행 전 로깅
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("User not authenticated");
@@ -55,28 +53,22 @@ public class ApiLoggingAspect {
 
         log.setEndpoint(joinPoint.getSignature().toShortString());
         log.setHttpMethod(request.getMethod());
-        //ßlog.setRequestBody(getRequestPayload()); // Request body 읽기
+        //log.setRequestBody(getRequestPayload());
         log.setCreatedAt(LocalDateTime.now());
 
         ApiLogContext.setLog(log);
+    }
 
-        Object result;
-        try {
-            // 실제 메서드 실행
-            result = joinPoint.proceed();
-        } catch (Exception e) {
-            // 예외 발생 시 처리
-            log.setResponseBody("Error: " + e.getMessage());
-            throw e; // 예외를 다시 던지기
+    @AfterReturning(pointcut = "@annotation(apiLogging)", returning = "result")
+    public void logAfter(JoinPoint joinPoint, ApiLogging apiLogging, Object result) {
+        ApiLogVO log = ApiLogContext.getLog();
+        if (log != null) {
+            log.setResponseBody(result != null ? result.toString() : "No response");
+
+
+            apiLogService.createLog(log);
+            ApiLogContext.clear(); // Clear the context after logging
         }
-
-        // 메서드 실행 후 로깅
-        log.setResponseBody(result != null ? result.toString() : "No response");
-
-        apiLogService.createLog(log);
-        ApiLogContext.clear(); // Clear the context after logging
-
-        return result;
     }
 
     private String getRequestPayload() {

@@ -3,7 +3,7 @@ package com.sparta.spartaeats.common.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.spartaeats.common.security.UserDetailsImpl;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
-import com.sparta.spartaeats.user.domain.LoginRequestDto;
+import com.sparta.spartaeats.user.domain.UserRequestDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("로그인 시도");
         try {
-            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+            UserRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), UserRequestDto.class);
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(

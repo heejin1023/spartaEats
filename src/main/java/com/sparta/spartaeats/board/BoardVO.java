@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.board;
 
+import com.sparta.spartaeats.entity.TimeStamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "test_board")
@@ -14,7 +16,7 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardVO {
+public class BoardVO extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,8 +24,7 @@ public class BoardVO {
 
     private String title;
     private String contents;
-    private Date createdAt;
-    private Date updatedAt;
+
 
 
 }

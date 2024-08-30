@@ -46,7 +46,7 @@ public class BoardController extends CustomApiController {
             return apiResult;
         }
 
-        @Secured(UserRoleEnum.Authority.ADMIN)
+        //@Secured(UserRoleEnum.Authority.ADMIN)
         @ApiLogging
         @GetMapping("/get")
         public ApiResult getBoard(@RequestParam long boardId) {
