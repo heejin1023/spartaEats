@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
 
-    @Query("select d from Delivery d where d.id = :storeId and (d.delYn = 'N' or d.delYn = 'n')")
+    @Query("select d from Delivery d where d.id = :deliveryId and (d.delYn = 'N' or d.delYn = 'n')")
     Optional<Delivery> findByIdWithDel(UUID deliveryId);
 }

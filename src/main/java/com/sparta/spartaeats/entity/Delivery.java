@@ -2,12 +2,14 @@ package com.sparta.spartaeats.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "p_delivery")
+@NoArgsConstructor
 public class Delivery extends TimeStamped{
 
     @Id
@@ -30,5 +32,15 @@ public class Delivery extends TimeStamped{
     private Character delYn;
     private Character useYn;
 
-
+    public Delivery(User user, Order order, String zip, String address, String local, String address2, String contact, Character delYn, Character useYn) {
+        this.user = user;
+        this.order = order;
+        this.zip = zip;
+        this.address = address;
+        this.local = local;
+        this.address2 = address2;
+        this.contact = contact;
+        this.delYn = delYn;
+        this.useYn = useYn;
+    }
 }
