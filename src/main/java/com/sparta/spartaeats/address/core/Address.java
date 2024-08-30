@@ -24,7 +24,8 @@ public class Address extends TimeStamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
-    private User user;
+    //private User user;
+    private Long user = 1L;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
@@ -54,13 +55,14 @@ public class Address extends TimeStamped {
     private Long deletedBy;
     private LocalDateTime deletedAt;
 
+
     public Address(AddressRequestDto addressRequestDto, Long userIdx) {
         this.local = addressRequestDto.getLocal();
         this.zip = addressRequestDto.getZip();
         this.address = addressRequestDto.getAddress();
         this.address2 = addressRequestDto.getAddress2();
         this.contact = addressRequestDto.getContact();
-        this.user = new User(userIdx);  // 이 부분은 실제 User 객체와 매핑하도록 수정 필요
+        this.user = 1L;//new User(userIdx);  // 이 부분은 실제 User 객체와 매핑하도록 수정 필요
         this.useYn = addressRequestDto.getUseYn() != null ? addressRequestDto.getUseYn() : 'Y';
     }
 

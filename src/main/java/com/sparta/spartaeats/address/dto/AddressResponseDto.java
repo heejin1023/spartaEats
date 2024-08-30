@@ -19,16 +19,10 @@ public class AddressResponseDto {
     private String content;
     private Character useYn;
     private Character delYn;
-    private LocalDateTime createdAt;
-    private Long createdBy;
-    private LocalDateTime updatedAt;
-    private Long updatedBy;
-    private LocalDateTime deletedAt;
-    private Long deletedBy;
 
     public AddressResponseDto(Address savedAddress) {
         this.delvrUuid = savedAddress.getId();
-        this.userIdx = savedAddress.getUser().getId(); // User 엔티티에서 ID를 가져온다고 가정
+        this.userIdx = 1L;//savedAddress.getUser().getId(); // User 엔티티에서 ID를 가져온다고 가정
         this.zip = savedAddress.getZip();
         this.local = savedAddress.getLocal();
         this.address = savedAddress.getAddress();
@@ -36,12 +30,6 @@ public class AddressResponseDto {
         this.content = savedAddress.getContact();
         this.useYn = savedAddress.getUseYn();
         this.delYn = savedAddress.getDelYn();
-        this.createdAt = savedAddress.getCreatedAt();
-        this.createdBy = savedAddress.getCreatedBy();
-        this.updatedAt = savedAddress.getModifiedAt();
-        this.updatedBy = savedAddress.getModifiedBy();
-        this.deletedAt = savedAddress.getDeletedAt();
-        this.deletedBy = savedAddress.getDeletedBy();
     }
 
 }

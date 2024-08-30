@@ -3,7 +3,12 @@ package com.sparta.spartaeats.address.controller;
 import com.sparta.spartaeats.address.service.AddressService;
 import com.sparta.spartaeats.address.dto.AddressRequestDto;
 import com.sparta.spartaeats.address.dto.AddressResponseDto;
+import com.sparta.spartaeats.common.aop.ApiLogging;
+import com.sparta.spartaeats.common.model.ApiResult;
+import com.sparta.spartaeats.common.type.ApiResultError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/address")
 @RequiredArgsConstructor
+@Slf4j
 public class AddressController {
 
     private final AddressService addressService;
@@ -42,6 +48,7 @@ public class AddressController {
     }
 
     // 배송지 상세 조회
+    @ApiLogging
     @GetMapping("/{addressId}")
     public AddressResponseDto getAddressById(@PathVariable String addressId,
                                              @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
@@ -49,16 +56,23 @@ public class AddressController {
     }
 
     // 배송지 목록 조회 (페이징)
+    @ApiLogging
     @GetMapping
-    public List<AddressResponseDto> getAddresses(
-            Pageable pageable,
+    public ApiResult getAddresses(
+            @RequestParam int pageNumber,
+            @RequestParam int pageSize,
             @RequestHeader(value = "X-User-Id", required = true) Long userIdx,
             @RequestHeader(value = "X-Role", required = true) String role,
             @RequestParam(value = "local", required = false) String local,
             @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "useYn", required = false) Character useYn) {
 
-        // 서비스 호출
-        return addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<AddressResponseDto> data = (Page<AddressResponseDto>) addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
+
+        apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);
+        return apiResult;
     }
 }

@@ -6,6 +6,7 @@ import com.sparta.spartaeats.location.dto.LocationResponseDto;
 import com.sparta.spartaeats.location.entity.Location;
 import com.sparta.spartaeats.location.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,8 +48,9 @@ public class LocationService {
     }
 
 
-    public List<LocationResponseDto> getAllLocations() {
-        List<Location> locations = locationRepository.findAll();
+    public List<LocationResponseDto> getAllLocations(Pageable pageable) {
+        List<Location> locations;
+        locations = locationRepository.findAll(pageable).getContent();
         return locations.stream()
                 .map(LocationResponseDto::new) // 생성자에서 Location 객체를 받는 LocationResponseDto가 필요
                 .collect(Collectors.toList());
