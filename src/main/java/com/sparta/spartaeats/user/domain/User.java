@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.user.domain;
 
+import com.sparta.spartaeats.entity.TimeStamped;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class User {
+public class User extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
