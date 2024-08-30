@@ -1,11 +1,10 @@
-package com.sparta.spartaeats.entity;
+package com.sparta.spartaeats.order.domain;
 
+import com.sparta.spartaeats.entity.Product;
+import com.sparta.spartaeats.entity.TimeStamped;
 import com.sparta.spartaeats.order.dto.OrderProductDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,8 @@ import java.util.UUID;
 @Table(name = "p_order_products")
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-public class OrderProduct extends TimeStamped{
+@ToString
+public class OrderProduct extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,7 +38,7 @@ public class OrderProduct extends TimeStamped{
 
     public static OrderProduct createOrderProduct(Product product, OrderProductDto dto) {
         return OrderProduct.builder()
-                .price(dto.getPrice())
+                .price(product.getPrice())
                 .amount(dto.getAmount())
                 .product(product)
                 .delYn('N')

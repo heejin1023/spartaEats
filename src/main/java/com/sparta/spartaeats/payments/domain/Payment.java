@@ -1,5 +1,7 @@
-package com.sparta.spartaeats.entity;
+package com.sparta.spartaeats.payments.domain;
 
+import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.order.domain.Order;
 import com.sparta.spartaeats.types.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Table(name = "p_payments")
 @AllArgsConstructor @NoArgsConstructor
-public class Payment extends TimeStamped{
+public class Payment extends TimeStamped {
 
     @Id
     @GeneratedValue

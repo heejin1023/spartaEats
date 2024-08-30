@@ -4,9 +4,12 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.order.domain.Order;
+import com.sparta.spartaeats.order.domain.OrderProduct;
+import com.sparta.spartaeats.order.domain.QOrder;
+import com.sparta.spartaeats.order.domain.QOrderProduct;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
-import com.sparta.spartaeats.entity.*;
 import com.sparta.spartaeats.exception.EmptyDataException;
 import com.sparta.spartaeats.order.dto.*;
 import jakarta.persistence.EntityManager;
@@ -22,10 +25,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.sparta.spartaeats.entity.QOrder.*;
-import static com.sparta.spartaeats.entity.QOrderProduct.*;
 import static com.sparta.spartaeats.entity.QStore.*;
-import static com.sparta.spartaeats.entity.QUser.*;
+import static com.sparta.spartaeats.order.domain.QOrder.*;
+import static com.sparta.spartaeats.order.domain.QOrderProduct.*;
+import static com.sparta.spartaeats.user.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j

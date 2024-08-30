@@ -1,5 +1,7 @@
 package com.sparta.spartaeats.entity;
 
+import com.sparta.spartaeats.order.domain.Order;
+import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

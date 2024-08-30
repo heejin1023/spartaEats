@@ -5,8 +5,8 @@ import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.responseDto.SingleResponseDto;
-import com.sparta.spartaeats.entity.Order;
-import com.sparta.spartaeats.entity.Payment;
+import com.sparta.spartaeats.order.domain.Order;
+import com.sparta.spartaeats.payments.domain.Payment;
 import com.sparta.spartaeats.exception.EmptyDataException;
 import com.sparta.spartaeats.order.repository.OrderRepository;
 import com.sparta.spartaeats.payments.dto.*;
@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j

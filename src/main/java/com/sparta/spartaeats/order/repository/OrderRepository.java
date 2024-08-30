@@ -1,7 +1,7 @@
 package com.sparta.spartaeats.order.repository;
 
 
-import com.sparta.spartaeats.entity.Order;
+import com.sparta.spartaeats.order.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

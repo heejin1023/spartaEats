@@ -3,6 +3,8 @@ package com.sparta.spartaeats.payments.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.spartaeats.order.domain.QOrder;
+import com.sparta.spartaeats.payments.domain.QPayment;
 import com.sparta.spartaeats.payments.dto.PaymentResponseDto;
 import com.sparta.spartaeats.payments.dto.PaymentSearchCond;
 import com.sparta.spartaeats.payments.dto.QPaymentResponseDto;
@@ -15,8 +17,8 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.sparta.spartaeats.entity.QOrder.order;
-import static com.sparta.spartaeats.entity.QPayment.*;
+import static com.sparta.spartaeats.order.domain.QOrder.*;
+import static com.sparta.spartaeats.payments.domain.QPayment.*;
 import static org.springframework.util.StringUtils.hasText;
 
 public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {

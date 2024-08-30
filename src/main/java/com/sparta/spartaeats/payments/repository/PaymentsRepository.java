@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.payments.repository;
 
-import com.sparta.spartaeats.entity.Payment;
+import com.sparta.spartaeats.payments.domain.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

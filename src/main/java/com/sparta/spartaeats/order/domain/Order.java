@@ -1,11 +1,15 @@
-package com.sparta.spartaeats.entity;
+package com.sparta.spartaeats.order.domain;
 
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.entity.Delivery;
+import com.sparta.spartaeats.entity.Store;
+import com.sparta.spartaeats.entity.TimeStamped;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.exception.OrderTimeOutException;
 import com.sparta.spartaeats.order.dto.OrderResponseDto;
 import com.sparta.spartaeats.types.OrderStatus;
 import com.sparta.spartaeats.types.OrderType;
+import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +28,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order extends TimeStamped{
+public class Order extends TimeStamped {
 
     @Id
     @GeneratedValue

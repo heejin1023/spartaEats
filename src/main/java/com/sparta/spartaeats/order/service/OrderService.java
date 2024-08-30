@@ -1,6 +1,8 @@
 package com.sparta.spartaeats.order.service;
 
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.order.domain.Order;
+import com.sparta.spartaeats.order.domain.OrderProduct;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.responseDto.SingleResponseDto;
@@ -11,10 +13,11 @@ import com.sparta.spartaeats.order.dto.*;
 import com.sparta.spartaeats.delivery.DeliveryRepository;
 import com.sparta.spartaeats.order.repository.OrderProductRepository;
 import com.sparta.spartaeats.order.repository.OrderRepository;
-import com.sparta.spartaeats.user.UserRepository;
 import com.sparta.spartaeats.product.repository.ProductRepository;
 import com.sparta.spartaeats.store.repository.StoreRepository;
 import com.sparta.spartaeats.types.OrderStatus;
+import com.sparta.spartaeats.user.domain.User;
+import com.sparta.spartaeats.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +59,8 @@ public class OrderService {
                     throw new DeletedProductException("판매 중지 된 상품이 존재합니다, 상품명 : " + orderProduct.getProduct().getProductName());
                 }
             }
-            Order order = new Order(userRepository.findById(252L).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다")), findStore, orderProductsList,
+        User user = userRepository.findById(252).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+        Order order = new Order(user, findStore, orderProductsList,
                     orderRequestDto.getMemo(), orderRequestDto.getOrderType(), Order.calculatePrice(orderProductsList), delivery, OrderStatus.PREPARING, 'N');
             // 연관관계 설정
             // 루프 내에서 Iterable 직접 수정 시 발생하는 에러로 인해 복제
@@ -92,9 +96,10 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public SingleResponseDto getOneOrder(UUID orderId) {
+    public SingleResponseDto getOneOrder(UUID orderId, String userRole) {
+            log.info("userRole = {}", userRole);
             Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
-//        Order findOrder = orderRepository.findByIdWithAuth(orderId, user.getId()).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
+    //        Order findOrder = orderRepository.findByIdWithAuth(orderId, user.getId()).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
             OrderListResponseDto responseDto = new OrderListResponseDto(orderId, findOrder.getUser().getId(), findOrder.getStore().getId(),
                     Order.calculatePrice(findOrder.getOrderProductList()), findOrder.getMemo(),
                     findOrder.getOrderStatus(), findOrder.getOrderType(),
