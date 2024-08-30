@@ -34,7 +34,7 @@ public class Store extends TimeStamped {
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private StoreCategory storeCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,7 +50,7 @@ public class Store extends TimeStamped {
     @Column(name = "store_name", length = 200, nullable = false)
     private String storeName;
 
-    @Column(name = "stroe_contact", length = 100, nullable = false)
+    @Column(name = "store_contact", length = 100, nullable = false)
     private String storeContact;
 
     @Column(name = "store_address", length = 200, nullable = false)

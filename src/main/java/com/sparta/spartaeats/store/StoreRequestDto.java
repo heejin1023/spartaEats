@@ -10,6 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class StoreRequestDto {
+    private UUID storeId;
     private Long userIdx;
     private String storeName;
     private String storeContact;

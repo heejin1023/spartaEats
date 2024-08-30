@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -24,25 +25,23 @@ public class StoreService {
 
     // 음식점 등록
     public ApiResult createStore(StoreRequestDto storeRequestDto) {
-        User user = new User();
-        user.setId(storeRequestDto.getUserIdx());
-        //user 정보 -> 체크 필요
+//        User user = new User();
+//        user.setId(storeRequestDto.getUserIdx());
+//        user 정보 -> 체크 필요
 
-        StoreCategory storeCategory = (StoreCategory) storeCategoryRepository.findByIdAndDelYn(storeRequestDto.getCategoryId(), "N")
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+        StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(storeRequestDto.getCategoryId(), "N")
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
 
         Store store = Store.builder()
                 .id(UUID.randomUUID())
-                .owner(user)
+//                .owner(user)
                 .storeName(storeRequestDto.getStoreName())
                 .storeContact(storeRequestDto.getStoreContact())
                 .storeAddress(storeRequestDto.getStoreAddress())
                 .storeCategory(storeCategory)
-                .location(new Location(storeRequestDto.getLocationId())) //locationRepository.findById 로 변경 필요
+//                .location(new Location(storeRequestDto.getLocationId())) //locationRepository.findById 로 변경 필요
                 .useYn("Y")
                 .delYn("N")
-//                .createdAt(LocalDateTime.now())
-//                .createdBy(storeRequestDto.getUserIdx())
                 .build();
 
         storeRepository.save(store);
@@ -53,8 +52,8 @@ public class StoreService {
     }
 
     // 음식점 정보 수정
-    public ApiResult updateStore(UUID store_id, StoreRequestDto storeRequestDto) {
-        Store store = storeRepository.findByIdAndDelYn(store_id, "N")
+    public ApiResult updateStore(UUID storeId, StoreRequestDto storeRequestDto) {
+        Store store = storeRepository.findByIdAndDelYn(storeId, "N")
                 .orElseThrow(() -> new IllegalArgumentException("해당 음식점을 찾을 수 없습니다."));
 
         StoreCategory storeCategory = (StoreCategory) storeCategoryRepository.findById(storeRequestDto.getCategoryId())
@@ -76,45 +75,58 @@ public class StoreService {
     }
 
     //음식점 삭제
+    public ApiResult deleteStore(UUID storeId) {
+        Store store = storeRepository.findByIdAndDelYn(storeId, "N")
+                .orElseThrow(() -> new IllegalArgumentException("해당 음식점을 찾을 수 없습니다."));
+        store.setDelYn("Y");
+        store.setDeletedAt(LocalDateTime.now());
+        storeRepository.save(store);
 
+        ApiResult apiResult = new ApiResult();
+        apiResult.set(ApiResultError.NO_ERROR, "음식점 정보 삭제 성공");
+        return apiResult;
+    }
 
     // 음식점 상세 조회
     @Transactional(readOnly = true)
-    public ApiResult getStoreDetail(UUID store_id) {
+    public StoreResponseDto getStoreDetail(UUID store_id) {
         Store store = storeRepository.findByIdAndDelYn(store_id, "N")
                 .orElseThrow(() -> new IllegalArgumentException("해당 음식점을 찾을 수 없습니다."));
 
-        StoreResponseDto responseDto = StoreResponseDto.builder()
+        StoreResponseDto storeResponseDto = StoreResponseDto.builder()
                 .storeId(store.getId())
                 .owner(store.getOwner())
                 .storeName(store.getStoreName())
                 .storeContact(store.getStoreContact())
                 .storeAddress(store.getStoreAddress())
-                .storeCategory(store.getStoreCategory())
+                .storeCategoryId(store.getStoreCategory().getId())
                 .createdAt(store.getCreatedAt())
                 .createdBy(store.getCreatedBy())
                 .modifiedAt(store.getModifiedAt())
                 .modifiedBy(store.getModifiedBy())
                 .build();
+        return storeResponseDto;
 
-        ApiResult apiResult = new ApiResult();
-        apiResult.set(ApiResultError.NO_ERROR, "음식점 상세 조회 성공").setResultData(responseDto);
-        return apiResult;
     }
 
     // 음식점 전체 조회 및 검색
     @Transactional(readOnly = true)
-    public ApiResult getStores(StoreSearchRequestDto searchRequestDto, Pageable pageable) {
+    public Page<StoreResponseDto> getStores(StoreSearchRequestDto searchRequestDto, Pageable pageable) {
 
         Page<Store> storePage = storeRepository.findAll(StoreSpecification.searchWith(searchRequestDto), pageable);
 
-        // PageInfo 설정
-        ApiResult result = new ApiResult();
-        result.set(ApiResultError.NO_ERROR, "음식점 조회 성공");
-        result.setList(storePage);  // Page 데이터를 ApiResult에 설정
-        result.setPageInfo(storePage);  // PageInfo를 설정
+        // Store 엔티티를 StoreResponseDto로 변환
+        Page<StoreResponseDto> storeResponseDtoPage = storePage.map(store -> new StoreResponseDto(
+                store.getId(),
+                store.getStoreName(),
+                store.getStoreContact(),
+                store.getStoreAddress(),
+                store.getStoreCategory().getId()  // StoreCategory 객체 대신 ID만 가져옴
+        ));
 
-        return result;
+
+
+        return storeResponseDtoPage;
 //
 //        Page<Store> stores = storeRepository.findAll(StoreSpecification.searchWith(searchRequestDto), pageable);
 //
@@ -130,4 +142,6 @@ public class StoreService {
 //        apiResult.set(ApiResultError.NO_ERROR).setList(storeList).setPageInfo(pageInfo);
         //return new ApiResult(200, "음식점 목록 조회 성공", new StoreListResultData(storeList, pageInfo));
     }
+
+
 }

@@ -4,21 +4,26 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.store.StoreResponseDto;
+import com.sparta.spartaeats.store.StoreSearchRequestDto;
+import com.sparta.spartaeats.store.StoreSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class StoreCategoryService {
     private final StoreCategoryRepository storeCategoryRepository;
 //    private final JPAQueryFactory queryFactory;
 
     //카테고리 등록
-
+    @Transactional
     public ApiResult createStoreCategory(StoreCategoryRequestDto storeCategoryRequestDto){
         System.out.println(storeCategoryRequestDto.getCategory_name());
         System.out.println(storeCategoryRequestDto.getCategory_description());
@@ -26,15 +31,20 @@ public class StoreCategoryService {
                 .id(UUID.randomUUID())
                 .categoryName(storeCategoryRequestDto.getCategory_name())
                 .categoryDescription(storeCategoryRequestDto.getCategory_description())
+                .delYn("N")
+                .useYn("Y")
                 .build();
-        storeCategoryRepository.save(storeCategory);
+        System.out.println(storeCategory);
+        StoreCategory storeResponse = storeCategoryRepository.save(storeCategory);
+        System.out.println(storeResponse);
         ApiResult apiResult = new ApiResult();
-        apiResult.set(ApiResultError.NO_ERROR, "카테고리 등록 성공");
+        apiResult.set(ApiResultError.NO_ERROR, "카테고리 등록 성공").setResultData(storeResponse);
         return apiResult;
     }
 
     //카테고리 정보 수정
     public ApiResult updateStoreCategory(UUID store_category_id, StoreCategoryRequestDto storeCategoryRequestDto){
+        System.out.println(store_category_id);
         StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(store_category_id, "N")
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
 
@@ -42,7 +52,7 @@ public class StoreCategoryService {
         storeCategory.setCategoryDescription(storeCategory.getCategoryDescription());
         storeCategory.setUseYn(storeCategory.getUseYn());
 
-//        storeCategoryRepository.save(storeCategory);
+        storeCategoryRepository.save(storeCategory);
 
         ApiResult apiResult = new ApiResult();
         apiResult.set(ApiResultError.NO_ERROR, "카테고리 정보 수정 성공");
@@ -54,7 +64,8 @@ public class StoreCategoryService {
         StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(store_category_id, "N")
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
         storeCategory.setDelYn("Y");
-
+        storeCategory.setDeletedAt(LocalDateTime.now());
+        storeCategoryRepository.save(storeCategory);
         ApiResult apiResult = new ApiResult();
         apiResult.set(ApiResultError.NO_ERROR, "카테고리 삭제 성공");
         return apiResult;
@@ -66,12 +77,16 @@ public class StoreCategoryService {
 
     // 카테고리 상세 조회
     @Transactional(readOnly = true)
-    public ApiResult getCategoryById(UUID storeCategoryId) {
+    public StoreCategory getCategoryDetails(UUID storeCategoryId) {
         StoreCategory storeCategory = storeCategoryRepository.findById(storeCategoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
-        return new ApiResult()
-                .setResultData(storeCategory)
-                .setResultMessage("카테고리 상세 조회 성공");
+        return storeCategory;
+    }
+
+    //카테고리 목록 조회 및 검색
+    public Page<StoreCategory> getStoreCategories(StoreCategorySearchRequestDto storeCategorySearchRequestDto, Pageable pageable) {
+        Page<StoreCategory> storeCategoryPage = storeCategoryRepository.findAll(StoreCategorySpecification.searchWith(storeCategorySearchRequestDto), pageable);
+        return storeCategoryPage;
     }
 
 //    // 카테고리 목록 조회 및 검색

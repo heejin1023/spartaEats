@@ -1,7 +1,9 @@
 package com.sparta.spartaeats.store;
 
 import com.sparta.spartaeats.common.model.ApiResult;
+import com.sparta.spartaeats.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +23,22 @@ public class StoreController {
     }
 
     // 음식점 정보 수정
-    @PatchMapping("/{store_id}/update")
-    public ApiResult updateStore(@PathVariable("store_id") UUID storeId, @RequestBody StoreRequestDto storeRequestDto) {
+    @PatchMapping("/update")
+    public ApiResult updateStore(@RequestParam UUID storeId, @RequestBody StoreRequestDto storeRequestDto) {
         return storeService.updateStore(storeId, storeRequestDto);
     }
 
-    @PatchMapping("/{store_id}/")
+    @PatchMapping("/delete")
+    public ApiResult deleteStore(@RequestParam UUID storeId) {
+        return storeService.deleteStore(storeId);
 
+    }
     // 음식점 상세 조회
     @GetMapping("/{store_id}")
-    public ApiResult getStoreDetail(@PathVariable("store_id") UUID storeId) {
+    public StoreResponseDto getStoreDetail(@PathVariable("store_id") UUID storeId) {
+//        ApiResult apiResult = new ApiResult();
+//        apiResult.set(ApiResultError.NO_ERROR, "음식점 상세 조회 성공").setResultData(responseDto);
+//        return apiResult;
         return storeService.getStoreDetail(storeId);
     }
 
@@ -46,7 +54,12 @@ public class StoreController {
 
         StoreSearchRequestDto searchRequestDto = new StoreSearchRequestDto(storeName, locationId, storeAddress, categoryId, useYn);
         Pageable pageable = PageRequest.of(page - 1, size);
-
-        return storeService.getStores(searchRequestDto, pageable);
+        Page<StoreResponseDto> storeResponseDtoPage = storeService.getStores(searchRequestDto, pageable);
+        // PageInfo 설정
+        ApiResult result = new ApiResult();
+        result.set(ApiResultError.NO_ERROR, "음식점 조회 성공");
+        result.setList(storeResponseDtoPage);  // Page 데이터를 ApiResult에 설정
+        result.setPageInfo(storeResponseDtoPage);  // PageInfo를 설정
+        return result;
     }
 }

@@ -24,7 +24,7 @@ public class StoreResponseDto {
     private String storeName;
     private String storeContact;
     private String storeAddress;
-    private StoreCategory storeCategory;
+    private UUID storeCategoryId;
 
     private LocalDateTime createdAt;
     private Long createdBy;
@@ -33,18 +33,12 @@ public class StoreResponseDto {
     private LocalDateTime deletedAt;
     private Long deletedBy;
 
-    public StoreResponseDto(Store store) {
-        this.storeId = store.getId();
-        this.owner = store.getOwner();
-        this.storeName = store.getStoreName();
-        this.storeContact = store.getStoreContact();
-        this.storeAddress = store.getStoreAddress();
-        this.storeCategory = store.getStoreCategory();
-        this.createdAt = store.getCreatedAt();
-        this.createdBy = store.getCreatedBy();
-        this.modifiedAt = store.getModifiedAt();
-        this.modifiedBy = store.getModifiedBy();
-        this.deletedAt = store.getDeletedAt();
-        this.deletedBy = store.getDeletedBy();
+
+    public StoreResponseDto(UUID storeId, String storeName, String storeContact, String storeAddress, UUID categoryId) {
+        this.storeId = storeId;
+        this.storeName = storeName;
+        this.storeContact = storeContact;
+        this.storeAddress = storeAddress;
+        this.storeCategoryId = categoryId;
     }
 }
