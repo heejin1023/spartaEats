@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
@@ -24,10 +25,6 @@ public class ApiResult extends HashMap<String, Object>{
     public static final String AR_KEY_LIST = "list";
     public static final String AR_KEY_SC = "sc";
 
-    public ApiResult() {
-        this.set(ApiResultError.ERROR_DEFAULT);
-    }
-
     public ApiResult(ApiResultError err) {
         this.set(err);
     }
@@ -36,12 +33,18 @@ public class ApiResult extends HashMap<String, Object>{
         super(map);
     }
 
+    public ApiResult() {
+        this.set(ApiResultError.ERROR_DEFAULT);
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
     public ApiResult set(ApiResultError err) {
         return set(err, null);
     }
 
     public ApiResult set(ApiResultError err, String appendMessage) {
-        put(AR_KEY_RESULT_CODE, err.getCode());
+        put(AR_KEY_RESULT_CODE, err);
 
         String msg = err.getMessage();
         if(StringUtils.hasText(appendMessage)) {
