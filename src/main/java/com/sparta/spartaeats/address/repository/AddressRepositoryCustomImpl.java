@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.address.repository;
 
-import com.sparta.spartaeats.entity.*;
+import com.sparta.spartaeats.address.domain.Address;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -20,10 +20,10 @@ public class AddressRepositoryCustomImpl implements AddressRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public List<Delivery> findByUserIdAndLocalAndOrderIdAndUseYn(Long userIdx, String local, Long orderId, Character useYn, Pageable pageable) {
+    public List<Address> findByUserIdAndLocalAndOrderIdAndUseYn(Long userIdx, String local, Long orderId, Character useYn, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Delivery> query = cb.createQuery(Delivery.class);
-        Root<Delivery> address = query.from(Delivery.class);
+        CriteriaQuery<Address> query = cb.createQuery(Address.class);
+        Root<Address> address = query.from(Address.class);
 
         Predicate criteria = cb.conjunction();
 
@@ -48,7 +48,7 @@ public class AddressRepositoryCustomImpl implements AddressRepositoryCustom {
         // 정렬 예시: 생성일순으로 정렬
         query.orderBy(cb.desc(address.get("createdAt")));
 
-        TypedQuery<Delivery> typedQuery = entityManager.createQuery(query);
+        TypedQuery<Address> typedQuery = entityManager.createQuery(query);
         typedQuery.setFirstResult((int) pageable.getOffset());
         typedQuery.setMaxResults(pageable.getPageSize());
 
