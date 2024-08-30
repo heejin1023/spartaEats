@@ -1,9 +1,14 @@
 package com.sparta.spartaeats.entity;
 
+import com.sparta.spartaeats.address.dto.AddressRequestDto;
+import com.sparta.spartaeats.entity.Order;
+import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -45,4 +50,33 @@ public class Delivery extends TimeStamped{
 
     @Column(name = "use_yn", nullable = false)
     private Character useYn = 'Y';
+
+    private Long deletedBy;
+    private LocalDateTime deletedAt;
+
+
+    public Delivery(AddressRequestDto addressRequestDto, User user) {
+        this.local = addressRequestDto.getLocal();
+        this.zip = addressRequestDto.getZip();
+        this.address = addressRequestDto.getAddress();
+        this.address2 = addressRequestDto.getAddress2();
+        this.contact = addressRequestDto.getContact();
+        this.user = user;  // 이 부분은 실제 User 객체와 매핑하도록 수정 필요
+        this.useYn = addressRequestDto.getUseYn() != null ? addressRequestDto.getUseYn() : 'Y';
     }
+
+    public void update(AddressRequestDto addressRequestDto, Long userIdx) {
+        this.local = addressRequestDto.getLocal();
+        this.zip = addressRequestDto.getZip();
+        this.address = addressRequestDto.getAddress();
+        this.address2 = addressRequestDto.getAddress2();
+        this.contact = addressRequestDto.getContact();
+        this.useYn = addressRequestDto.getUseYn() != null ? addressRequestDto.getUseYn() : this.useYn;
+    }
+
+    public void delete(Long deletedBy) {
+        this.delYn = 'Y';
+        this.deletedBy = deletedBy;
+        this.deletedAt = LocalDateTime.now();
+    }
+}

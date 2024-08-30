@@ -24,11 +24,11 @@ public class Payment extends TimeStamped{
     private PaymentStatus paymentStatus;
 
     @Lob
-    @Column(name = "payment_data", columnDefinition = "CLOB")
+    @Column(name = "payment_data", columnDefinition = "TEXT")
     private String paymentData;
 
     @Lob
-    @Column(name = "payment_fail_data", columnDefinition = "CLOB")
+    @Column(name = "payment_fail_data", columnDefinition = "TEXT")
     private String paymentFailData;
 
     private Character del_yn;

@@ -6,7 +6,7 @@ import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.location.dto.LocationRequestDto;
 import com.sparta.spartaeats.location.dto.LocationResponseDto;
-import com.sparta.spartaeats.location.entity.Location;
+import com.sparta.spartaeats.entity.*;
 import com.sparta.spartaeats.location.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

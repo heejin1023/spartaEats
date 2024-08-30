@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.address.dto;
 
-import com.sparta.spartaeats.address.core.Address;
+import com.sparta.spartaeats.entity.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +20,7 @@ public class AddressResponseDto {
     private Character useYn;
     private Character delYn;
 
-    public AddressResponseDto(Address savedAddress) {
+    public AddressResponseDto(Delivery savedAddress) {
         this.delvrUuid = savedAddress.getId();
         this.userIdx = 1L;//savedAddress.getUser().getId(); // User 엔티티에서 ID를 가져온다고 가정
         this.zip = savedAddress.getZip();

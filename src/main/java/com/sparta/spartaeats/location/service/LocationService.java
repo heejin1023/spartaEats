@@ -1,9 +1,8 @@
 package com.sparta.spartaeats.location.service;
 
-import com.sparta.spartaeats.address.core.Address;
+import com.sparta.spartaeats.entity.*;
 import com.sparta.spartaeats.location.dto.LocationRequestDto;
 import com.sparta.spartaeats.location.dto.LocationResponseDto;
-import com.sparta.spartaeats.location.entity.Location;
 import com.sparta.spartaeats.location.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

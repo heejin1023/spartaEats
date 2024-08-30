@@ -22,6 +22,7 @@ public class User extends TimeStamped{
     private String userName;
     private String userContact;
     private String userEmail;
+    @Enumerated(EnumType.STRING)
     private UserRoleEnum userRole;
 
     @OneToMany(mappedBy = "user")
