@@ -51,6 +51,9 @@ public class Address extends TimeStamped {
     @Column(name = "use_yn", nullable = false)
     private Character useYn = 'Y';
 
+    private Long deletedBy;
+    private LocalDateTime deletedAt;
+
     public Address(AddressRequestDto addressRequestDto, Long userIdx) {
         this.local = addressRequestDto.getLocal();
         this.zip = addressRequestDto.getZip();

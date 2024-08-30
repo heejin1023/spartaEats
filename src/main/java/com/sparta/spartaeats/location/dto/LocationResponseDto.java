@@ -15,23 +15,11 @@ public class LocationResponseDto {
     private String locationName;
     private Character useYn;
     private Character delYn;
-    private LocalDateTime createdAt;
-    private Long createdBy;
-    private LocalDateTime updatedAt;
-    private Long updatedBy;
-    private LocalDateTime deletedAt;
-    private Long deletedBy;
 
     public LocationResponseDto(Location location) {
         this.locationId = location.getId();
         this.locationName = location.getLocationName();
         this.useYn = location.getUseYn();
         this.delYn = location.getDelYn();
-        this.createdAt = location.getCreatedAt();
-        this.createdBy = location.getCreatedBy();
-        this.updatedAt = location.getModifiedAt();
-        this.updatedBy = location.getModifiedBy();
-        this.deletedAt = location.getDeletedAt();
-        this.deletedBy = location.getDeletedBy();
     }
 }
