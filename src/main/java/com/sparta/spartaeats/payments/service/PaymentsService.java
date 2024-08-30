@@ -46,7 +46,7 @@ public class PaymentsService {
             paymentsRepository.save(payment);
             order.changeOrderStatus(order.getId(), OrderStatus.PREPARING);
             PaymentResponseDto paymentResponseDto = getPaymentResponseDto(payment);
-            return new SingleResponseDto<>(ApiResultError.NO_ERROR.getCode(), "결제가 완료되었습니다", paymentResponseDto);
+            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제가 완료되었습니다", paymentResponseDto);
     }
 
     public SingleResponseDto<PaymentUpdateResponseDto> updatePayment(UUID paymentId, PayUpdateRequestDto requestDto) {
@@ -62,7 +62,7 @@ public class PaymentsService {
             payment.changeStatus(requestDto.getStatus());
             PaymentUpdateResponseDto responseDto = new PaymentUpdateResponseDto(paymentId, payment.getPaymentStatus());
 
-            return new SingleResponseDto<>(ApiResultError.NO_ERROR.getCode(), "결제 상태 업데이트 완료", responseDto);
+            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 상태 업데이트 완료", responseDto);
     }
 
     public SimpleResponseDto deletePayment(UUID paymentId) {
@@ -71,12 +71,12 @@ public class PaymentsService {
                 throw new IllegalStateException("이미 삭제된 결제입니다");
             }
             payment.deletePayment();
-            return new SimpleResponseDto(ApiResultError.NO_ERROR.getCode(), "결제 내역이 삭제되었습니다.");
+            return new SimpleResponseDto(ApiResultError.NO_ERROR, "결제 내역이 삭제되었습니다.");
     }
 
     public SingleResponseDto<?> getOnePaymentResult(UUID paymentId) {
             Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
-            return new SingleResponseDto<>(ApiResultError.NO_ERROR.getCode(), "결제 내역 단건 조회", getPaymentResponseDto(payment));
+            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
         }
 
     public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond) {
@@ -85,8 +85,7 @@ public class PaymentsService {
                 log.error("PaymentService.getAllPayments");
                 throw new EmptyDataException("결제 내역이 존재하지 않습니다");
             }
-            List<PaymentResponseDto> content = page.getContent();
-            return new MultiResponseDto<>(ApiResultError.NO_ERROR.getCode(), "결제 목록 조회", content,
+            return new MultiResponseDto<>(ApiResultError.NO_ERROR, "결제 목록 조회", page,
                     new PageInfoDto(
                             (int) page.getTotalElements(),
                             page.getSize(),

@@ -1,8 +1,8 @@
 package com.sparta.spartaeats.exception;
 
+import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
-import com.sparta.spartaeats.utils.ResponseErrorUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -12,37 +12,43 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public SimpleResponseDto handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseErrorUtils.handleErrorSimple(ApiResultError.ERROR_INVALID_ARGUMENT.getCode(), e.getMessage());
+    public ApiResult handleIllegalArgumentException(IllegalArgumentException e) {
+        return new ApiResult().set(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public SimpleResponseDto handleIllegalStateException(IllegalArgumentException e) {
-        return ResponseErrorUtils.handleErrorSimple(ApiResultError.ERROR_INVALID_STATE.getCode(), e.getMessage());
+    public ApiResult handleIllegalStateException(IllegalArgumentException e) {
+        return new ApiResult().set(ApiResultError.ERROR_INVALID_STATE, e.getMessage());
+
     }
 
     @ExceptionHandler(EmptyDataException.class)
-    public SimpleResponseDto handleEmptyDataException(IllegalArgumentException e) {
-        return ResponseErrorUtils.handleErrorSimple(ApiResultError.ERROR_EMPTY_DATA.getCode(), e.getMessage());
+    public ApiResult handleEmptyDataException(IllegalArgumentException e) {
+        return new ApiResult().set(ApiResultError.ERROR_EMPTY_DATA, e.getMessage());
+
     }
 
     @ExceptionHandler(DeletedProductException.class)
-    public SimpleResponseDto handleDeletedProductException(DeletedProductException e) {
-        return ResponseErrorUtils.handleErrorSimple(ApiResultError.ERROR_INVALID_STATE.getCode(), e.getMessage());
+    public ApiResult handleDeletedProductException(DeletedProductException e) {
+        return new ApiResult().set(ApiResultError.ERROR_INVALID_STATE, e.getMessage());
+
     }
 
     @ExceptionHandler(OrderTimeOutException.class)
-    public SimpleResponseDto handleOrderTimeOutException(DeletedProductException e) {
-        return ResponseErrorUtils.handleErrorSimple(ApiResultError.ERROR_TIMEOUT.getCode(), e.getMessage());
+    public ApiResult handleOrderTimeOutException(DeletedProductException e) {
+        return new ApiResult().set(ApiResultError.ERROR_TIMEOUT, e.getMessage());
+
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public SimpleResponseDto handleNoSuchElementException(NoSuchElementException e) {
-        return ResponseErrorUtils.handleErrorSimple(ApiResultError.ERROR_INVALID_ARGUMENT.getCode(), e.getMessage());
+    public ApiResult handleNoSuchElementException(NoSuchElementException e) {
+        return new ApiResult().set(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage());
+
     }
     @ExceptionHandler(Exception.class)
-    public SimpleResponseDto handleException(Exception e) {
-        return ResponseErrorUtils.handleErrorSimple(ApiResultError.ERROR_DEFAULT.getCode(), e.getMessage());
+    public ApiResult handleException(Exception e) {
+        return new ApiResult().set(ApiResultError.ERROR_DEFAULT, e.getMessage());
+
     }
 
 }

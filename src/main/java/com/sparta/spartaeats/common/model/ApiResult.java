@@ -41,7 +41,7 @@ public class ApiResult extends HashMap<String, Object>{
     }
 
     public ApiResult set(ApiResultError err, String appendMessage) {
-        put(AR_KEY_RESULT_CODE, err.getCode());
+        put(AR_KEY_RESULT_CODE, err);
 
         String msg = err.getMessage();
         if(StringUtils.hasText(appendMessage)) {

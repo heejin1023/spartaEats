@@ -90,9 +90,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         Page<OrderListResponseDto> page = new PageImpl<>(content.subList(start, end), pageable, content.size());
 
         return new MultiResponseDto<>(
-                ApiResultError.NO_ERROR.getCode(),
+                ApiResultError.NO_ERROR,
                 "Order List 조회",
-                page.getContent(),
+                page,
                 new PageInfoDto(
                         (int) page.getTotalElements(),
                         page.getSize(),

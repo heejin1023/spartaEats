@@ -2,6 +2,7 @@ package com.sparta.spartaeats.order.controller;
 
 //import com.sparta.spartaeats.UserDetailsImpl;
 
+import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
@@ -27,38 +28,40 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<SingleResponseDto> order(@RequestBody OrderRequestDto orderRequestDto) throws Exception { //, @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ApiResult order(@RequestBody OrderRequestDto orderRequestDto) throws Exception { //, @AuthenticationPrincipal UserDetailsImpl userDetails
         SingleResponseDto responseDto = orderService.order(orderRequestDto); // ,userDetails.getUser()
-        return ResponseEntity.ok(responseDto);
+        return new ApiResult().set(responseDto.getResultCode()).setResultData(responseDto.getData()).setResultMessage(responseDto.getResultMessage());
     }
 
     @PatchMapping("/{orderId}")
-    public ResponseEntity<SingleResponseDto> updateOrderStatus(@PathVariable UUID orderId, @RequestBody UpdateOrderDto requestDto) {
+    public ApiResult updateOrderStatus(@PathVariable UUID orderId, @RequestBody UpdateOrderDto requestDto) {
         SingleResponseDto responseDto = orderService.updateOrder(orderId, requestDto);
-        return ResponseEntity.ok(responseDto);
+        return new ApiResult().set(responseDto.getResultCode(),responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
     @PostMapping("/cancel/{orderId}")
-    public SimpleResponseDto cancelOrder(@PathVariable UUID orderId) {
+    public ApiResult cancelOrder(@PathVariable UUID orderId) {
         SimpleResponseDto responseDto = orderService.cancelOrder(orderId);
-        return new SimpleResponseDto(ApiResultError.NO_ERROR.getCode(), "주문이 취소되었습니다");
+//        return new SimpleResponseDto(ApiResultError.NO_ERROR, "주문이 취소되었습니다");
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage());
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<SingleResponseDto> getOneOrder(@PathVariable UUID orderId) {
+    public ApiResult getOneOrder(@PathVariable UUID orderId) {
         SingleResponseDto responseDto = orderService.getOneOrder(orderId);
-        return ResponseEntity.ok(responseDto);
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
     @GetMapping
-    public MultiResponseDto getOrderList(OrderSearchCondition cond, Pageable pageable) {
-        return orderService.getOrderList(cond, pageable);
+    public ApiResult getOrderList(OrderSearchCondition cond, Pageable pageable) {
+        MultiResponseDto responseDto = orderService.getOrderList(cond, pageable);
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setList(responseDto.getResultData()).setPageInfo(responseDto.getResultData()).setSc(cond);
     }
 
     @DeleteMapping("/{orderId}")
-    public SimpleResponseDto deleteOrder(@PathVariable UUID orderId) {
+    public ApiResult deleteOrder(@PathVariable UUID orderId) {
         SimpleResponseDto responseDto = orderService.deleteOrder(orderId);
-        return responseDto;
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage());
     }
 
 }

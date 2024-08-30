@@ -1,8 +1,11 @@
 package com.sparta.spartaeats.responseDto;
 
+import com.sparta.spartaeats.common.model.ApiResult;
+import com.sparta.spartaeats.common.type.ApiResultError;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -10,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MultiResponseDto<T> {
-    private String resultCode;
+    private ApiResultError resultCode;
     private String resultMessage;
-    private List<T> resultData;
+    private Page<T> resultData;
     private PageInfoDto pageInfo;
 }

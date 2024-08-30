@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.payments.controller;
 
+import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.responseDto.SingleResponseDto;
@@ -21,28 +22,33 @@ public class PaymentsController {
     private final PaymentsService paymentsService;
 
     @PostMapping
-    public SingleResponseDto<PaymentResponseDto> payOrder(@RequestBody PayRequestDto payRequestDto) {
-        return paymentsService.pay(payRequestDto);
+    public ApiResult payOrder(@RequestBody PayRequestDto payRequestDto) {
+        SingleResponseDto<PaymentResponseDto> responseDto = paymentsService.pay(payRequestDto);
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
     @PatchMapping("/{paymentId}")
-    public SingleResponseDto<PaymentUpdateResponseDto> updatePayment(@PathVariable UUID paymentId, @RequestBody PayUpdateRequestDto requestDto) {
-        return paymentsService.updatePayment(paymentId, requestDto);
+    public ApiResult updatePayment(@PathVariable UUID paymentId, @RequestBody PayUpdateRequestDto requestDto) {
+        SingleResponseDto<PaymentUpdateResponseDto> responseDto = paymentsService.updatePayment(paymentId, requestDto);
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
     @DeleteMapping("/{paymentId}")
-    public SimpleResponseDto deletePayment(@PathVariable UUID paymentId) {
-        return paymentsService.deletePayment(paymentId);
+    public ApiResult deletePayment(@PathVariable UUID paymentId) {
+        SimpleResponseDto responseDto = paymentsService.deletePayment(paymentId);
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage());
     }
 
     @GetMapping("/{paymentId}")
-    public SingleResponseDto<?> getOnePaymentResult(@PathVariable UUID paymentId) {
-        return paymentsService.getOnePaymentResult(paymentId);
+    public ApiResult getOnePaymentResult(@PathVariable UUID paymentId) {
+        SingleResponseDto<?> responseDto = paymentsService.getOnePaymentResult(paymentId);
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
     @GetMapping
-    public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond) {
-        return paymentsService.getAllPayments(pageable, cond);
+    public ApiResult getAllPayments(Pageable pageable, PaymentSearchCond cond) {
+        MultiResponseDto<PaymentResponseDto> responseDto = paymentsService.getAllPayments(pageable, cond);
+        return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getResultData()).setPageInfo(responseDto.getResultData()).setSc(cond);
     }
 
 
