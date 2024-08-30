@@ -1,7 +1,10 @@
 package com.sparta.spartaeats.entity;
 
+import com.sparta.spartaeats.order.domain.Order;
+import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +13,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Table(name = "p_store")
+@NoArgsConstructor
 public class Store extends TimeStamped{
 
     @Id
@@ -41,4 +45,16 @@ public class Store extends TimeStamped{
     private Character useYn;
     private Character delYn;
 
+    public Store(User owner, Category category, Location location, List<Order> orderList, List<Product> productList, String storeName, String storeContact, String storeAddress, Character useYn, Character delYn) {
+        this.owner = owner;
+        this.category = category;
+        this.location = location;
+        this.orderList = orderList;
+        this.productList = productList;
+        this.storeName = storeName;
+        this.storeContact = storeContact;
+        this.storeAddress = storeAddress;
+        this.useYn = useYn;
+        this.delYn = delYn;
+    }
 }
