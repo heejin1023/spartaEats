@@ -1,6 +1,8 @@
 package com.sparta.spartaeats.user.domain;
 
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.common.util.TimeStamped;
+import com.sparta.spartaeats.user.domain.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,8 +27,9 @@ public class User extends TimeStamped {
     private String userContact;
     private String userEmail;
 
-    @Column(columnDefinition = "VARCHAR(255)")
-    private String userRole;
+    @Enumerated(EnumType.STRING)
+    @Column
+    private UserRoleEnum userRole;
 
     //@OneToMany(mappedBy = "user")
     //private List<Delivery> deliveryList = new ArrayList<>();
