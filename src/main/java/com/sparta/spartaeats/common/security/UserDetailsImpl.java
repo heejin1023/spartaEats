@@ -22,6 +22,10 @@ public class UserDetailsImpl implements UserDetails {
         return loginUserInfo;
     }
 
+    public String userId() {
+        return loginUserInfo.getUserId();
+    }
+
     @Override
     public String getPassword() {
         return loginUserInfo.getPassword();
