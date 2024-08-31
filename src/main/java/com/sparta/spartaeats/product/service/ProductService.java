@@ -3,7 +3,7 @@ package com.sparta.spartaeats.product.service;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.product.domain.Product;
-import com.sparta.spartaeats.product.ProductRepository;
+import com.sparta.spartaeats.product.repository.ProductRepository;
 import com.sparta.spartaeats.product.ProductSpecification;
 import com.sparta.spartaeats.product.dto.ProductRequestDto;
 import com.sparta.spartaeats.product.dto.ProductResponseDto;

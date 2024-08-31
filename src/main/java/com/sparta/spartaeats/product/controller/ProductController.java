@@ -2,15 +2,18 @@ package com.sparta.spartaeats.product.controller;
 
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.product.domain.validationGroup.ValidProduct001;
 import com.sparta.spartaeats.product.service.ProductService;
 import com.sparta.spartaeats.product.dto.ProductRequestDto;
 import com.sparta.spartaeats.product.dto.ProductResponseDto;
 import com.sparta.spartaeats.product.dto.ProductSearchRequestDto;
+import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0001;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -24,7 +27,7 @@ public class ProductController {
 
     //상품 등록
     @PostMapping
-    public ApiResult createProduct(@RequestBody ProductRequestDto productRequestDto) {
+    public ApiResult createProduct(@RequestBody @Validated(ValidProduct001.class) ProductRequestDto productRequestDto) {
         return productService.createProduct(productRequestDto);
     }
 

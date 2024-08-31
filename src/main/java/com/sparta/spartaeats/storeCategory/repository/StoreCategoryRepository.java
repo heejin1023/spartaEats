@@ -1,4 +1,4 @@
-package com.sparta.spartaeats.storeCategory;
+package com.sparta.spartaeats.storeCategory.repository;
 
 import com.sparta.spartaeats.storeCategory.domain.StoreCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
