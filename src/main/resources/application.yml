@@ -28,3 +28,8 @@ server:
 jwt:
   secret:
     key: 7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg==
+
+spartaEats:
+  ai:
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=
+    api-key: AIzaSyDDYv9R1IEOvNIdgkhWITGpDSD6lbdLq_c
