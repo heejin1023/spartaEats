@@ -25,9 +25,11 @@ public class AddressService {
     public AddressResponseDto createAddress(AddressRequestDto addressRequestDto, Long userIdx) {
         // DTO -> Entity 변환
         Address delivery = new Address(addressRequestDto, userRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다")));
+        Address address = new Address(addressRequestDto, userRepository.findById(userIdx).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다")));
 
         // DB 저장
         Address savedAddress = addressRepository.save(delivery);
+        Address savedAddress = addressRepository.save(address);
 
         // Entity -> ResponseDto 변환
         return new AddressResponseDto(savedAddress);
@@ -58,30 +60,30 @@ public class AddressService {
     @Transactional
     public AddressResponseDto updateAddress(UUID addressId, AddressRequestDto addressRequestDto, Long userIdx) {
         // 해당 주소가 DB에 존재하는지 확인
-        Address delivery = findAddress(addressId);
+        Address address = findAddress(addressId);
 
         // 주소 정보 수정
         // 역할별 수정 차이
         // 관리자 > 가능
         // 그 외 > 생성자 idx랑 비교해서 동일할 경우
-        delivery.update(addressRequestDto, userIdx);
+        address.update(addressRequestDto, userIdx);
 
         // 수정된 데이터 반환
-        return new AddressResponseDto(delivery);
+        return new AddressResponseDto(address);
     }
 
     public void deleteAddress(UUID addressId, Long deletedBy, Long userId) {
         // 해당 주소가 DB에 존재하는지 확인
-        Address delivery = findAddress(addressId);
+        Address address = findAddress(addressId);
 
         // 주소 삭제 처리 (소프트 삭제로 구현 가능)
         // 역할별 수정 차이
         // 관리자 > 가능
         // 그 외 > 생성자 idx랑 비교해서 동일할 경우
-        delivery.delete(deletedBy);
+        address.delete(deletedBy);
 
         // DB에 반영
-        addressRepository.save(delivery);
+        addressRepository.save(address);
     }
 
     public AddressResponseDto getAddressById(UUID addressId, Long userIdx) {
