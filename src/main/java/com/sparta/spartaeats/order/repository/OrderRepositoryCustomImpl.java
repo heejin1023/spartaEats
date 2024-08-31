@@ -12,8 +12,8 @@ import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
 import com.sparta.spartaeats.exception.EmptyDataException;
 import com.sparta.spartaeats.order.dto.*;
-import com.sparta.spartaeats.store.QStore;
-import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.store.domain.QStore;
+import com.sparta.spartaeats.store.domain.Store;
 import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 import static com.sparta.spartaeats.order.domain.QOrder.*;
 import static com.sparta.spartaeats.order.domain.QOrderProduct.*;
-import static com.sparta.spartaeats.store.QStore.*;
+import static com.sparta.spartaeats.store.domain.QStore.*;
 import static com.sparta.spartaeats.user.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 

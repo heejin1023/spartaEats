@@ -6,7 +6,7 @@ import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.exception.OrderTimeOutException;
 import com.sparta.spartaeats.order.dto.OrderResponseDto;
-import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.store.domain.Store;
 import com.sparta.spartaeats.types.OrderStatus;
 import com.sparta.spartaeats.types.OrderType;
 import com.sparta.spartaeats.user.domain.User;

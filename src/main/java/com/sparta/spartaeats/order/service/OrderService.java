@@ -5,7 +5,7 @@ import com.sparta.spartaeats.address.repository.AddressRepository;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.order.domain.Order;
 import com.sparta.spartaeats.order.domain.OrderProduct;
-import com.sparta.spartaeats.product.Product;
+import com.sparta.spartaeats.product.domain.Product;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.responseDto.SingleResponseDto;
@@ -15,8 +15,8 @@ import com.sparta.spartaeats.order.dto.*;
 import com.sparta.spartaeats.order.repository.OrderProductRepository;
 import com.sparta.spartaeats.order.repository.OrderRepository;
 import com.sparta.spartaeats.product.ProductRepository;
-import com.sparta.spartaeats.store.Store;
 import com.sparta.spartaeats.store.StoreRepository;
+import com.sparta.spartaeats.store.domain.Store;
 import com.sparta.spartaeats.types.OrderStatus;
 import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.repository.UserRepository;
@@ -81,7 +81,7 @@ public class OrderService {
         ArrayList<OrderProduct> list = new ArrayList<>();
         for (OrderProductDto orderProductDto : orderProducts) {
             Product findProduct = productRepository.findByIdWithDel(orderProductDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("Product not found"));
-            if (findProduct.getDel_yn() == "Y") {
+            if (findProduct.getDelYn() == "Y") {
                 log.error("Order.getOrderProductList findProduct is Invalid");
                 throw new DeletedProductException("판매 중지 된 상품이 존재합니다, 상품명 : " + findProduct.getProductName());
             }

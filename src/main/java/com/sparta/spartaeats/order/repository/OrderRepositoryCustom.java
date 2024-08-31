@@ -2,7 +2,7 @@ package com.sparta.spartaeats.order.repository;
 
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.order.dto.OrderSearchCondition;
-import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.store.domain.Store;
 import com.sparta.spartaeats.user.domain.User;
 import org.springframework.data.domain.Pageable;
 

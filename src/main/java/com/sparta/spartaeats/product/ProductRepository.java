@@ -12,6 +12,6 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpecificationExecutor<Product> {
 
-    @Query("select p from Product p where p.id = :productId and (p.del_yn = 'N' or p.del_yn = 'n')")
+    @Query("select p from Product p where p.id = :productId and (p.delYn = 'N' or p.delYn = 'n')")
     Optional<Product> findByIdWithDel(UUID productId);
 }
