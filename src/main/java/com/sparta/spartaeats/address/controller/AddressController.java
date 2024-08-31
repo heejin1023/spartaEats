@@ -4,13 +4,21 @@ import com.sparta.spartaeats.address.service.AddressService;
 import com.sparta.spartaeats.address.dto.AddressRequestDto;
 import com.sparta.spartaeats.address.dto.AddressResponseDto;
 import com.sparta.spartaeats.common.aop.ApiLogging;
+import com.sparta.spartaeats.common.controller.CustomApiController;
+import com.sparta.spartaeats.common.jwt.JwtUtil;
 import com.sparta.spartaeats.common.model.ApiResult;
+import com.sparta.spartaeats.common.security.UserDetailsImpl;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
+import com.sparta.spartaeats.user.domain.User;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
@@ -21,39 +29,60 @@ import java.util.UUID;
 @RequestMapping("/api/address")
 @RequiredArgsConstructor
 @Slf4j
-public class AddressController {
+public class AddressController extends CustomApiController {
 
     private final AddressService addressService;
 
     // 배송지 등록
+    @ApiLogging
     @PostMapping
-    public AddressResponseDto createAddress(@RequestBody AddressRequestDto addressRequestDto,
-                                            @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
-        return addressService.createAddress(addressRequestDto, userIdx);
+    public ApiResult createAddress(@RequestBody AddressRequestDto addressRequestDto,
+                                   @RequestHeader(value = "X-User-Id", required = true) Long userIdx,
+                                   Errors errors) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
+        AddressResponseDto responseDto = addressService.createAddress(addressRequestDto, userIdx);
+        apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
+        return apiResult;
     }
 
     // 배송지 수정
+    @ApiLogging
     @PatchMapping("/{addressId}")
-    public AddressResponseDto updateAddress(@PathVariable String addressId,
-                                            @RequestBody AddressRequestDto addressRequestDto,
-                                            @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
-        return addressService.updateAddress(UUID.fromString(addressId), addressRequestDto, userIdx);
+    public ApiResult updateAddress(@PathVariable String addressId,
+                                   @RequestBody AddressRequestDto addressRequestDto,
+                                   @RequestHeader(value = "X-User-Id", required = true) Long userIdx,
+                                   Errors errors) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
+        AddressResponseDto responseDto = addressService.updateAddress(UUID.fromString(addressId), addressRequestDto, userIdx);
+        apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
+        return apiResult;
     }
 
     // 배송지 삭제
+    @ApiLogging
     @PatchMapping("/{addressId}/delete")
-    public void deleteAddress(@PathVariable String addressId,
-                              @RequestParam Long deletedBy,
-                              @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
+    public ApiResult deleteAddress(@PathVariable String addressId,
+                                   @RequestParam Long deletedBy,
+                                   @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
         addressService.deleteAddress(UUID.fromString(addressId), deletedBy, userIdx);
+        ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR);
+        return apiResult;
     }
 
     // 배송지 상세 조회
     @ApiLogging
     @GetMapping("/{addressId}")
-    public AddressResponseDto getAddressById(@PathVariable String addressId,
-                                             @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
-        return addressService.getAddressById(UUID.fromString(addressId), userIdx);
+    public ApiResult getAddressById(@PathVariable String addressId,
+                                    @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
+        AddressResponseDto responseDto = addressService.getAddressById(UUID.fromString(addressId), userIdx);
+        ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR).setResultData(responseDto);
+        return apiResult;
     }
 
     // 배송지 목록 조회 (페이징)
@@ -62,16 +91,22 @@ public class AddressController {
     public ApiResult getAddresses(
             @RequestParam int pageNumber,
             @RequestParam int pageSize,
-            @RequestHeader(value = "X-User-Id", required = true) Long userIdx,
-            @RequestHeader(value = "X-Role", required = true) UserRoleEnum role,
             @RequestParam(value = "local", required = false) String local,
             @RequestParam(value = "orderId", required = false) Long orderId,
-            @RequestParam(value = "useYn", required = false) Character useYn) {
+            @RequestParam(value = "useYn", required = false) Character useYn,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        User user = userDetails.getUser();
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<AddressResponseDto> data = (Page<AddressResponseDto>) addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
+        // User 객체에서 userIdx 가져오기
+        Long userIdx = userDetails.getUser().getId();
+
+        // Role 가져오기
+        UserRoleEnum role = UserRoleEnum.valueOf(userDetails.getUser().getUserRole());
+        
+        Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
+        Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
 
         apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);
         return apiResult;

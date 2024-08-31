@@ -7,6 +7,7 @@ import com.sparta.spartaeats.address.dto.AddressResponseDto;
 import com.sparta.spartaeats.address.repository.AddressRepository;
 import com.sparta.spartaeats.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +34,8 @@ public class AddressService {
         return new AddressResponseDto(savedAddress);
     }
 
-    public List<AddressResponseDto> getAddresses(Pageable pageable, Long userIdx, UserRoleEnum role, String local, Long orderId, Character useYn) {
-        List<Address> addresses;
+    public Page<AddressResponseDto> getAddresses(Pageable pageable, Long userIdx, UserRoleEnum role, String local, Long orderId, Character useYn) {
+        Page<Address> addresses;
         // DB 조회 및 변환
         // 역할별 조회 차이
         // 관리자 가게주인 > 제한없음
@@ -43,16 +44,14 @@ public class AddressService {
         // 검색필드 : 지역 주문id 활성화여부
         if (role == UserRoleEnum.ADMIN || role == UserRoleEnum.OWNER) {
             // 관리자나 가게 주인이라면 모든 주소를 조회
-            addresses = addressRepository.findAll(pageable).getContent();
+            addresses = addressRepository.findAll(pageable);
         } else {
             // 일반 사용자는 자신의 주소만 조회
             addresses = addressRepository.findByUserIdAndLocalAndOrderIdAndUseYn(userIdx, local, orderId, useYn, pageable);
         }
 
         // Entity -> DTO 변환
-        return addresses.stream()
-                .map(AddressResponseDto::new)
-                .collect(Collectors.toList());
+        return addresses.map(AddressResponseDto::new);
     }
 
     @Transactional
