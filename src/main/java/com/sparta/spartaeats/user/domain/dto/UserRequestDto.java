@@ -1,6 +1,5 @@
 package com.sparta.spartaeats.user.domain.dto;
 
-import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0001;
 import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0002;
 import jakarta.validation.constraints.NotBlank;
@@ -46,7 +45,7 @@ public class UserRequestDto {
     @Pattern(regexp = "^(USER|OWNER|ADMIN)$",
             groups = {ValidUser0001.class},
             message = "존재하지 않는 사용자타입입니다.")
-    private UserRoleEnum userRole;
+    private String userRole;
 
     @Pattern(regexp = "^010-?\\d{4}-?\\d{4}$",
             groups = {ValidUser0001.class},
