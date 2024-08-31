@@ -4,16 +4,14 @@ import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.controller.CustomApiController;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import com.sparta.spartaeats.common.type.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
+import com.sparta.spartaeats.user.domain.User;
 /**
  * 참고용
  */
@@ -30,14 +28,16 @@ public class BoardController extends CustomApiController {
         @ApiLogging
         @GetMapping
         public ApiResult getBoardList(
-                @RequestParam int pageNumber,
-                @RequestParam int pageSize) {
+                @RequestParam(defaultValue = "1") int pageNumber,
+                @RequestParam(defaultValue = "10") int pageSize) {
 
             ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
             // TODO : BaseSearchDTO 작업
 //            if (errors.hasErrors()) { // 파라미터 바인딩 오류시 리턴
 //                return bindError(errors, apiResult);
 //            }
+            User loginUser = getLoginedUserObject();
+            log.info("LoginUser info {}", loginUser);
 
             Pageable pageable = PageRequest.of(pageNumber, pageSize);
             Page<BoardVO> data =  boardService.getBoards(pageable);
