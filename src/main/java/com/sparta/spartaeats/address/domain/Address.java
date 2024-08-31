@@ -1,7 +1,7 @@
 package com.sparta.spartaeats.address.domain;
 
 import com.sparta.spartaeats.address.dto.AddressRequestDto;
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.order.domain.Order;
 import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.*;

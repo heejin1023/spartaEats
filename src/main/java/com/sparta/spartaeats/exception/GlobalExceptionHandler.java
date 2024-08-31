@@ -41,9 +41,9 @@ public class GlobalExceptionHandler {
         return new ApiResult().set(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ApiResult handleException(Exception e) {
-        return new ApiResult().set(ApiResultError.ERROR_DEFAULT, e.getMessage());
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ApiResult handleException(Exception e) {
+//        return new ApiResult().set(ApiResultError.ERROR_DEFAULT, e.getMessage());
+//    }
 
 }

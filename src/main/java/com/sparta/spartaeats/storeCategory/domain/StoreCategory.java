@@ -43,4 +43,8 @@ public class StoreCategory extends TimeStamped {
     @OneToMany(mappedBy = "storeCategory")
     private List<Store> stores;
 
+    public StoreCategory(UUID id){
+        this.id = id;
+    }
+
 }

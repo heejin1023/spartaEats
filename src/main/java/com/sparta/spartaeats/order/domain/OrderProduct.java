@@ -1,8 +1,8 @@
 package com.sparta.spartaeats.order.domain;
 
-import com.sparta.spartaeats.entity.Product;
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.order.dto.OrderProductDto;
+import com.sparta.spartaeats.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.*;
 

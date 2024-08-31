@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.user.domain;
 
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -13,6 +13,7 @@ import com.sparta.spartaeats.payments.dto.*;
 import com.sparta.spartaeats.payments.repository.PaymentsRepository;
 import com.sparta.spartaeats.types.OrderStatus;
 import com.sparta.spartaeats.types.PaymentStatus;
+import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -73,13 +74,21 @@ public class PaymentsService {
             return new SimpleResponseDto(ApiResultError.NO_ERROR, "결제 내역이 삭제되었습니다.");
     }
 
-    public SingleResponseDto<?> getOnePaymentResult(UUID paymentId) {
-            Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
-            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
-        }
+    public SingleResponseDto<?> getOnePaymentResult(UUID paymentId, User user) {
+        Long userId = user.getId();
+        Payment payment = paymentsRepository.findByIdWithDelWithUser(paymentId,userId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
+        return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
+    }
 
-    public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond) {
-            Page<PaymentResponseDto> page = paymentsRepository.findPaymentList(pageable,cond);
+    public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond,User user) {
+        Long userId = user.getId();
+        String userRole = user.getUserRole();
+//        Page<PaymentResponseDto> page = new
+//        if (userRole.contains("USER")) {
+//            Page<PaymentResponseDto> page = paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);
+//        }else{
+        Page<PaymentResponseDto> page = paymentsRepository.findPaymentList(pageable,cond);
+//        }
             if(page.isEmpty()){
                 log.error("PaymentService.getAllPayments");
                 throw new EmptyDataException("결제 내역이 존재하지 않습니다");
