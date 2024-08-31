@@ -50,6 +50,6 @@ public class User extends TimeStamped {
         this.userEmail = loginRequestDto.getUserEmail();
         this.delYn = "N";
         this.useYn = "Y";
-        this.userRole = loginRequestDto.getUserRole();
+        this.userRole = UserRoleEnum.valueOf(loginRequestDto.getUserRole());
     }
 }
