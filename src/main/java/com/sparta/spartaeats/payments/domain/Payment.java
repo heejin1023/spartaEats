@@ -21,9 +21,10 @@ public class Payment extends TimeStamped {
     @Column(name = "payment_id")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
     private Integer payment_amount;
 
     @Enumerated(EnumType.STRING)

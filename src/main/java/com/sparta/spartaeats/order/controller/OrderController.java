@@ -14,6 +14,8 @@ import com.sparta.spartaeats.order.dto.OrderSearchCondition;
 import com.sparta.spartaeats.order.dto.UpdateOrderDto;
 import com.sparta.spartaeats.order.service.OrderService;
 import com.sparta.spartaeats.user.domain.User;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +58,7 @@ public class OrderController {
 
 
     @GetMapping("/{orderId}")
-    public ApiResult getOneOrder(@PathVariable UUID orderId,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResult getOneOrder(@PathVariable UUID orderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         SingleResponseDto responseDto = orderService.getOneOrder(orderId,user);
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
@@ -65,6 +67,7 @@ public class OrderController {
     @GetMapping
     public ApiResult getOrderList(OrderSearchCondition cond, Pageable pageable,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
+        System.out.println("user.getUserId() = " + user.getUserId());
         MultiResponseDto responseDto = orderService.getOrderList(cond, pageable,user);
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setList(responseDto.getResultData()).setPageInfo(responseDto.getResultData()).setSc(cond);
     }
