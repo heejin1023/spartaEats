@@ -3,6 +3,7 @@ package com.sparta.spartaeats.location.domain;
 import com.sparta.spartaeats.address.dto.AddressRequestDto;
 import com.sparta.spartaeats.entity.TimeStamped;
 import com.sparta.spartaeats.location.dto.LocationRequestDto;
+import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,10 @@ public class Location extends TimeStamped {
     @GeneratedValue
     @Column(name = "location_id", length = 200, nullable = false)
     private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_idx")
+    private User user;
 
     @Column(name = "location_name", length = 200, nullable = false)
     private String locationName;
