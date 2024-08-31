@@ -102,7 +102,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public SingleResponseDto getOneOrder(UUID orderId, User user) {
         log.info("userRole = {}", user.getUserId());
-        String userRole = user.getUserRole();
+        String userRole = String.valueOf(user.getUserRole());
         Long userId = user.getId();
         // 권한이 USER 일땐 자기가 주문한 내역만
         if (userRole.contains("USER")) {
@@ -133,7 +133,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public MultiResponseDto getOrderList(OrderSearchCondition cond, Pageable pageable,User user) {
         log.info("userRole = {}", user.getUserId());
-        String userRole = user.getUserRole();
+        String userRole = String.valueOf(user.getUserRole());
         Long userId = user.getId();
         if(userRole.contains("USER")) {
             return orderRepository.searchOrdersWithUserRole(cond, pageable, userId);
