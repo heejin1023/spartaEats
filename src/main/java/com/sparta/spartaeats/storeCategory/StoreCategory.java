@@ -1,4 +1,4 @@
-package com.sparta.spartaeats.store_category;
+package com.sparta.spartaeats.storeCategory;
 
 import com.sparta.spartaeats.entity.TimeStamped;
 import com.sparta.spartaeats.store.Store;
@@ -41,9 +41,5 @@ public class StoreCategory extends TimeStamped {
     // 연관 관계: Store (1:N)
     @OneToMany(mappedBy = "storeCategory")
     private List<Store> stores;
-
-    public StoreCategory(UUID id){
-        this.id = id;
-    }
 
 }
