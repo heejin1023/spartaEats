@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.store_category;
 
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.store.Store;
 import jakarta.persistence.*;
 import lombok.*;

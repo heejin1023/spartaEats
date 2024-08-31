@@ -1,14 +1,11 @@
 package com.sparta.spartaeats.board;
 
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Date;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "test_board")

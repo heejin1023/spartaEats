@@ -1,20 +1,22 @@
 package com.sparta.spartaeats.order.service;
 
+import com.sparta.spartaeats.address.domain.Address;
+import com.sparta.spartaeats.address.repository.AddressRepository;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.order.domain.Order;
 import com.sparta.spartaeats.order.domain.OrderProduct;
+import com.sparta.spartaeats.product.Product;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.responseDto.SingleResponseDto;
-import com.sparta.spartaeats.entity.*;
 import com.sparta.spartaeats.exception.DeletedProductException;
 import com.sparta.spartaeats.exception.EmptyDataException;
 import com.sparta.spartaeats.order.dto.*;
-import com.sparta.spartaeats.delivery.DeliveryRepository;
 import com.sparta.spartaeats.order.repository.OrderProductRepository;
 import com.sparta.spartaeats.order.repository.OrderRepository;
-import com.sparta.spartaeats.product.repository.ProductRepository;
-import com.sparta.spartaeats.store.repository.StoreRepository;
+import com.sparta.spartaeats.product.ProductRepository;
+import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.store.StoreRepository;
 import com.sparta.spartaeats.types.OrderStatus;
 import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.repository.UserRepository;
@@ -38,14 +40,14 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
-    private final DeliveryRepository deliveryRepository;
+    private final AddressRepository deliveryRepository;
     private final OrderProductRepository orderProductRepository;
 
 
     public SingleResponseDto order(OrderRequestDto orderRequestDto){ // , User user
 
             Store findStore = storeRepository.findByIdWithDel(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다"));
-            Delivery delivery = deliveryRepository.findByIdWithDel(orderRequestDto.getDeliveryId()).orElseThrow(() -> new IllegalArgumentException("해당 배달 주소를 찾을 수 없습니다"));
+            Address delivery = deliveryRepository.findByIdWithDel(orderRequestDto.getDeliveryId()).orElseThrow(() -> new IllegalArgumentException("해당 배달 주소를 찾을 수 없습니다"));
             List<OrderProductDto> orderProducts = orderRequestDto.getOrderProducts();
             //OrderProductDto 로 OrderProduct List 생성
             ArrayList<OrderProduct> orderProductsList = getOrderProductsList(orderProducts);
@@ -79,7 +81,7 @@ public class OrderService {
         ArrayList<OrderProduct> list = new ArrayList<>();
         for (OrderProductDto orderProductDto : orderProducts) {
             Product findProduct = productRepository.findByIdWithDel(orderProductDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("Product not found"));
-            if (findProduct.getDelYn() == 'Y') {
+            if (findProduct.getDel_yn() == "Y") {
                 log.error("Order.getOrderProductList findProduct is Invalid");
                 throw new DeletedProductException("판매 중지 된 상품이 존재합니다, 상품명 : " + findProduct.getProductName());
             }
@@ -96,19 +98,47 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public SingleResponseDto getOneOrder(UUID orderId, String userRole) {
-            log.info("userRole = {}", userRole);
-            Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
-    //        Order findOrder = orderRepository.findByIdWithAuth(orderId, user.getId()).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
-            OrderListResponseDto responseDto = new OrderListResponseDto(orderId, findOrder.getUser().getId(), findOrder.getStore().getId(),
-                    Order.calculatePrice(findOrder.getOrderProductList()), findOrder.getMemo(),
-                    findOrder.getOrderStatus(), findOrder.getOrderType(),
-                    OrderProduct.toOrderProductDto(findOrder.getOrderProductList()));
+    public SingleResponseDto getOneOrder(UUID orderId, User user) {
+        log.info("userRole = {}", user.getUserId());
+        String userRole = user.getUserRole();
+        Long userId = user.getId();
+        // 권한이 USER 일땐 자기가 주문한 내역만
+        if (userRole.contains("USER")) {
+            Order findOrder = orderRepository.findByIdAndUser(orderId, user).orElseThrow(() -> new EmptyDataException("Order not found with" + orderId));
+            OrderListResponseDto responseDto = getResponseDto(orderId, findOrder);
             return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 내역 단일 조회", responseDto);
+        // 권한이 OWNER 이면 자기 가게의 주문 중에서
+        }else if(userRole.contains("OWNER")) {
+            Store store = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Store not found with owner"));
+            Order findOrder = orderRepository.findByIdAndStore(orderId,store).orElseThrow(() -> new EmptyDataException("Order not found with" + orderId));
+            OrderListResponseDto responseDto = getResponseDto(orderId, findOrder);
+            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 내역 단일 조회", responseDto);
+            // ADMIN은 전체 중에서 검색
+        }else {
+            Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
+            OrderListResponseDto responseDto = getResponseDto(orderId, findOrder);
+            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 내역 단일 조회", responseDto);
+        }
+    }
+
+    private static OrderListResponseDto getResponseDto(UUID orderId, Order findOrder) {
+        return new OrderListResponseDto(orderId, findOrder.getUser().getId(), findOrder.getStore().getId(),
+                Order.calculatePrice(findOrder.getOrderProductList()), findOrder.getMemo(),
+                findOrder.getOrderStatus(), findOrder.getOrderType(),
+                OrderProduct.toOrderProductDto(findOrder.getOrderProductList()));
     }
 
     @Transactional(readOnly = true)
-    public MultiResponseDto getOrderList(OrderSearchCondition cond, Pageable pageable) {
+    public MultiResponseDto getOrderList(OrderSearchCondition cond, Pageable pageable,User user) {
+        log.info("userRole = {}", user.getUserId());
+        String userRole = user.getUserRole();
+        Long userId = user.getId();
+        if(userRole.contains("USER")) {
+            return orderRepository.searchOrdersWithUserRole(cond, pageable, userId);
+        } else if (userRole.contains("OWNER")) {
+            Store findStore = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Store not found with owner"));
+            return orderRepository.searchOrdersWithOwnerRole(cond,pageable,findStore);
+        } else
             return orderRepository.searchOrders(cond, pageable);
         }
 

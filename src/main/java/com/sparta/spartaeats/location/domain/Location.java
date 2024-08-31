@@ -1,7 +1,6 @@
 package com.sparta.spartaeats.location.domain;
 
-import com.sparta.spartaeats.address.dto.AddressRequestDto;
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.location.dto.LocationRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;

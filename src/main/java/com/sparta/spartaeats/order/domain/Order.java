@@ -1,12 +1,12 @@
 package com.sparta.spartaeats.order.domain;
 
+import com.sparta.spartaeats.address.domain.Address;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import com.sparta.spartaeats.entity.Delivery;
-import com.sparta.spartaeats.entity.Store;
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import com.sparta.spartaeats.exception.OrderTimeOutException;
 import com.sparta.spartaeats.order.dto.OrderResponseDto;
+import com.sparta.spartaeats.store.Store;
 import com.sparta.spartaeats.types.OrderStatus;
 import com.sparta.spartaeats.types.OrderType;
 import com.sparta.spartaeats.user.domain.User;
@@ -54,7 +54,7 @@ public class Order extends TimeStamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delvr_id")
-    private Delivery delivery;
+    private Address delivery;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -88,7 +88,7 @@ public class Order extends TimeStamped {
         this.orderStatus = orderStatus;
     }
 
-    public Order(User user, Store store, List<OrderProduct> orderProductList, String memo, OrderType orderType, Integer orderPrice, Delivery delivery, OrderStatus orderStatus, Character delYn) {
+    public Order(User user, Store store, List<OrderProduct> orderProductList, String memo, OrderType orderType, Integer orderPrice, Address delivery, OrderStatus orderStatus, Character delYn) {
         this.user = user;
         this.store = store;
         this.orderProductList = orderProductList;

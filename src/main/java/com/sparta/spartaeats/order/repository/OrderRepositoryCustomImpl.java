@@ -12,6 +12,9 @@ import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
 import com.sparta.spartaeats.exception.EmptyDataException;
 import com.sparta.spartaeats.order.dto.*;
+import com.sparta.spartaeats.store.QStore;
+import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,14 +28,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.sparta.spartaeats.entity.QStore.*;
 import static com.sparta.spartaeats.order.domain.QOrder.*;
 import static com.sparta.spartaeats.order.domain.QOrderProduct.*;
+import static com.sparta.spartaeats.store.QStore.*;
 import static com.sparta.spartaeats.user.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
+
 
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
@@ -40,6 +44,138 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     public OrderRepositoryCustomImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
+    }
+
+    @Override
+    public MultiResponseDto searchOrdersWithUserRole(OrderSearchCondition cond, Pageable pageable, Long userId) {
+        List<Order> orders = queryFactory
+                .select(order)
+                .from(order)
+                .leftJoin(order.store, store)
+                .leftJoin(order.user, user)
+                .fetchJoin()
+                .where(
+                        productNameEq(cond.getProductName()),
+                        storeNameEq(cond.getStoreName()),
+                        categoryEq(cond.getCategory()),
+                        userNameEq(cond.getUsername()),
+                        createdDateBetween(cond.getStartDate(), cond.getEndDate()),
+                        order.delYn.eq('N'),
+                        order.user.id.eq(userId)
+                )
+                .fetch();
+
+        if (orders.isEmpty()) {
+            log.error("orderRepositoryCustomImpl.searchOrders Error : List<Order> orders is empty");
+            throw new EmptyDataException("데이터가 존재하지 않습니다");
+        }
+
+        //OrderProduct 컬렉션은 따로 가져오기
+        List<OrderProduct> orderProducts = queryFactory
+                .selectFrom(orderProduct)
+                .join(orderProduct.order, order)
+                .where(orderProduct.order.in(orders))
+                .fetch();
+
+        Map<UUID, List<OrderProductDto>> orderProductMap = orderProducts.stream()
+                .collect(Collectors.groupingBy(
+                        op -> op.getOrder().getId(),
+                        Collectors.mapping(op -> new OrderProductDto(
+                                op.getProduct().getId(),
+                                op.getAmount(),
+                                op.getPrice()
+                        ), Collectors.toList())
+                ));
+
+
+        // OrderListResponseDto로 매핑
+        List<OrderListResponseDto> content = orders.stream()
+                .map(o -> new OrderListResponseDto(o, orderProductMap.getOrDefault(o.getId(), Collections.emptyList())))
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), content.size());
+        Page<OrderListResponseDto> page = new PageImpl<>(content.subList(start, end), pageable, content.size());
+
+        return new MultiResponseDto<>(
+                ApiResultError.NO_ERROR,
+                "Order List 조회",
+                page,
+                new PageInfoDto(
+                        (int) page.getTotalElements(),
+                        page.getSize(),
+                        page.getNumber(),
+                        page.getTotalPages(),
+                        page.hasPrevious(),
+                        page.hasNext()
+                )
+        );
+    }
+
+    @Override
+    public MultiResponseDto searchOrdersWithOwnerRole(OrderSearchCondition cond, Pageable pageable, Store findStore) {
+        List<Order> orders = queryFactory
+                .select(order)
+                .from(order)
+                .leftJoin(order.store, store)
+                .leftJoin(order.user, user)
+                .fetchJoin()
+                .where(
+                        productNameEq(cond.getProductName()),
+                        storeNameEq(cond.getStoreName()),
+                        categoryEq(cond.getCategory()),
+                        userNameEq(cond.getUsername()),
+                        createdDateBetween(cond.getStartDate(), cond.getEndDate()),
+                        order.delYn.eq('N'),
+                        order.store.eq(findStore)
+                )
+                .fetch();
+
+        if (orders.isEmpty()) {
+            log.error("orderRepositoryCustomImpl.searchOrders Error : List<Order> orders is empty");
+            throw new EmptyDataException("데이터가 존재하지 않습니다");
+        }
+
+        //OrderProduct 컬렉션은 따로 가져오기
+        List<OrderProduct> orderProducts = queryFactory
+                .selectFrom(orderProduct)
+                .join(orderProduct.order, order)
+                .where(orderProduct.order.in(orders))
+                .fetch();
+
+        Map<UUID, List<OrderProductDto>> orderProductMap = orderProducts.stream()
+                .collect(Collectors.groupingBy(
+                        op -> op.getOrder().getId(),
+                        Collectors.mapping(op -> new OrderProductDto(
+                                op.getProduct().getId(),
+                                op.getAmount(),
+                                op.getPrice()
+                        ), Collectors.toList())
+                ));
+
+
+        // OrderListResponseDto로 매핑
+        List<OrderListResponseDto> content = orders.stream()
+                .map(o -> new OrderListResponseDto(o, orderProductMap.getOrDefault(o.getId(), Collections.emptyList())))
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), content.size());
+        Page<OrderListResponseDto> page = new PageImpl<>(content.subList(start, end), pageable, content.size());
+
+        return new MultiResponseDto<>(
+                ApiResultError.NO_ERROR,
+                "Order List 조회",
+                page,
+                new PageInfoDto(
+                        (int) page.getTotalElements(),
+                        page.getSize(),
+                        page.getNumber(),
+                        page.getTotalPages(),
+                        page.hasPrevious(),
+                        page.hasNext()
+                )
+        );
     }
 
     @Override
@@ -122,7 +258,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     private BooleanExpression categoryEq(String category) {
-        return hasText(category) ? order.store.category.categoryName.eq(category) : null;
+        return hasText(category) ? order.store.storeCategory.categoryName.eq(category) : null;
     }
 
     private BooleanExpression userNameEq(String userName) {

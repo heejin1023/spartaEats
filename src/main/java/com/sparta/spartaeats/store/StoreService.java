@@ -2,8 +2,6 @@ package com.sparta.spartaeats.store;
 
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import com.sparta.spartaeats.entity.Location;
-import com.sparta.spartaeats.entity.User;
 import com.sparta.spartaeats.store_category.StoreCategory;
 import com.sparta.spartaeats.store_category.StoreCategoryRepository;
 import lombok.RequiredArgsConstructor;

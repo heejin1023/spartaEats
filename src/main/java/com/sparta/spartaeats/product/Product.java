@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.product;
 
-import com.sparta.spartaeats.entity.TimeStamped;
+import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.store.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,6 @@ import java.util.UUID;
 @Entity
 @Data
 @Builder
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "p_products")
@@ -36,10 +35,10 @@ public class Product extends TimeStamped {
     private String productDescription;
 
     @ColumnDefault("'Y'")
-    @Column(name = "use_yn", length = 1)
+    @Column( length = 1)
     private String use_yn;
 
     @ColumnDefault("'N'")
-    @Column(name = "del_yn", length = 1, nullable = false)
+    @Column( length = 1, nullable = false)
     private String del_yn;
 }
