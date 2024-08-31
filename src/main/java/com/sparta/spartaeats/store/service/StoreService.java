@@ -1,7 +1,10 @@
-package com.sparta.spartaeats.store;
+package com.sparta.spartaeats.store.service;
 
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.store.StoreRepository;
+import com.sparta.spartaeats.store.StoreSpecification;
 import com.sparta.spartaeats.store.dto.StoreRequestDto;
 import com.sparta.spartaeats.store.dto.StoreResponseDto;
 import com.sparta.spartaeats.store.dto.StoreSearchRequestDto;

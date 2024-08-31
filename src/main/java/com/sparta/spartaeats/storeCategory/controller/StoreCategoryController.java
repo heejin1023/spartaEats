@@ -1,7 +1,9 @@
-package com.sparta.spartaeats.storeCategory;
+package com.sparta.spartaeats.storeCategory.controller;
 
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.storeCategory.StoreCategory;
+import com.sparta.spartaeats.storeCategory.service.StoreCategoryService;
 import com.sparta.spartaeats.storeCategory.dto.StoreCategoryRequestDto;
 import com.sparta.spartaeats.storeCategory.dto.StoreCategoryResponseDto;
 import com.sparta.spartaeats.storeCategory.dto.StoreCategorySearchRequestDto;
