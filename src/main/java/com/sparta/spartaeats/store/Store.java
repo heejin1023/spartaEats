@@ -1,15 +1,12 @@
 package com.sparta.spartaeats.store;
 
-import com.sparta.spartaeats.common.model.ApiResult;
-import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.entity.*;
 import com.sparta.spartaeats.product.Product;
-import com.sparta.spartaeats.store_category.StoreCategory;
+import com.sparta.spartaeats.storeCategory.StoreCategory;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

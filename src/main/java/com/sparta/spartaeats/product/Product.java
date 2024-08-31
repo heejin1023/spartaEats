@@ -37,9 +37,9 @@ public class Product extends TimeStamped {
 
     @ColumnDefault("'Y'")
     @Column(name = "use_yn", length = 1)
-    private String use_yn;
+    private String useYn;
 
     @ColumnDefault("'N'")
     @Column(name = "del_yn", length = 1, nullable = false)
-    private String del_yn;
+    private String delYn;
 }
