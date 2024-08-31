@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 public class StoreCategoryRequestDto {
 
+
     @JsonProperty("category_name")
     private String categoryName;
 

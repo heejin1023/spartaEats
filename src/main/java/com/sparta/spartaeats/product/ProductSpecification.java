@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.product;
 
+import com.sparta.spartaeats.product.domain.Product;
 import com.sparta.spartaeats.product.dto.ProductSearchRequestDto;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;

@@ -55,6 +55,7 @@ public class ProductController {
                                  @RequestParam(value = "size", defaultValue = "10") int size,
                                  @RequestParam(value = "sort", defaultValue = "productName") String sort,
                                  @RequestParam(value = "direction", defaultValue = "asc") String direction) {
+
         // 상품 전체 조회 service에 보낼 파라미터 설정
         ProductSearchRequestDto productSearchRequestDto = new ProductSearchRequestDto(productName, storeName, useYn);
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);

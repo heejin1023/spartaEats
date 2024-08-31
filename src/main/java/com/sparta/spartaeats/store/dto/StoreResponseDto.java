@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.store.dto;
 
-import com.sparta.spartaeats.entity.User;
+import com.sparta.spartaeats.user.domain.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
