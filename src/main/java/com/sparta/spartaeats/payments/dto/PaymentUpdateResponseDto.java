@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.payments.dto;
 
-import com.sparta.spartaeats.types.PaymentStatus;
+import com.sparta.spartaeats.common.type.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

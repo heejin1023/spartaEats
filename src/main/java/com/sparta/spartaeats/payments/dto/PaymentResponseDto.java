@@ -1,7 +1,7 @@
 package com.sparta.spartaeats.payments.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.sparta.spartaeats.types.PaymentStatus;
+import com.sparta.spartaeats.common.type.PaymentStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

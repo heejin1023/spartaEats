@@ -2,8 +2,8 @@ package com.sparta.spartaeats.order.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.sparta.spartaeats.order.domain.Order;
-import com.sparta.spartaeats.types.OrderStatus;
-import com.sparta.spartaeats.types.OrderType;
+import com.sparta.spartaeats.common.type.OrderStatus;
+import com.sparta.spartaeats.common.type.OrderType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

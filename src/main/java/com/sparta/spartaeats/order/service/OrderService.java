@@ -3,21 +3,23 @@ package com.sparta.spartaeats.order.service;
 import com.sparta.spartaeats.address.domain.Address;
 import com.sparta.spartaeats.address.repository.AddressRepository;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.exception.DeletedProductException;
+import com.sparta.spartaeats.common.exception.EmptyDataException;
 import com.sparta.spartaeats.order.domain.Order;
 import com.sparta.spartaeats.order.domain.OrderProduct;
-import com.sparta.spartaeats.product.domain.Product;
-import com.sparta.spartaeats.responseDto.MultiResponseDto;
-import com.sparta.spartaeats.responseDto.SimpleResponseDto;
-import com.sparta.spartaeats.responseDto.SingleResponseDto;
-import com.sparta.spartaeats.exception.DeletedProductException;
-import com.sparta.spartaeats.exception.EmptyDataException;
 import com.sparta.spartaeats.order.dto.*;
 import com.sparta.spartaeats.order.repository.OrderProductRepository;
 import com.sparta.spartaeats.order.repository.OrderRepository;
-import com.sparta.spartaeats.product.ProductRepository;
-import com.sparta.spartaeats.store.StoreRepository;
+
+import com.sparta.spartaeats.product.domain.Product;
+import com.sparta.spartaeats.product.repository.ProductRepository;
+import com.sparta.spartaeats.responseDto.MultiResponseDto;
+import com.sparta.spartaeats.responseDto.SimpleResponseDto;
+import com.sparta.spartaeats.responseDto.SingleResponseDto;
+
 import com.sparta.spartaeats.store.domain.Store;
-import com.sparta.spartaeats.types.OrderStatus;
+import com.sparta.spartaeats.store.repository.StoreRepository;
+import com.sparta.spartaeats.common.type.OrderStatus;
 import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +63,7 @@ public class OrderService {
                     throw new DeletedProductException("판매 중지 된 상품이 존재합니다, 상품명 : " + orderProduct.getProduct().getProductName());
                 }
             }
-        User user = userRepository.findById(252).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+        User user = userRepository.findById(252L).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
         Order order = new Order(user, findStore, orderProductsList,
                     orderRequestDto.getMemo(), orderRequestDto.getOrderType(), Order.calculatePrice(orderProductsList), delivery, OrderStatus.PREPARING, 'N');
             // 연관관계 설정

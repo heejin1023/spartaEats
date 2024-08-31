@@ -4,7 +4,7 @@ import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.store.domain.Store;
 import com.sparta.spartaeats.store.repository.StoreRepository;
-import com.sparta.spartaeats.store.StoreSpecification;
+import com.sparta.spartaeats.store.domain.StoreSpecification;
 import com.sparta.spartaeats.store.dto.StoreRequestDto;
 import com.sparta.spartaeats.store.dto.StoreResponseDto;
 import com.sparta.spartaeats.store.dto.StoreSearchRequestDto;

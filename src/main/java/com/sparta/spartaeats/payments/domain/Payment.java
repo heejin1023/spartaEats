@@ -2,7 +2,7 @@ package com.sparta.spartaeats.payments.domain;
 
 import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.order.domain.Order;
-import com.sparta.spartaeats.types.PaymentStatus;
+import com.sparta.spartaeats.common.type.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

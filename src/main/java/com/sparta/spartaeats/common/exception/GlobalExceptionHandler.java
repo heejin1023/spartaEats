@@ -1,8 +1,7 @@
-package com.sparta.spartaeats.exception;
+package com.sparta.spartaeats.common.exception;
 
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import com.sparta.spartaeats.responseDto.SimpleResponseDto;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

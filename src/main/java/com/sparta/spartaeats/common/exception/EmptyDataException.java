@@ -1,4 +1,4 @@
-package com.sparta.spartaeats.exception;
+package com.sparta.spartaeats.common.exception;
 
 public class EmptyDataException extends RuntimeException {
 

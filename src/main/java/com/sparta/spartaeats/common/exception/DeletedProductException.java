@@ -1,4 +1,4 @@
-package com.sparta.spartaeats.exception;
+package com.sparta.spartaeats.common.exception;
 
 public class DeletedProductException extends RuntimeException {
     public DeletedProductException() {

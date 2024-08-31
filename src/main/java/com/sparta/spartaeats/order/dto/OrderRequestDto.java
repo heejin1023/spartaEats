@@ -1,6 +1,6 @@
 package com.sparta.spartaeats.order.dto;
 
-import com.sparta.spartaeats.types.OrderType;
+import com.sparta.spartaeats.common.type.OrderType;
 import lombok.Data;
 
 import java.util.List;
