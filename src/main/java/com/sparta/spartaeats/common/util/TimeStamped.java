@@ -1,6 +1,5 @@
 package com.sparta.spartaeats.common.util;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,18 +1,20 @@
-package com.sparta.spartaeats.store;
+package com.sparta.spartaeats.store.domain;
 
 import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.location.domain.Location;
 import com.sparta.spartaeats.order.domain.Order;
-import com.sparta.spartaeats.product.Product;
-import com.sparta.spartaeats.store_category.StoreCategory;
+import com.sparta.spartaeats.product.domain.Product;
+import com.sparta.spartaeats.storeCategory.domain.StoreCategory;
 import com.sparta.spartaeats.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 
 @Entity
 @Data

@@ -1,6 +1,7 @@
 package com.sparta.spartaeats.store;
 
 import com.sparta.spartaeats.user.domain.User;
+import com.sparta.spartaeats.store.domain.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

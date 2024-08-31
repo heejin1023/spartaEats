@@ -1,7 +1,8 @@
-package com.sparta.spartaeats.store_category;
+package com.sparta.spartaeats.storeCategory.domain;
+
 
 import com.sparta.spartaeats.common.util.TimeStamped;
-import com.sparta.spartaeats.store.Store;
+import com.sparta.spartaeats.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
