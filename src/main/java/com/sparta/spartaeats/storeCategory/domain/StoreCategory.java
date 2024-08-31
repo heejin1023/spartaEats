@@ -1,7 +1,8 @@
-package com.sparta.spartaeats.store_category;
+package com.sparta.spartaeats.storeCategory.domain;
 
-import com.sparta.spartaeats.entity.TimeStamped;
-import com.sparta.spartaeats.store.Store;
+
+import com.sparta.spartaeats.common.util.TimeStamped;
+import com.sparta.spartaeats.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -41,9 +42,5 @@ public class StoreCategory extends TimeStamped {
     // 연관 관계: Store (1:N)
     @OneToMany(mappedBy = "storeCategory")
     private List<Store> stores;
-
-    public StoreCategory(UUID id){
-        this.id = id;
-    }
 
 }

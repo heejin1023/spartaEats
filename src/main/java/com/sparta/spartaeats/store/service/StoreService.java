@@ -1,11 +1,15 @@
-package com.sparta.spartaeats.store;
+package com.sparta.spartaeats.store.service;
 
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import com.sparta.spartaeats.entity.Location;
-import com.sparta.spartaeats.entity.User;
-import com.sparta.spartaeats.store_category.StoreCategory;
-import com.sparta.spartaeats.store_category.StoreCategoryRepository;
+import com.sparta.spartaeats.store.domain.Store;
+import com.sparta.spartaeats.store.StoreRepository;
+import com.sparta.spartaeats.store.StoreSpecification;
+import com.sparta.spartaeats.store.dto.StoreRequestDto;
+import com.sparta.spartaeats.store.dto.StoreResponseDto;
+import com.sparta.spartaeats.store.dto.StoreSearchRequestDto;
+import com.sparta.spartaeats.storeCategory.domain.StoreCategory;
+import com.sparta.spartaeats.storeCategory.StoreCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +26,15 @@ public class StoreService {
     //UserRepository 등록
     private final StoreRepository storeRepository;
     private final StoreCategoryRepository storeCategoryRepository;
+//    private final UserRepository userRepository;
 
     // 음식점 등록
     public ApiResult createStore(StoreRequestDto storeRequestDto) {
-//        User user = new User();
-//        user.setId(storeRequestDto.getUserIdx());
-//        user 정보 -> 체크 필요
+
+
+//        User user = userRepository.findByIdAndDelYn(storeRequestDto.getUserIdx(), 'N')
+//                .orElseThrow(() -> new IllegalArgumentException("해당 OWNER를 찾을 수 없습니다."));
+
 
         StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(storeRequestDto.getCategoryId(), "N")
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
@@ -56,16 +63,23 @@ public class StoreService {
         Store store = storeRepository.findByIdAndDelYn(storeId, "N")
                 .orElseThrow(() -> new IllegalArgumentException("해당 음식점을 찾을 수 없습니다."));
 
-        StoreCategory storeCategory = (StoreCategory) storeCategoryRepository.findById(storeRequestDto.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
-
-        store.setStoreName(storeRequestDto.getStoreName());
-        store.setStoreContact(storeRequestDto.getStoreContact());
-        store.setStoreAddress(storeRequestDto.getStoreAddress());
-        store.setStoreCategory(storeCategory);
-        store.setUseYn(storeRequestDto.getUseYn());
-//        store.setUpdatedAt(LocalDateTime.now());
-//        store.setUpdatedBy(storeRequestDto.getUserIdx());
+        if(storeRequestDto.getStoreName() != null){
+            store.setStoreName(storeRequestDto.getStoreName());
+        }
+        if(storeRequestDto.getStoreContact() != null){
+            store.setStoreContact(storeRequestDto.getStoreContact());
+        }
+        if(storeRequestDto.getStoreAddress() != null){
+            store.setStoreAddress(storeRequestDto.getStoreAddress());
+        }
+        if(storeRequestDto.getCategoryId() != null){
+            StoreCategory storeCategory = storeCategoryRepository.findById(storeRequestDto.getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+            store.setStoreCategory(storeCategory);
+        }
+        if(storeRequestDto.getUseYn() != null){
+            store.setUseYn(storeRequestDto.getUseYn());
+        }
 
         storeRepository.save(store);
 
@@ -100,6 +114,7 @@ public class StoreService {
                 .storeContact(store.getStoreContact())
                 .storeAddress(store.getStoreAddress())
                 .storeCategoryId(store.getStoreCategory().getId())
+                .useYn(store.getUseYn())
                 .createdAt(store.getCreatedAt())
                 .createdBy(store.getCreatedBy())
                 .modifiedAt(store.getModifiedAt())
@@ -112,35 +127,26 @@ public class StoreService {
     // 음식점 전체 조회 및 검색
     @Transactional(readOnly = true)
     public Page<StoreResponseDto> getStores(StoreSearchRequestDto searchRequestDto, Pageable pageable) {
-
+        System.out.println(searchRequestDto.getUseYn());
         Page<Store> storePage = storeRepository.findAll(StoreSpecification.searchWith(searchRequestDto), pageable);
 
         // Store 엔티티를 StoreResponseDto로 변환
         Page<StoreResponseDto> storeResponseDtoPage = storePage.map(store -> new StoreResponseDto(
                 store.getId(),
+                store.getOwner(),
                 store.getStoreName(),
                 store.getStoreContact(),
                 store.getStoreAddress(),
-                store.getStoreCategory().getId()  // StoreCategory 객체 대신 ID만 가져옴
+                store.getStoreCategory().getId(),  // StoreCategory 객체 대신 ID만 가져옴
+                store.getUseYn(),
+                store.getCreatedAt(),
+                store.getCreatedBy(),
+                store.getModifiedAt(),
+                store.getModifiedBy(),
+                store.getDeletedAt(),
+                store.getDeletedBy()
         ));
-
-
-
         return storeResponseDtoPage;
-//
-//        Page<Store> stores = storeRepository.findAll(StoreSpecification.searchWith(searchRequestDto), pageable);
-//
-//        List<StoreListResponseDto> storeList = stores.stream()
-//                .map(store -> StoreListResponseDto.builder()
-//                        .storeId(store.getId())
-//                        .storeName(store.getStoreName())
-//                        .categoryName(store.getStoreCategory().getCategoryName())
-//                        .build())
-//                .collect(Collectors.toList());
-//
-//        PageInfo pageInfo = new PageInfo(stores.getTotalElements(), stores.getSize(), stores.getNumber(), stores.getTotalPages(), stores.hasPrevious(), stores.hasNext());
-//        apiResult.set(ApiResultError.NO_ERROR).setList(storeList).setPageInfo(pageInfo);
-        //return new ApiResult(200, "음식점 목록 조회 성공", new StoreListResultData(storeList, pageInfo));
     }
 
 
