@@ -3,10 +3,9 @@ package com.sparta.spartaeats.user.service;
 
 import com.sparta.spartaeats.common.jwt.JwtUtil;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
-import com.sparta.spartaeats.user.domain.UserRequestDto;
+import com.sparta.spartaeats.user.domain.dto.UserRequestDto;
 import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

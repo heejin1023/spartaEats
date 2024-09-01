@@ -22,6 +22,10 @@ public class UserDetailsImpl implements UserDetails {
         return loginUserInfo;
     }
 
+    public String userId() {
+        return loginUserInfo.getUserId();
+    }
+
     @Override
     public String getPassword() {
         return loginUserInfo.getPassword();
@@ -35,7 +39,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        UserRoleEnum role = UserRoleEnum.valueOf(loginUserInfo.getUserRole());
+        UserRoleEnum role = loginUserInfo.getUserRole();
         String authority = role.getAuthority();
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);

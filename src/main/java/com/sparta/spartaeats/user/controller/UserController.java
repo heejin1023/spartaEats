@@ -5,9 +5,8 @@ import com.sparta.spartaeats.common.controller.CustomApiController;
 import com.sparta.spartaeats.common.jwt.JwtUtil;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import com.sparta.spartaeats.common.type.UserRoleEnum;
-import com.sparta.spartaeats.user.domain.UserRequestDto;
 import com.sparta.spartaeats.user.domain.User;
+import com.sparta.spartaeats.user.domain.dto.UserRequestDto;
 import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0001;
 import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0002;
 import com.sparta.spartaeats.user.service.UserService;
@@ -71,9 +70,8 @@ public class UserController extends CustomApiController {
 
         User user = userService.login(loginRequestDto);
 
-        // JWT 생성 및 쿠키에 저장 후 Response 객체에 추가
-        String token = jwtUtil.createToken(user.getUserId(), UserRoleEnum.valueOf(user.getUserRole()));
-        jwtUtil.addJwtToCookie(token, res);
+
+
         return apiResult.set(ApiResultError.NO_ERROR);
     }
 }

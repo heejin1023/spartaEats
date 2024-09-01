@@ -1,21 +1,45 @@
 package com.sparta.spartaeats.common.controller;
 
 
-import org.springframework.validation.Errors;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.spartaeats.common.model.ApiResult;
+import com.sparta.spartaeats.common.security.UserDetailsImpl;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.user.domain.User;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
 
 @Slf4j
 @RequiredArgsConstructor
 public abstract class CustomApiController {
 
     protected ObjectMapper mapper = new ObjectMapper();
+
+    protected User getLoginedUserObject() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("Authentication authentication {}", authentication);
+
+        if(authentication == null) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetailsImpl = (UserDetailsImpl) principal;
+            User user = userDetailsImpl.getUser();
+
+            return user;
+        }
+
+        return null;
+    }
+
 
     /**
      * <p>[공통] Parameter Bind error 처리

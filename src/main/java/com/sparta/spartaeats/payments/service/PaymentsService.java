@@ -82,7 +82,7 @@ public class PaymentsService {
 
     public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond,User user) {
         Long userId = user.getId();
-        String userRole = user.getUserRole();
+        String userRole = String.valueOf(user.getUserRole());
 //        Page<PaymentResponseDto> page = new
 //        if (userRole.contains("USER")) {
 //            Page<PaymentResponseDto> page = paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);

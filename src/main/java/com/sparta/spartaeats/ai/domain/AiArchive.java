@@ -1,21 +1,23 @@
-package com.sparta.spartaeats.ai;
+package com.sparta.spartaeats.ai.domain;
 
 import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.product.domain.Product;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 
 @Entity
-@Data
-@Builder
 @Getter
 @Table(name = "p_AI")
-public class AI extends TimeStamped {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class AiArchive extends TimeStamped {
     
     @Id
     @GeneratedValue
