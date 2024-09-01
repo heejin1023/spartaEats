@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.location.service;
 
+import com.sparta.spartaeats.address.dto.AddressResponseDto;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.location.domain.Location;
 import com.sparta.spartaeats.location.dto.LocationRequestDto;
@@ -7,6 +8,7 @@ import com.sparta.spartaeats.location.dto.LocationResponseDto;
 import com.sparta.spartaeats.location.repository.LocationRepository;
 import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -56,12 +58,15 @@ public class LocationService {
     }
 
 
-    public List<LocationResponseDto> getAllLocations(Pageable pageable) {
-        List<Location> locations;
-        locations = locationRepository.findAll(pageable).getContent();
-        return locations.stream()
-                .map(LocationResponseDto::new) // 생성자에서 Location 객체를 받는 LocationResponseDto가 필요
-                .collect(Collectors.toList());
+    public Page<LocationResponseDto> getAllLocations(Pageable pageable, Character useYn) {
+        Page<Location> locations;
+        if (useYn != null) {
+            locations = locationRepository.findByUseYn(useYn, pageable);
+        } else {
+            locations = locationRepository.findAll(pageable);
+        }
+
+        return locations.map(LocationResponseDto::new);
     }
 
     // Address 조회 및 예외 처리
