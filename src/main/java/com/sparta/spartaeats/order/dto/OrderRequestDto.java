@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Data
 public class OrderRequestDto {
-    @NotEmpty
+
     private OrderType orderType;
     private UUID deliveryId;
     private String memo;
