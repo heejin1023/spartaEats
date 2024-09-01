@@ -1,16 +1,24 @@
 package com.sparta.spartaeats.store.controller;
 
+import com.sparta.spartaeats.common.controller.CustomApiController;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
+import com.sparta.spartaeats.store.domain.validationGroup.ValidStore001;
 import com.sparta.spartaeats.store.service.StoreService;
 import com.sparta.spartaeats.store.dto.StoreRequestDto;
 import com.sparta.spartaeats.store.dto.StoreResponseDto;
 import com.sparta.spartaeats.store.dto.StoreSearchRequestDto;
+import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -18,21 +26,53 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stores")
-public class StoreController {
+public class StoreController extends CustomApiController {
     private final StoreService storeService;
 
     // 음식점 등록
     @PostMapping
-    public ApiResult createStore(@RequestBody StoreRequestDto storeRequestDto) {
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
+    public ApiResult createStore(@RequestBody @Validated(ValidStore001.class) StoreRequestDto storeRequestDto) {
+        // 현재 인증 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        ApiResult result = new ApiResult();
+
+        // 권한이 OWNER인 경우, 로그인한 사용자 정보 세팅
+        if (authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(UserRoleEnum.Authority.OWNER))) {
+            User user = getLoginedUserObject();
+            if (user != null) {
+                storeRequestDto.setUserIdx(user.getId());
+            }
+        }
+        if (storeRequestDto.getUserIdx() == null){
+            result.set(ApiResultError.STORE_NO_OWNER);
+        }
+
+        //authority가 admin이라면 storeRequestDto 그대로 넘기기
         return storeService.createStore(storeRequestDto);
     }
 
     // 음식점 정보 수정
     @PatchMapping("/update")
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     public ApiResult updateStore(@RequestParam(value = "store_id") UUID id, @RequestBody StoreRequestDto storeRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //권한이 owner일 경우 현재 로그인한 사용자의 store_id인지 확인
+        if (authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(UserRoleEnum.Authority.OWNER))) {
+            boolean isOwnerOfStore = storeService.isOwnerOfStore(getLoginedUserObject().getId(), id);
+            if (!isOwnerOfStore) {
+                // 권한이 없거나 다른 사용자의 음식점일 경우
+                ApiResult result = new ApiResult();
+                return result.set(ApiResultError.NO_AUTH_ERROR);
+            }
+        }
         return storeService.updateStore(id, storeRequestDto);
     }
 
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     @PatchMapping("/delete")
     public ApiResult deleteStore(@RequestParam(value = "store_id") UUID id) {
         return storeService.deleteStore(id);

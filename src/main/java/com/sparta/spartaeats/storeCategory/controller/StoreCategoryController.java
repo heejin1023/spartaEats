@@ -2,7 +2,9 @@ package com.sparta.spartaeats.storeCategory.controller;
 
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.storeCategory.domain.StoreCategory;
+import com.sparta.spartaeats.storeCategory.domain.validationGroup.ValidStoreCategory001;
 import com.sparta.spartaeats.storeCategory.service.StoreCategoryService;
 import com.sparta.spartaeats.storeCategory.dto.StoreCategoryRequestDto;
 import com.sparta.spartaeats.storeCategory.dto.StoreCategoryResponseDto;
@@ -12,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,18 +29,21 @@ public class StoreCategoryController {
     //카테고리 등록
 
     @PostMapping
-    public ApiResult createStoreCategory(@RequestBody StoreCategoryRequestDto storeCategoryRequestDto) {
+    @Secured(UserRoleEnum.Authority.ADMIN)
+    public ApiResult createStoreCategory(@RequestBody @Validated(ValidStoreCategory001.class) StoreCategoryRequestDto storeCategoryRequestDto) {
         return storeCategoryService.createStoreCategory(storeCategoryRequestDto);
     }
 
     //카테고리 정보 수정
     @PatchMapping("/update")
+    @Secured(UserRoleEnum.Authority.ADMIN)
     public ApiResult updateStoreCategory(@RequestParam(name = "store_category_id") UUID id, @RequestBody StoreCategoryRequestDto storeCategoryRequestDto) {
         return storeCategoryService.updateStoreCategory(id, storeCategoryRequestDto);
     }
 
     //카테고리 삭제
     @PatchMapping("/delete")
+    @Secured(UserRoleEnum.Authority.ADMIN)
     public ApiResult deleteStoreCategory(@RequestParam(name = "store_category_id") UUID id) {
         return storeCategoryService.deleteStoreCategory(id);
     }
