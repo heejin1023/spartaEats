@@ -1,6 +1,7 @@
 package com.sparta.spartaeats.payments.service;
 
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
@@ -13,6 +14,8 @@ import com.sparta.spartaeats.payments.dto.*;
 import com.sparta.spartaeats.payments.repository.PaymentsRepository;
 import com.sparta.spartaeats.common.type.OrderStatus;
 import com.sparta.spartaeats.common.type.PaymentStatus;
+import com.sparta.spartaeats.store.domain.Store;
+import com.sparta.spartaeats.store.repository.StoreRepository;
 import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,7 @@ public class PaymentsService {
 
     private final PaymentsRepository paymentsRepository;
     private final OrderRepository orderRepository;
+    private final StoreRepository storeRepository;
 
     public SingleResponseDto<PaymentResponseDto> pay(PayRequestDto payRequestDto) {
           Order order = orderRepository.findById(payRequestDto.getOrderId()).orElseThrow(
@@ -74,34 +78,28 @@ public class PaymentsService {
             return new SimpleResponseDto(ApiResultError.NO_ERROR, "결제 내역이 삭제되었습니다.");
     }
 
+    @Transactional(readOnly = true)
     public SingleResponseDto<?> getOnePaymentResult(UUID paymentId, User user) {
         Long userId = user.getId();
         Payment payment = paymentsRepository.findByIdWithDelWithUser(paymentId,userId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
         return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
     }
 
+    @Transactional(readOnly = true)
     public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond,User user) {
         Long userId = user.getId();
         String userRole = String.valueOf(user.getUserRole());
-//        Page<PaymentResponseDto> page = new
-//        if (userRole.contains("USER")) {
-//            Page<PaymentResponseDto> page = paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);
-//        }else{
-        Page<PaymentResponseDto> page = paymentsRepository.findPaymentList(pageable,cond);
-//        }
-            if(page.isEmpty()){
-                log.error("PaymentService.getAllPayments");
-                throw new EmptyDataException("결제 내역이 존재하지 않습니다");
-            }
-            return new MultiResponseDto<>(ApiResultError.NO_ERROR, "결제 목록 조회", page,
-                    new PageInfoDto(
-                            (int) page.getTotalElements(),
-                            page.getSize(),
-                            page.getNumber(),
-                            page.getTotalPages(),
-                            page.hasPrevious(),
-                            page.hasNext()
-                    ));
+        if (userRole.contains("USER")) {
+            log.info("userId = {}", userId);
+            return paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);
+        } else if (userRole.contains("OWNER")) {
+            Store store = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Not Found Store with Owner Id : " + userId));
+            UUID storeId = store.getId();
+            return paymentsRepository.findPaymentListWithOwnerRole(pageable, cond, storeId);
+        } else {
+            return paymentsRepository.findPaymentList(pageable, cond);
+        }
+
     }
 
     private PaymentResponseDto getPaymentResponseDto(Payment payment) {

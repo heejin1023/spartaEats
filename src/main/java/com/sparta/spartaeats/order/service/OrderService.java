@@ -46,7 +46,7 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
 
 
-    public SingleResponseDto order(OrderRequestDto orderRequestDto){ // , User user
+    public SingleResponseDto order(OrderRequestDto orderRequestDto,User user){ // , User user
 
             Store findStore = storeRepository.findByIdWithDel(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다"));
             Address delivery = deliveryRepository.findByIdWithDel(orderRequestDto.getDeliveryId()).orElseThrow(() -> new IllegalArgumentException("해당 배달 주소를 찾을 수 없습니다"));
@@ -63,9 +63,8 @@ public class OrderService {
                     throw new DeletedProductException("판매 중지 된 상품이 존재합니다, 상품명 : " + orderProduct.getProduct().getProductName());
                 }
             }
-        User user = userRepository.findById(252L).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
         Order order = new Order(user, findStore, orderProductsList,
-                    orderRequestDto.getMemo(), orderRequestDto.getOrderType(), Order.calculatePrice(orderProductsList), delivery, OrderStatus.PREPARING, 'N');
+                    orderRequestDto.getMemo(), orderRequestDto.getOrderType(), Order.calculatePrice(orderProductsList), delivery, OrderStatus.PENDING, 'N');
             // 연관관계 설정
             // 루프 내에서 Iterable 직접 수정 시 발생하는 에러로 인해 복제
             ArrayList<OrderProduct> list = new ArrayList<>(orderProductsList);

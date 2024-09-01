@@ -67,7 +67,7 @@ public class Order extends TimeStamped {
 
     public static Integer calculatePrice(List<OrderProduct> list) {
         return list.stream()
-                .mapToInt(OrderProduct::getPrice)
+                .mapToInt(op -> op.getPrice() * op.getAmount())
                 .sum();
     }
 

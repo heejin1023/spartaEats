@@ -1,18 +1,16 @@
 package com.sparta.spartaeats.address.controller;
 
-import com.sparta.spartaeats.address.service.AddressService;
 import com.sparta.spartaeats.address.dto.AddressRequestDto;
 import com.sparta.spartaeats.address.dto.AddressResponseDto;
+import com.sparta.spartaeats.address.service.AddressService;
 import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.controller.CustomApiController;
-import com.sparta.spartaeats.common.jwt.JwtUtil;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.security.UserDetailsImpl;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.user.domain.User;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,9 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -51,7 +47,7 @@ public class AddressController extends CustomApiController {
     // 배송지 수정
     @ApiLogging
     @PatchMapping("/{addressId}")
-    public ApiResult updateAddress(@PathVariable String addressId,
+    public ApiResult updateAddress(@PathVariable UUID addressId,
                                    @RequestBody AddressRequestDto addressRequestDto,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails,
                                    Errors errors) {
@@ -60,8 +56,7 @@ public class AddressController extends CustomApiController {
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
         }
-        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        AddressResponseDto responseDto = addressService.updateAddress(UUID.fromString(addressId), addressRequestDto, userIdx);
+        AddressResponseDto responseDto = addressService.updateAddress(addressId, addressRequestDto, userDetails.getUser());
         apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         return apiResult;
     }
@@ -69,34 +64,26 @@ public class AddressController extends CustomApiController {
     // 배송지 삭제
     @ApiLogging
     @PatchMapping("/{addressId}/delete")
-    public ApiResult deleteAddress(@PathVariable String addressId,
-                                   @RequestParam Long deletedBy,
-                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                   Errors errors) {
+    public ApiResult deleteAddress(@PathVariable UUID addressId,
+                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
-        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        addressService.deleteAddress(UUID.fromString(addressId), deletedBy, userIdx);
+        addressService.deleteAddress(addressId, user);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR);
-        if (errors.hasErrors()) {
-            return bindError(errors, apiResult);
-        }
+
         return apiResult;
     }
 
     // 배송지 상세 조회
     @ApiLogging
     @GetMapping("/{addressId}")
-    public ApiResult getAddressById(@PathVariable String addressId,
-                                    @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                    Errors errors) {
+    public ApiResult getAddressById(@PathVariable UUID addressId,
+                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        AddressResponseDto responseDto = addressService.getAddressById(UUID.fromString(addressId), userIdx);
+        AddressResponseDto responseDto = addressService.getAddressById(addressId, userIdx);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR).setResultData(responseDto);
-        if (errors.hasErrors()) {
-            return bindError(errors, apiResult);
-        }
+
         return apiResult;
     }
 
@@ -104,13 +91,12 @@ public class AddressController extends CustomApiController {
     @ApiLogging
     @GetMapping
     public ApiResult getAddresses(
-            @RequestParam int pageNumber,
-            @RequestParam int pageSize,
+            @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "local", required = false) String local,
-            @RequestParam(value = "orderId", required = false) Long orderId,
+            @RequestParam(value = "orderId", required = false) UUID orderId,
             @RequestParam(value = "useYn", required = false) Character useYn,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            Errors errors) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         User user = userDetails.getUser();
@@ -121,9 +107,7 @@ public class AddressController extends CustomApiController {
         Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
 
         apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);
-        if (errors.hasErrors()) {
-            return bindError(errors, apiResult);
-        }
+
         return apiResult;
     }
 }
