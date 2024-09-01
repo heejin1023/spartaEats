@@ -25,8 +25,8 @@ public interface AiArchiveRepository extends JpaRepository<AiArchive, UUID> {
             "LEFT JOIN User u ON a.createdBy = u.id " +
             "WHERE (:productName IS NULL OR p.productName LIKE %:productName%) " +
             "AND (:userName IS NULL OR u.userName LIKE %:userName%) ")
-//            "AND (:startDate IS NULL OR a.createdAt >= :startDate) " +
-//            "AND (:endDate IS NULL OR a.createdAt <= :endDate)")
+
+
     Page<AiArchiveResponseDto> searchWithJoinAndLike(
             @Param("productName") String productName,
             @Param("userName") String userName,

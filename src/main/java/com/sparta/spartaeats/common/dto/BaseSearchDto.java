@@ -26,7 +26,7 @@ public class BaseSearchDto {
         }
 
         if (direction == null) {
-            direction = "asc";
+            direction = "desc";
         }
 
         if (sort == null) {
