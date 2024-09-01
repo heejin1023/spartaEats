@@ -78,12 +78,14 @@ public class PaymentsService {
             return new SimpleResponseDto(ApiResultError.NO_ERROR, "결제 내역이 삭제되었습니다.");
     }
 
+    @Transactional(readOnly = true)
     public SingleResponseDto<?> getOnePaymentResult(UUID paymentId, User user) {
         Long userId = user.getId();
         Payment payment = paymentsRepository.findByIdWithDelWithUser(paymentId,userId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
         return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
     }
 
+    @Transactional(readOnly = true)
     public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond,User user) {
         Long userId = user.getId();
         String userRole = String.valueOf(user.getUserRole());

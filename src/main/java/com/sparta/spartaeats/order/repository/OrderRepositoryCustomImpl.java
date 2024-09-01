@@ -96,7 +96,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         return new MultiResponseDto<>(
                 ApiResultError.NO_ERROR,
                 "Order List 조회",
-                page,
+                page.getContent(),
                 new PageInfoDto(
                         (int) page.getTotalElements(),
                         page.getSize(),
@@ -162,7 +162,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         return new MultiResponseDto<>(
                 ApiResultError.NO_ERROR,
                 "Order List 조회",
-                page,
+                page.getContent(),
                 new PageInfoDto(
                         (int) page.getTotalElements(),
                         page.getSize(),
@@ -227,7 +227,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         return new MultiResponseDto<>(
                 ApiResultError.NO_ERROR,
                 "Order List 조회",
-                page,
+                page.getContent(),
                 new PageInfoDto(
                         (int) page.getTotalElements(),
                         page.getSize(),

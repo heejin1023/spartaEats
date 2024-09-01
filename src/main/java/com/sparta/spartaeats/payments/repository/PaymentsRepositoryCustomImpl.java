@@ -94,7 +94,7 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
         return new MultiResponseDto<>(ApiResultError.NO_ERROR,
                 "Payment List 조회",
-                page,
+                page.getContent(),
                 new PageInfoDto((int) page.getTotalElements(),
                         page.getSize(),
                         page.getNumber(),
@@ -105,13 +105,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
     @Override
     public MultiResponseDto<PaymentResponseDto> findPaymentListWithUserRole(Pageable pageable, PaymentSearchCond cond, Long userId) {
-        List<PaymentResponseDto> content = queryFactory
-                .select(new QPaymentResponseDto(
-                        payment.id,
-                        payment.payment_amount,
-                        payment.paymentStatus
-                ))
-                .from(payment)
+        List<Payment> findPayment = queryFactory
+                .selectFrom(payment)
                 .leftJoin(payment.order, order)
                 .where(
                         paymentStatusEq(cond.getStatus()),
@@ -137,6 +132,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                 );
 //        Page<PaymentResponseDto> page = PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
+        List<PaymentResponseDto> content = findPayment.stream()
+                .map(PaymentResponseDto::new).toList();
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), content.size());
         Page<PaymentResponseDto> page = new PageImpl<>(content.subList(start, end), pageable, content.size());
@@ -147,7 +144,7 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
         return new MultiResponseDto<>(ApiResultError.NO_ERROR,
                 "Payment List 조회",
-                page,
+                page.getContent(),
                 new PageInfoDto((int) page.getTotalElements(),
                         page.getSize(),
                         page.getNumber(),
@@ -158,16 +155,10 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
     @Override
     public MultiResponseDto<PaymentResponseDto> findPaymentListWithOwnerRole(Pageable pageable, PaymentSearchCond cond, UUID storeId) {
-        List<PaymentResponseDto> content = queryFactory
-                .select(new QPaymentResponseDto(
-                        payment.id,
-                        payment.payment_amount.as("price"),
-                        payment.paymentStatus.as("status")
-                ))
-                .from(payment)
+        List<Payment> findPayment = queryFactory
+                .selectFrom(payment)
                 .leftJoin(payment.order, order)
                 .leftJoin(order.store, QStore.store)
-                .fetchJoin()
                 .where(
                         paymentStatusEq(cond.getStatus()),
                         createdByEq(cond.getCreatedBy()),
@@ -184,7 +175,6 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                 .from(payment)
                 .leftJoin(payment.order, order)
                 .leftJoin(order.store, QStore.store)
-                .fetchJoin()
                 .where(
                         paymentStatusEq(cond.getStatus()),
                         createdByEq(cond.getCreatedBy()),
@@ -192,6 +182,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
                         payment.order.store.id.eq(storeId)
                 );
+        List<PaymentResponseDto> content = findPayment.stream()
+                .map(PaymentResponseDto::new).toList();
         Page<PaymentResponseDto> page = PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
         if(page.isEmpty()){
@@ -201,7 +193,7 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
         return new MultiResponseDto<>(ApiResultError.NO_ERROR,
                 "Payment List 조회",
-                page,
+                page.getContent(),
                 new PageInfoDto((int) page.getTotalElements(),
                         page.getSize(),
                         page.getNumber(),
