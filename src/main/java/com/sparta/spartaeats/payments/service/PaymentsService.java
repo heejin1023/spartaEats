@@ -1,6 +1,7 @@
 package com.sparta.spartaeats.payments.service;
 
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
@@ -85,17 +86,17 @@ public class PaymentsService {
 
     public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond,User user) {
         Long userId = user.getId();
-//        String userRole = user.getUserRole();
-//        if (userRole.contains("CUSTOMER")) {
-//            return paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);
-//        } else if (userRole.contains("OWNER")) {
-//            Store store = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Not Found Store with Owner Id : " + userId));
-//            UUID storeId = store.getId();
-//            return paymentsRepository.findPaymentListWithOwnerRole(pageable, cond, storeId);
-//        } else {
-//            return paymentsRepository.findPaymentList(pageable, cond);
-//        }
-        return null;
+        String userRole = String.valueOf(user.getUserRole());
+        if (userRole.contains("USER")) {
+            log.info("userId = {}", userId);
+            return paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);
+        } else if (userRole.contains("OWNER")) {
+            Store store = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Not Found Store with Owner Id : " + userId));
+            UUID storeId = store.getId();
+            return paymentsRepository.findPaymentListWithOwnerRole(pageable, cond, storeId);
+        } else {
+            return paymentsRepository.findPaymentList(pageable, cond);
+        }
 
     }
 

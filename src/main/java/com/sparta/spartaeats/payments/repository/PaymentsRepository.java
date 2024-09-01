@@ -17,7 +17,7 @@ public interface PaymentsRepository extends JpaRepository<Payment, UUID>, Paymen
     @Query("select p from Payment p where p.id = :paymentId and (p.delYn = 'N' or p.delYn = 'n')")
     Optional<Payment> findByIdWithDel(@Param("paymentId") UUID paymentId);
 
-    @Query("select p from Payment p where p.id = :paymentId and (p.delYn = 'N' or p.delYn = 'n') and p.createdBy = :userId")
+    @Query("select p from Payment p join Order o on p.order.id = o.id where p.id = :paymentId and (p.delYn = 'N' or p.delYn = 'n') and o.user.id = :userId")
     Optional<Payment> findByIdWithDelWithUser(@Param("paymentId") UUID paymentId, @Param("userId") Long userId);
 
 }

@@ -6,6 +6,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.spartaeats.common.exception.EmptyDataException;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.order.dto.OrderListResponseDto;
+import com.sparta.spartaeats.payments.domain.Payment;
 import com.sparta.spartaeats.payments.dto.PaymentResponseDto;
 import com.sparta.spartaeats.payments.dto.PaymentSearchCond;
 import com.sparta.spartaeats.payments.dto.QPaymentResponseDto;
@@ -17,6 +19,7 @@ import com.sparta.spartaeats.store.domain.Store;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
@@ -41,12 +44,24 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
     @Override
     public MultiResponseDto<PaymentResponseDto> findPaymentList(Pageable pageable, PaymentSearchCond cond) {
-        List<PaymentResponseDto> content = queryFactory
+        /*List<PaymentResponseDto> content = queryFactory
                 .select(new QPaymentResponseDto(
                         payment.id,
                         payment.payment_amount.as("price"),
                         payment.paymentStatus.as("status")
                 ))
+                .from(payment)
+                .where(
+                        paymentStatusEq(cond.getStatus()),
+                        createdByEq(cond.getCreatedBy()),
+                        pgTypeEq(cond.getPgType()),
+                        createdDateBetween(cond.getStartDate(), cond.getEndDate())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();*/
+        List<Payment> list = queryFactory
+                .selectFrom(payment)
                 .from(payment)
                 .where(
                         paymentStatusEq(cond.getStatus()),
@@ -67,6 +82,9 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate())
                 );
+
+        List<PaymentResponseDto> content = list.stream()
+                .map(PaymentResponseDto::new).toList();
         Page<PaymentResponseDto> page = PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
         if(page.isEmpty()){
@@ -90,16 +108,17 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
         List<PaymentResponseDto> content = queryFactory
                 .select(new QPaymentResponseDto(
                         payment.id,
-                        payment.payment_amount.as("price"),
-                        payment.paymentStatus.as("status")
+                        payment.payment_amount,
+                        payment.paymentStatus
                 ))
                 .from(payment)
+                .leftJoin(payment.order, order)
                 .where(
                         paymentStatusEq(cond.getStatus()),
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.createdBy.eq(userId)
+                        payment.order.user.id.eq(userId)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -108,15 +127,19 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(payment.count())
                 .from(payment)
+                .leftJoin(payment.order, order)
                 .where(
                         paymentStatusEq(cond.getStatus()),
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.createdBy.eq(userId)
+                        payment.order.user.id.eq(userId)
                 );
-        Page<PaymentResponseDto> page = PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+//        Page<PaymentResponseDto> page = PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), content.size());
+        Page<PaymentResponseDto> page = new PageImpl<>(content.subList(start, end), pageable, content.size());
         if(page.isEmpty()){
             log.error("PaymentService.getAllPayments");
             throw new EmptyDataException("결제 내역이 존재하지 않습니다");

@@ -1,5 +1,6 @@
 package com.sparta.spartaeats.payments.controller;
 
+import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.security.UserDetailsImpl;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
@@ -26,6 +27,7 @@ public class PaymentsController {
 
     private final PaymentsService paymentsService;
 
+    @ApiLogging
     @Secured(UserRoleEnum.Authority.USER)
     @PostMapping
     public ApiResult payOrder(@RequestBody PayRequestDto payRequestDto) {
@@ -33,6 +35,7 @@ public class PaymentsController {
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
+    @ApiLogging
     @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     @PatchMapping("/{paymentId}")
     public ApiResult updatePayment(@PathVariable UUID paymentId, @RequestBody PayUpdateRequestDto requestDto) {
@@ -40,6 +43,7 @@ public class PaymentsController {
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
+    @ApiLogging
     @Secured(UserRoleEnum.Authority.USER)
     @DeleteMapping("/{paymentId}")
     public ApiResult deletePayment(@PathVariable UUID paymentId) {
@@ -47,6 +51,7 @@ public class PaymentsController {
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage());
     }
 
+    @ApiLogging
     @GetMapping("/{paymentId}")
     public ApiResult getOnePaymentResult(@PathVariable UUID paymentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
@@ -54,6 +59,7 @@ public class PaymentsController {
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage()).setResultData(responseDto.getData());
     }
 
+    @ApiLogging
     @GetMapping
     public ApiResult getAllPayments(Pageable pageable, PaymentSearchCond cond, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
