@@ -12,9 +12,7 @@ import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,17 +79,8 @@ public class AiArchiveController extends CustomApiController {
     public ApiResult getAiArchiveList(AiArchiveSearchCondition sc) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
-
-        log.info("AiArchiveSearchCondition {}", sc.toString());
-        int page = sc.getPageNumber();
-        int size = sc.getPageSize();
-        String sort = sc.getSort() == null ? "createdAt" : sc.getSort();
-        String direction = sc.getDirection()  == null ? "asc" : sc.getDirection();
-
-        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        Sort sortOption = Sort.by(sortDirection, sort);
-
-        Pageable pageable = PageRequest.of(page - 1, size, sortOption);
+        sc.validateAndSetDefaults();
+        Pageable pageable = sc.generatePageable();
 
         Page<AiArchiveResponseDto> aiArchivePage = aiArchiveService.getAiArchiveList(sc, pageable);
 
@@ -108,6 +97,9 @@ public class AiArchiveController extends CustomApiController {
     @PatchMapping("{aiId}")
     public ApiResult deleteAiArchive(@PathVariable UUID aiId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if(aiId == null) {
+            apiResult.set(ApiResultError.ERROR_INVALID_ARGUMENT);
+        }
 
         User user = getLoginedUserObject();
         Long userIdx = user.getId();
