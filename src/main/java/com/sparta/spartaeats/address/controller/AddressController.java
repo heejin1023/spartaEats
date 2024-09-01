@@ -53,12 +53,14 @@ public class AddressController extends CustomApiController {
     @PatchMapping("/{addressId}")
     public ApiResult updateAddress(@PathVariable String addressId,
                                    @RequestBody AddressRequestDto addressRequestDto,
-                                   @RequestHeader(value = "X-User-Id", required = true) Long userIdx,
+                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
                                    Errors errors) {
+
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
         }
+        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
         AddressResponseDto responseDto = addressService.updateAddress(UUID.fromString(addressId), addressRequestDto, userIdx);
         apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         return apiResult;
@@ -69,9 +71,16 @@ public class AddressController extends CustomApiController {
     @PatchMapping("/{addressId}/delete")
     public ApiResult deleteAddress(@PathVariable String addressId,
                                    @RequestParam Long deletedBy,
-                                   @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
+                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                   Errors errors) {
+
+        User user = userDetails.getUser();
+        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
         addressService.deleteAddress(UUID.fromString(addressId), deletedBy, userIdx);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
         return apiResult;
     }
 
@@ -79,9 +88,15 @@ public class AddressController extends CustomApiController {
     @ApiLogging
     @GetMapping("/{addressId}")
     public ApiResult getAddressById(@PathVariable String addressId,
-                                    @RequestHeader(value = "X-User-Id", required = true) Long userIdx) {
+                                    @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                    Errors errors) {
+        User user = userDetails.getUser();
+        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
         AddressResponseDto responseDto = addressService.getAddressById(UUID.fromString(addressId), userIdx);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR).setResultData(responseDto);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
         return apiResult;
     }
 
@@ -94,21 +109,21 @@ public class AddressController extends CustomApiController {
             @RequestParam(value = "local", required = false) String local,
             @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "useYn", required = false) Character useYn,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            Errors errors) {
 
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         User user = userDetails.getUser();
-
-        // User 객체에서 userIdx 가져오기
-        Long userIdx = userDetails.getUser().getId();
-
-        // Role 가져오기
-        UserRoleEnum role = UserRoleEnum.valueOf(userDetails.getUser().getUserRole());
+        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
+        UserRoleEnum role = UserRoleEnum.valueOf(userDetails.getUser().getUserRole()); // Role 가져오기
         
         Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
         Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
 
         apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
         return apiResult;
     }
 }
