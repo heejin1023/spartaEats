@@ -1,14 +1,14 @@
 package com.sparta.spartaeats.ai.dto;
 
+import com.sparta.spartaeats.common.dto.BaseRequestDto;
 import lombok.*;
 import java.util.UUID;
 
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AiArchiveRequestDto {
+public class AiArchiveRequestDto extends BaseRequestDto {
 
     private String question;
 

@@ -25,6 +25,10 @@ public class PageInfo {
 
 
     public PageInfo(Page<?> data) {
+        if(data.getPageable() != null) {
+
+        }
+
         this.totalItem = data.getTotalElements();
         this.pageItemSize = data.getSize();
         this.groupSize = data.getNumberOfElements();
