@@ -4,14 +4,12 @@ import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.controller.CustomApiController;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
-import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 /**
@@ -26,7 +24,7 @@ public class BoardController extends CustomApiController {
 
         private final BoardService boardService;
 
-        @Secured(UserRoleEnum.Authority.OWNER)
+       // @Secured(UserRoleEnum.Authority.OWNER)
         @ApiLogging
         @GetMapping
         public ApiResult getBoardList(
@@ -38,7 +36,7 @@ public class BoardController extends CustomApiController {
             User loginUser = getLoginedUserObject();
             log.info("LoginUser info {}", loginUser);
 
-            Pageable pageable = PageRequest.of(pageNumber, pageSize);
+            Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
             Page<BoardVO> data =  boardService.getBoards(pageable);
 
             apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);

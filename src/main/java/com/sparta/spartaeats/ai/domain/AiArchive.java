@@ -3,16 +3,14 @@ package com.sparta.spartaeats.ai.domain;
 import com.sparta.spartaeats.common.util.TimeStamped;
 import com.sparta.spartaeats.product.domain.Product;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "p_AI")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,8 +23,9 @@ public class AiArchive extends TimeStamped {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
+
 
     @Column(name = "request_contents", length = 1000)
     private String requestContents;
