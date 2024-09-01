@@ -6,11 +6,15 @@ public enum ApiResultError {
 
     NO_AUTH_ERROR				("401"	, "권한이 없습니다."),
 
+    LOGIN_ERR_NOT_MATCH_PASSWD	("1401"	, "비밀번호가 일치하지 않습니다."),
+    LOGIN_ERR_NOT_FOUND_ID 	    ("1402"	, "존재하지 않는 아이디입니다."),
     LOGIN_ERR_NOT_FOUND_USER 	("1404"	, "사용자 아이디 혹은 비밀번호가 틀렸습니다."),
-    LOGIN_ERR_NOT_MATCH_PASSWD	("1401"	, "사용자 아이디 혹은 비밀번호가 틀렸습니다."),
     LOGIN_ERR_NOT_USED_USER 	("1405"	, "사용 할 수 없는 계정 입니다."),
     LOGIN_ERR_REQUIRED			("1500"	, "로그인이 필요합니다"),
 
+    ERROR_AI_API                ("3000", "AI 오류가 발생했습니다"),
+    ERROR_AI_API_NO_PRODUCT     ("3001", "해당 상품이 존재하지 않습니다."),
+    ERROR_AI_API_EXCEED_LENGTH  ("3002", "답변 글자수가 너무 많습니다."),
 
     ERROR_INVALID_LOGIN			("9201" , "로그인정보가 유효하지 않습니다."),
 
