@@ -8,6 +8,7 @@ import com.sparta.spartaeats.address.repository.AddressRepository;
 import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AddressService {
@@ -46,6 +48,12 @@ public class AddressService {
             addresses = addressRepository.findAll(pageable);
         } else {
             // 일반 사용자는 자신의 주소만 조회
+            // 전달된 파라미터 값을 로그로 출력
+            log.info("userIdx: {}", userIdx);
+            log.info("local: {}", local);
+            log.info("orderId: {}", orderId);
+            log.info("useYn: {}", useYn);
+            log.info("pageable: {}", pageable);
             addresses = addressRepository.findByUserIdAndLocalAndOrderIdAndUseYn(userIdx, local, orderId, useYn, pageable);
         }
 

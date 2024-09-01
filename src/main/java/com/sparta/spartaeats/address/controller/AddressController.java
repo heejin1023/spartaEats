@@ -70,17 +70,12 @@ public class AddressController extends CustomApiController {
     @ApiLogging
     @PatchMapping("/{addressId}/delete")
     public ApiResult deleteAddress(@PathVariable String addressId,
-                                   @RequestParam Long deletedBy,
-                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                   Errors errors) {
+                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
-        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        addressService.deleteAddress(UUID.fromString(addressId), userDetails.getUser());
+        addressService.deleteAddress(UUID.fromString(addressId), user);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR);
-        if (errors.hasErrors()) {
-            return bindError(errors, apiResult);
-        }
+
         return apiResult;
     }
 
@@ -88,15 +83,12 @@ public class AddressController extends CustomApiController {
     @ApiLogging
     @GetMapping("/{addressId}")
     public ApiResult getAddressById(@PathVariable String addressId,
-                                    @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                    Errors errors) {
+                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
         AddressResponseDto responseDto = addressService.getAddressById(UUID.fromString(addressId), userIdx);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR).setResultData(responseDto);
-        if (errors.hasErrors()) {
-            return bindError(errors, apiResult);
-        }
+
         return apiResult;
     }
 
@@ -104,13 +96,12 @@ public class AddressController extends CustomApiController {
     @ApiLogging
     @GetMapping
     public ApiResult getAddresses(
-            @RequestParam int pageNumber,
-            @RequestParam int pageSize,
+            @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "local", required = false) String local,
             @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "useYn", required = false) Character useYn,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            Errors errors) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         User user = userDetails.getUser();
@@ -121,9 +112,7 @@ public class AddressController extends CustomApiController {
         Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
 
         apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);
-        if (errors.hasErrors()) {
-            return bindError(errors, apiResult);
-        }
+
         return apiResult;
     }
 }

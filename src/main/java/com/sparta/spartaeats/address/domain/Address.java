@@ -70,11 +70,11 @@ public class Address extends TimeStamped {
     }
 
     public void update(AddressRequestDto addressRequestDto, User user) {
-        this.local = addressRequestDto.getLocal();
-        this.zip = addressRequestDto.getZip();
-        this.address = addressRequestDto.getAddress();
-        this.address2 = addressRequestDto.getAddress2();
-        this.contact = addressRequestDto.getContact();
+        this.local = addressRequestDto.getLocal() != null ? addressRequestDto.getLocal() : this.local;
+        this.zip = addressRequestDto.getZip() != null ? addressRequestDto.getZip() : this.zip;
+        this.address = addressRequestDto.getAddress() != null ? addressRequestDto.getAddress() : this.address;
+        this.address2 = addressRequestDto.getAddress2() != null ? addressRequestDto.getAddress2() : this.address2;
+        this.contact = addressRequestDto.getContact() != null ? addressRequestDto.getContact() : this.contact;
         this.useYn = addressRequestDto.getUseYn() != null ? addressRequestDto.getUseYn() : this.useYn;
     }
 
