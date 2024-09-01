@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 @Repository
@@ -23,7 +24,7 @@ public class AddressRepositoryCustomImpl implements AddressRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Address> findByUserIdAndLocalAndOrderIdAndUseYn(Long userIdx, String local, Long orderId, Character useYn, Pageable pageable) {
+    public Page<Address> findByUserIdAndLocalAndOrderIdAndUseYn(Long userIdx, String local, UUID orderId, Character useYn, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Address> query = cb.createQuery(Address.class);
         Root<Address> address = query.from(Address.class);

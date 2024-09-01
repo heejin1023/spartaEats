@@ -51,7 +51,7 @@ public class AddressController extends CustomApiController {
     // 배송지 수정
     @ApiLogging
     @PatchMapping("/{addressId}")
-    public ApiResult updateAddress(@PathVariable String addressId,
+    public ApiResult updateAddress(@PathVariable UUID addressId,
                                    @RequestBody AddressRequestDto addressRequestDto,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails,
                                    Errors errors) {
@@ -60,8 +60,7 @@ public class AddressController extends CustomApiController {
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
         }
-        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        AddressResponseDto responseDto = addressService.updateAddress(UUID.fromString(addressId), addressRequestDto, userDetails.getUser());
+        AddressResponseDto responseDto = addressService.updateAddress(addressId, addressRequestDto, userDetails.getUser());
         apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         return apiResult;
     }
@@ -69,11 +68,11 @@ public class AddressController extends CustomApiController {
     // 배송지 삭제
     @ApiLogging
     @PatchMapping("/{addressId}/delete")
-    public ApiResult deleteAddress(@PathVariable String addressId,
+    public ApiResult deleteAddress(@PathVariable UUID addressId,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
-        addressService.deleteAddress(UUID.fromString(addressId), user);
+        addressService.deleteAddress(addressId, user);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR);
 
         return apiResult;
@@ -82,11 +81,11 @@ public class AddressController extends CustomApiController {
     // 배송지 상세 조회
     @ApiLogging
     @GetMapping("/{addressId}")
-    public ApiResult getAddressById(@PathVariable String addressId,
+    public ApiResult getAddressById(@PathVariable UUID addressId,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        AddressResponseDto responseDto = addressService.getAddressById(UUID.fromString(addressId), userIdx);
+        AddressResponseDto responseDto = addressService.getAddressById(addressId, userIdx);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR).setResultData(responseDto);
 
         return apiResult;
@@ -99,7 +98,7 @@ public class AddressController extends CustomApiController {
             @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "local", required = false) String local,
-            @RequestParam(value = "orderId", required = false) Long orderId,
+            @RequestParam(value = "orderId", required = false) UUID orderId,
             @RequestParam(value = "useYn", required = false) Character useYn,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 

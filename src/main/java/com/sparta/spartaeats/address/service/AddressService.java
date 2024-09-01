@@ -35,7 +35,7 @@ public class AddressService {
         return new AddressResponseDto(savedAddress);
     }
 
-    public Page<AddressResponseDto> getAddresses(Pageable pageable, Long userIdx, UserRoleEnum role, String local, Long orderId, Character useYn) {
+    public Page<AddressResponseDto> getAddresses(Pageable pageable, Long userIdx, UserRoleEnum role, String local, UUID orderId, Character useYn) {
         Page<Address> addresses;
         // DB 조회 및 변환
         // 역할별 조회 차이
@@ -48,12 +48,6 @@ public class AddressService {
             addresses = addressRepository.findAll(pageable);
         } else {
             // 일반 사용자는 자신의 주소만 조회
-            // 전달된 파라미터 값을 로그로 출력
-            log.info("userIdx: {}", userIdx);
-            log.info("local: {}", local);
-            log.info("orderId: {}", orderId);
-            log.info("useYn: {}", useYn);
-            log.info("pageable: {}", pageable);
             addresses = addressRepository.findByUserIdAndLocalAndOrderIdAndUseYn(userIdx, local, orderId, useYn, pageable);
         }
 
