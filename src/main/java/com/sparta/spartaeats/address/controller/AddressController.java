@@ -101,7 +101,9 @@ public class AddressController extends CustomApiController {
             @RequestParam(value = "orderId", required = false) UUID orderId,
             @RequestParam(value = "useYn", required = false) Character useYn,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            throw new IllegalArgumentException("pageSize는 10, 30, 50 중 하나여야 합니다.");
+        }
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기

@@ -78,7 +78,9 @@ public class LocationController extends CustomApiController {
     public ApiResult getAllLocations(
             @RequestParam int pageNumber,
             @RequestParam int pageSize) {
-
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            throw new IllegalArgumentException("pageSize는 10, 30, 50 중 하나여야 합니다.");
+        }
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
