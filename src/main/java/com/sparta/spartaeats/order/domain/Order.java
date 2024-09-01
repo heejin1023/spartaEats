@@ -112,7 +112,7 @@ public class Order extends TimeStamped {
             return new SimpleResponseDto(ApiResultError.ERROR_TIMEOUT, "주문 후 5분이 초과하여 취소할 수 없습니다");
             }
         }
-        this.orderStatus = OrderStatus.CANCELED;
+        this.orderStatus = OrderStatus.CANCELLED;
         return new SimpleResponseDto(ApiResultError.NO_ERROR, "주문이 취소되었습니다");
     }
 
