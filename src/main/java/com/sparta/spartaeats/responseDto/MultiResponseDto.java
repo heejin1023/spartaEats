@@ -15,6 +15,6 @@ import java.util.List;
 public class MultiResponseDto<T> {
     private ApiResultError resultCode;
     private String resultMessage;
-    private Page<T> resultData;
+    private List<T> resultData;
     private PageInfoDto pageInfo;
 }
