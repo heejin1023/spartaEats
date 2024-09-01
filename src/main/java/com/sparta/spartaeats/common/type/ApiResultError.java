@@ -11,6 +11,7 @@ public enum ApiResultError {
     LOGIN_ERR_NOT_USED_USER 	("1405"	, "사용 할 수 없는 계정 입니다."),
     LOGIN_ERR_REQUIRED			("1500"	, "로그인이 필요합니다"),
 
+    STORE_NO_OWNER              ("3603", "음식점 OWNER ID를 찾을 수 없습니다."),
 
     ERROR_INVALID_LOGIN			("9201" , "로그인정보가 유효하지 않습니다."),
 
@@ -31,9 +32,9 @@ public enum ApiResultError {
     ERROR_NOT_SUPPORTED_METHOD	("9902", "지원하지 않는 Method 입니다."),
     ERROR_INTERNAL_API_PARAMETERS("9903", "내부 API 파라미터 오류."),
     ERROR_TIMEOUT               ("9904", "시간 초과"),
-    ERROR_DEFAULT				("9999", "오류가 발생하였습니다.")
+    ERROR_DEFAULT				("9999", "오류가 발생하였습니다.");
 
-    ;
+
 
     private String code;
     private String message;

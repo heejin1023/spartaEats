@@ -115,7 +115,7 @@ public class AddressController extends CustomApiController {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        UserRoleEnum role = UserRoleEnum.valueOf(userDetails.getUser().getUserRole()); // Role 가져오기
+        UserRoleEnum role = userDetails.getUser().getUserRole(); // Role 가져오기
 
         Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
         Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);

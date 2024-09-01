@@ -109,7 +109,7 @@ public class StoreService {
 
         StoreResponseDto storeResponseDto = StoreResponseDto.builder()
                 .storeId(store.getId())
-                .owner(store.getOwner())
+                .userIdx(store.getOwner().getId())
                 .storeName(store.getStoreName())
                 .storeContact(store.getStoreContact())
                 .storeAddress(store.getStoreAddress())
@@ -133,7 +133,7 @@ public class StoreService {
         // Store 엔티티를 StoreResponseDto로 변환
         Page<StoreResponseDto> storeResponseDtoPage = storePage.map(store -> new StoreResponseDto(
                 store.getId(),
-                store.getOwner(),
+                store.getOwner().getId(),
                 store.getStoreName(),
                 store.getStoreContact(),
                 store.getStoreAddress(),
@@ -149,5 +149,17 @@ public class StoreService {
         return storeResponseDtoPage;
     }
 
+    public boolean isOwnerOfStore(Long userIdx, UUID storeId) {
+        // StoreRepository에서 storeId로 음식점 정보를 가져와서
+        // 해당 음식점이 userId와 일치하는지 확인
+        Store store = storeRepository.findByIdAndDelYn(storeId, "N")
+                .orElseThrow(() -> new IllegalArgumentException("해당 음식점을 찾을 수 없습니다."));
 
+        StoreResponseDto storeResponseDto = StoreResponseDto.builder()
+                .storeId(store.getId())
+                .userIdx(store.getOwner().getId())
+                .build();
+
+        return storeResponseDto != null && storeResponseDto.getUserIdx().equals(userIdx);
+    }
 }

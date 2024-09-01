@@ -1,19 +1,23 @@
 package com.sparta.spartaeats.product.controller;
 
+import com.sparta.spartaeats.common.controller.CustomApiController;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.product.domain.validationGroup.ValidProduct001;
 import com.sparta.spartaeats.product.domain.validationGroup.ValidProduct002;
 import com.sparta.spartaeats.product.service.ProductService;
 import com.sparta.spartaeats.product.dto.ProductRequestDto;
 import com.sparta.spartaeats.product.dto.ProductResponseDto;
 import com.sparta.spartaeats.product.dto.ProductSearchRequestDto;
+import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0001;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,24 +26,29 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
-public class ProductController {
+public class ProductController extends CustomApiController {
 
     private final ProductService productService;
 
     //상품 등록
     @PostMapping
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     public ApiResult createProduct(@RequestBody @Validated(ValidProduct001.class) ProductRequestDto productRequestDto) {
+//        User user = getLoginedUserObject();
+//        productRequestDto.setStoreId()
         return productService.createProduct(productRequestDto);
     }
 
     //상품 정보 수정
     @PatchMapping("/update")
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     public ApiResult updateProduct(@RequestParam(value = "product_id") UUID productId, @RequestBody @Validated(ValidProduct002.class) ProductRequestDto productRequestDto) {
         return productService.updateProduct(productId, productRequestDto);
     }
 
     // 상품 삭제
     @PatchMapping("/delete")
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     public ApiResult deleteProduct(@RequestParam(value = "product_id") UUID productId) {
         return productService.deleteProduct(productId);
     }
