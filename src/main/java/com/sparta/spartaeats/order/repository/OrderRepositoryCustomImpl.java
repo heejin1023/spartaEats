@@ -75,7 +75,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         categoryEq(cond.getCategory()),
                         userNameEq(cond.getUsername()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        order.delYn.eq('N'),
+                        order.delYn.eq('N').or(order.delYn.eq('n')),
                         order.user.id.eq(userId)
                 )
                 .orderBy(orderSpecifiers.toArray(new OrderSpecifier<?>[0]))
@@ -159,7 +159,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         categoryEq(cond.getCategory()),
                         userNameEq(cond.getUsername()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        order.delYn.eq('N'),
+                        order.delYn.eq('N').or(order.delYn.eq('n')),
                         order.store.eq(findStore)
                 )
                 .orderBy(orderSpecifiers.toArray(new OrderSpecifier<?>[0]))

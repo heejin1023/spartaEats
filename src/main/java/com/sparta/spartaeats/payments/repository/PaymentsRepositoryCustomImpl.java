@@ -155,7 +155,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.user.id.eq(userId)
+                        payment.order.user.id.eq(userId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 )
                 .orderBy(paymentSpecifiers.toArray(new OrderSpecifier[0]))
                 .offset(requestPage.getOffset())
@@ -171,7 +172,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.user.id.eq(userId)
+                        payment.order.user.id.eq(userId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 );
 //        Page<PaymentResponseDto> page = PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
@@ -224,7 +226,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.store.id.eq(storeId)
+                        payment.order.store.id.eq(storeId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 )
                 .orderBy(paymentSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .offset(pageable.getOffset())
@@ -241,7 +244,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.store.id.eq(storeId)
+                        payment.order.store.id.eq(storeId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 );
         List<PaymentResponseDto> content = findPayment.stream()
                 .map(PaymentResponseDto::new).toList();
