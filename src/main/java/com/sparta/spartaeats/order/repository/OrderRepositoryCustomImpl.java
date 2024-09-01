@@ -45,7 +45,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     @Override
     public MultiResponseDto searchOrdersWithUserRole(OrderSearchCondition cond, Pageable pageable, Long userId) {
         int pageSize = pageable.getPageSize();
-        if (pageSize == 10 || pageSize == 30 || pageSize == 50) {
+        if (pageSize != 10 || pageSize != 30 || pageSize != 50) {
             pageSize = 10;
         }
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageSize, pageable.getSort());
@@ -53,9 +53,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         pageable.getSort().forEach(order -> {
             OrderSpecifier<?> orderSpecifier = null;
-            if (order.getProperty().equalsIgnoreCase("modifiedDate")) {
+            if (order.getProperty().equalsIgnoreCase("modifiedAt")) {
                 orderSpecifier = order.isAscending() ? QOrder.order.modifiedAt.asc() : QOrder.order.modifiedAt.desc();
-            } else if (order.getProperty().equalsIgnoreCase("createdDate")) {
+            } else if (order.getProperty().equalsIgnoreCase("createdAt")) {
                 orderSpecifier = order.isAscending() ? QOrder.order.createdAt.asc() : QOrder.order.createdAt.desc();
             }
             if (orderSpecifier != null) {
@@ -131,15 +131,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     @Override
     public MultiResponseDto searchOrdersWithOwnerRole(OrderSearchCondition cond, Pageable pageable, Store findStore) {
         int pageSize = pageable.getPageSize();
-        if (pageSize == 10 || pageSize == 30 || pageSize == 50) {
+        if (pageSize != 10 || pageSize != 30 || pageSize != 50) {
             pageSize = 10;
         }
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         pageable.getSort().forEach(order -> {
             OrderSpecifier<?> orderSpecifier = null;
-            if (order.getProperty().equalsIgnoreCase("modifiedDate")) {
+            if (order.getProperty().equalsIgnoreCase("modifiedAt")) {
                 orderSpecifier = order.isAscending() ? QOrder.order.modifiedAt.asc() : QOrder.order.modifiedAt.desc();
-            } else if (order.getProperty().equalsIgnoreCase("createdDate")) {
+            } else if (order.getProperty().equalsIgnoreCase("createdAt")) {
                 orderSpecifier = order.isAscending() ? QOrder.order.createdAt.asc() : QOrder.order.createdAt.desc();
             }
             if (orderSpecifier != null) {
@@ -215,15 +215,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     @Override
     public MultiResponseDto searchOrders(OrderSearchCondition cond, Pageable pageable) {
         int pageSize = pageable.getPageSize();
-        if (pageSize == 10 || pageSize == 30 || pageSize == 50) {
+        if (pageSize != 10 || pageSize != 30 || pageSize != 50) {
             pageSize = 10;
         }
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         pageable.getSort().forEach(order -> {
             OrderSpecifier<?> orderSpecifier = null;
-            if (order.getProperty().equalsIgnoreCase("modifiedDate")) {
+            if (order.getProperty().equalsIgnoreCase("modifiedAt")) {
                 orderSpecifier = order.isAscending() ? QOrder.order.modifiedAt.asc() : QOrder.order.modifiedAt.desc();
-            } else if (order.getProperty().equalsIgnoreCase("createdDate")) {
+            } else if (order.getProperty().equalsIgnoreCase("createdAt")) {
                 orderSpecifier = order.isAscending() ? QOrder.order.createdAt.asc() : QOrder.order.createdAt.desc();
             }
             if (orderSpecifier != null) {
