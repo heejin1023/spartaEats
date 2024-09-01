@@ -22,7 +22,7 @@ public class AddressResponseDto {
 
     public AddressResponseDto(Address savedAddress) {
         this.delvrUuid = savedAddress.getId();
-        this.userIdx = 1L;//savedAddress.getUser().getId(); // User 엔티티에서 ID를 가져온다고 가정
+        this.userIdx = savedAddress.getUser().getId(); // User 엔티티에서 ID를 가져온다고 가정
         this.zip = savedAddress.getZip();
         this.local = savedAddress.getLocal();
         this.address = savedAddress.getAddress();
