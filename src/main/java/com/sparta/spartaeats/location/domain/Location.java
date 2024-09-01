@@ -38,11 +38,12 @@ public class Location extends TimeStamped {
     private Long deletedBy;
     private LocalDateTime deletedAt;
 
-    public Location(LocationRequestDto requestDto) {
+    public Location(LocationRequestDto requestDto, User user) {
         this.id = requestDto.getLocationId();
         this.locationName = requestDto.getLocationName();
         this.delYn = requestDto.getDelYn();
         this.useYn = requestDto.getUseYn();
+        this.user = user;
 
     }
 
