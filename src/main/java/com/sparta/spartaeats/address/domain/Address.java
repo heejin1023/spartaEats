@@ -51,6 +51,9 @@ public class Address extends TimeStamped {
     @Column(name = "use_yn", nullable = false)
     private Character useYn = 'Y';
 
+    @Column(name = "created_by", nullable = false, updatable = false)
+    private Long createdBy;
+
     private Long deletedBy;
     private LocalDateTime deletedAt;
 
@@ -63,9 +66,10 @@ public class Address extends TimeStamped {
         this.contact = addressRequestDto.getContact();
         this.user = user;  // 이 부분은 실제 User 객체와 매핑하도록 수정 필요
         this.useYn = addressRequestDto.getUseYn() != null ? addressRequestDto.getUseYn() : 'Y';
+        this.createdBy = user.getId(); // created_by 필드 설정
     }
 
-    public void update(AddressRequestDto addressRequestDto, Long userIdx) {
+    public void update(AddressRequestDto addressRequestDto, User user) {
         this.local = addressRequestDto.getLocal();
         this.zip = addressRequestDto.getZip();
         this.address = addressRequestDto.getAddress();
@@ -74,9 +78,9 @@ public class Address extends TimeStamped {
         this.useYn = addressRequestDto.getUseYn() != null ? addressRequestDto.getUseYn() : this.useYn;
     }
 
-    public void delete(Long deletedBy) {
+    public void delete(User user) {
         this.delYn = 'Y';
-        this.deletedBy = deletedBy;
+        this.deletedBy = user.getId();
         this.deletedAt = LocalDateTime.now();
     }
 }

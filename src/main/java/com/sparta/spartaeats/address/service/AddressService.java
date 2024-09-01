@@ -13,9 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +54,7 @@ public class AddressService {
     }
 
     @Transactional
-    public AddressResponseDto updateAddress(UUID addressId, AddressRequestDto addressRequestDto, Long userIdx) {
+    public AddressResponseDto updateAddress(UUID addressId, AddressRequestDto addressRequestDto, User user) {
         // 해당 주소가 DB에 존재하는지 확인
         Address address = findAddress(addressId);
 
@@ -64,21 +62,29 @@ public class AddressService {
         // 역할별 수정 차이
         // 관리자 > 가능
         // 그 외 > 생성자 idx랑 비교해서 동일할 경우
-        address.update(addressRequestDto, userIdx);
-
+        // 관리자 또는 주소 생성자인 경우에만 수정 가능
+        if (user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority()) || address.getCreatedBy().equals(user.getId())) {
+            // 주소 정보 수정
+            address.update(addressRequestDto, user);
+        } else {
+            throw new IllegalArgumentException("해당 주소를 수정할 권한이 없습니다.");
+        }
         // 수정된 데이터 반환
         return new AddressResponseDto(address);
     }
 
-    public void deleteAddress(UUID addressId, Long deletedBy, Long userId) {
+    @Transactional
+    public void deleteAddress(UUID addressId, User user) {
         // 해당 주소가 DB에 존재하는지 확인
         Address address = findAddress(addressId);
 
-        // 주소 삭제 처리 (소프트 삭제로 구현 가능)
-        // 역할별 수정 차이
-        // 관리자 > 가능
-        // 그 외 > 생성자 idx랑 비교해서 동일할 경우
-        address.delete(deletedBy);
+        // 관리자 또는 주소 생성자인 경우에만 삭제 가능
+        if (user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority()) || address.getCreatedBy().equals(user.getId())) {
+            // 주소 삭제 처리 (소프트 삭제)
+            address.delete(user);
+        } else {
+            throw new IllegalArgumentException("해당 주소를 삭제할 권한이 없습니다.");
+        }
 
         // DB에 반영
         addressRepository.save(address);

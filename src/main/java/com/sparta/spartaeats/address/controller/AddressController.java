@@ -61,7 +61,7 @@ public class AddressController extends CustomApiController {
             return bindError(errors, apiResult);
         }
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        AddressResponseDto responseDto = addressService.updateAddress(UUID.fromString(addressId), addressRequestDto, userIdx);
+        AddressResponseDto responseDto = addressService.updateAddress(UUID.fromString(addressId), addressRequestDto, userDetails.getUser());
         apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         return apiResult;
     }
@@ -76,7 +76,7 @@ public class AddressController extends CustomApiController {
 
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        addressService.deleteAddress(UUID.fromString(addressId), deletedBy, userIdx);
+        addressService.deleteAddress(UUID.fromString(addressId), userDetails.getUser());
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR);
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
@@ -115,7 +115,7 @@ public class AddressController extends CustomApiController {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        UserRoleEnum role = UserRoleEnum.valueOf(userDetails.getUser().getUserRole()); // Role 가져오기
+        UserRoleEnum role = userDetails.getUser().getUserRole(); // Role 가져오기
 
         Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
         Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
