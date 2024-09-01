@@ -37,13 +37,13 @@ public class AddressController extends CustomApiController {
     @ApiLogging
     @PostMapping
     public ApiResult createAddress(@RequestBody AddressRequestDto addressRequestDto,
-                                   @RequestHeader(value = "X-User-Id", required = true) Long userIdx,
+                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
                                    Errors errors) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
         }
-        AddressResponseDto responseDto = addressService.createAddress(addressRequestDto, userIdx);
+        AddressResponseDto responseDto = addressService.createAddress(addressRequestDto, userDetails.getUser());
         apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         return apiResult;
     }
@@ -116,7 +116,7 @@ public class AddressController extends CustomApiController {
         User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
         UserRoleEnum role = UserRoleEnum.valueOf(userDetails.getUser().getUserRole()); // Role 가져오기
-        
+
         Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
         Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
 

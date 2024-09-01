@@ -5,6 +5,7 @@ import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.address.dto.AddressRequestDto;
 import com.sparta.spartaeats.address.dto.AddressResponseDto;
 import com.sparta.spartaeats.address.repository.AddressRepository;
+import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,9 +24,9 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
 
-    public AddressResponseDto createAddress(AddressRequestDto addressRequestDto, Long userIdx) {
+    public AddressResponseDto createAddress(AddressRequestDto addressRequestDto, User user) {
         // DTO -> Entity 변환
-        Address address = new Address(addressRequestDto, userRepository.findById(userIdx).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다")));
+        Address address = new Address(addressRequestDto, user);
 
         // DB 저장
         Address savedAddress = addressRepository.save(address);
