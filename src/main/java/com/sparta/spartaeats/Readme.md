@@ -22,3 +22,11 @@
 ![JPA](https://img.shields.io/badge/JPA-0078D6?style=for-the-badge&logo=aseprite&logoColor=#)
 ![GitHub](https://img.shields.io/badge/Git-0078D6?style=for-the-badge&logo=git&logoColor=#)
 
+### Detail
+- Spring Boot : 3.3.3
+- JAVA : 17
+- Hibernate
+
+
+
+
