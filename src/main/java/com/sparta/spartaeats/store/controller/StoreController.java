@@ -68,7 +68,7 @@ public class StoreController extends CustomApiController {
     public ApiResult updateStore(@RequestParam(value = "store_id") UUID id, @RequestBody StoreRequestDto storeRequestDto) {
         // 현재 인증 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //권한이 owner일 경우 현재 로그인한 사용자의 store_id인지 확인
+        //권한이 owner일 경우 입력한 store_id가 현재 로그인한 사용자의 store_id인지 확인
         if (authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(UserRoleEnum.Authority.OWNER))) {
             boolean isOwnerOfStore = storeService.isOwnerOfStore(getLoginedUserObject().getId(), id);
