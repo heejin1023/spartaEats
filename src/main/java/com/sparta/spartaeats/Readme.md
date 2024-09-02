@@ -20,4 +20,5 @@
 ![Boot](https://img.shields.io/badge/springboot-0078D6?style=for-the-badge&logo=springboot&logoColor=#)
 ![Security](https://img.shields.io/badge/springsecurity-0078D6?style=for-the-badge&logo=springsecurity&logoColor=#)
 ![JPA](https://img.shields.io/badge/JPA-0078D6?style=for-the-badge&logo=aseprite&logoColor=#)
+![GitHub](https://img.shields.io/badge/Git-0078D6?style=for-the-badge&logo=git&logoColor=#)
 
