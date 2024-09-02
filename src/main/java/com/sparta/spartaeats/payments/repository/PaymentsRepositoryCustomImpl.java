@@ -276,7 +276,7 @@ private BooleanExpression createdByEq(Long userId) {
 }
 
 private BooleanExpression pgTypeEq(String pgType) {
-    return hasText(pgType) ? payment.pgType.eq(pgType) : null;
+    return hasText(pgType) ? payment.pgType.like("%"+pgType+"%") : null;
 }
 
 private BooleanExpression createdDateBetween(LocalDateTime startDate, LocalDateTime endDate) {

@@ -299,17 +299,17 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             return null;
         }
         return JPAExpressions.selectFrom(orderProduct)
-                .where(orderProduct.product.productName.eq(productName)
+                .where(orderProduct.product.productName.like("%"+productName+"%")
                         .and(orderProduct.order.eq(order)))
                 .exists();
     }
 
     private BooleanExpression storeNameEq(String storeName) {
-        return hasText(storeName) ? order.store.storeName.eq(storeName) : null;
+        return hasText(storeName) ? order.store.storeName.like("%"+storeName+"%") : null;
     }
 
     private BooleanExpression categoryEq(String category) {
-        return hasText(category) ? order.store.storeCategory.categoryName.eq(category) : null;
+        return hasText(category) ? order.store.storeCategory.categoryName.like("%"+category+"%") : null;
     }
 
     private BooleanExpression userNameEq(String userName) {
