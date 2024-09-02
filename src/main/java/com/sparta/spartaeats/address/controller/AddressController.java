@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -80,8 +81,7 @@ public class AddressController extends CustomApiController {
     public ApiResult getAddressById(@PathVariable UUID addressId,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        AddressResponseDto responseDto = addressService.getAddressById(addressId, userIdx);
+        AddressResponseDto responseDto = addressService.getAddressById(addressId, user);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR).setResultData(responseDto);
 
         return apiResult;
@@ -96,14 +96,22 @@ public class AddressController extends CustomApiController {
             @RequestParam(value = "local", required = false) String local,
             @RequestParam(value = "orderId", required = false) UUID orderId,
             @RequestParam(value = "useYn", required = false) Character useYn,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy, // 추가된 부분
+            @RequestParam(value = "isAsc", defaultValue = "true") boolean isAsc, // 추가된 부분
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            pageSize = 10;
+        }
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-        User user = userDetails.getUser();
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
         UserRoleEnum role = userDetails.getUser().getUserRole(); // Role 가져오기
 
-        Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
+        // 정렬 방향 설정
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+
+        // 페이징 및 정렬 설정
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
         Page<AddressResponseDto> data = addressService.getAddresses(pageable, userIdx, role, local, orderId, useYn);
 
         apiResult.set(ApiResultError.NO_ERROR).setList(data).setPageInfo(data);

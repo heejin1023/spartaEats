@@ -1,6 +1,9 @@
 package com.sparta.spartaeats.store.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sparta.spartaeats.store.domain.validationGroup.ValidStore001;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.UUID;
@@ -11,12 +14,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class StoreRequestDto {
-    @JsonProperty("store_id")
-    private UUID storeId;
+
     @JsonProperty("user_idx")
     private Long userIdx;
+
+    @NotBlank(groups = {ValidStore001.class},
+            message = "음식점 이름을 입력하세요")
     @JsonProperty("store_name")
     private String storeName;
+
     @JsonProperty("store_contact")
     private String storeContact;
     @JsonProperty("store_address")
@@ -26,5 +32,5 @@ public class StoreRequestDto {
     @JsonProperty("location_id")
     private UUID locationId;
     @JsonProperty("use_yn")
-    private String useYn;
+    private Character useYn;
 }

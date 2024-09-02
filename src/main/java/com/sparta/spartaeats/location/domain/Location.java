@@ -26,6 +26,9 @@ public class Location extends TimeStamped {
     @JoinColumn(name = "user_idx")
     private User user;
 
+    @Column(name = "location_code", nullable = false)
+    private Integer locationCode;
+
     @Column(name = "location_name", length = 200, nullable = false)
     private String locationName;
 
@@ -35,11 +38,15 @@ public class Location extends TimeStamped {
     @Column(name = "use_yn", nullable = false)
     private Character useYn = 'Y';
 
+    @Column(name = "modified_by")
+    private Long modifiedBy;
+
     private Long deletedBy;
     private LocalDateTime deletedAt;
 
     public Location(LocationRequestDto requestDto, User user) {
         this.id = requestDto.getLocationId();
+        this.locationCode = requestDto.getLocationCode();
         this.locationName = requestDto.getLocationName();
         this.delYn = requestDto.getDelYn();
         this.useYn = requestDto.getUseYn();
@@ -47,9 +54,11 @@ public class Location extends TimeStamped {
 
     }
 
-    public void update(LocationRequestDto requestDto, Long userIdx) {
-        this.locationName = requestDto.getLocationName();
+    public void update(LocationRequestDto requestDto, User user) {
+        this.locationName = requestDto.getLocationName() != null ? requestDto.getLocationName() : this.locationName;
+        this.locationCode = requestDto.getLocationCode() != null ? requestDto.getLocationCode() : this.locationCode;
         this.useYn = requestDto.getUseYn() != null ? requestDto.getUseYn() : this.useYn;
+        this.modifiedBy = user.getId();
     }
 
     public void delete(Long deletedBy) {

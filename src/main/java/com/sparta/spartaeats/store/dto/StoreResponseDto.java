@@ -12,12 +12,12 @@ import java.util.UUID;
 @Builder
 public class StoreResponseDto {
     private UUID storeId;
-    private User owner;
+    private Long userIdx;
     private String storeName;
     private String storeContact;
     private String storeAddress;
     private UUID storeCategoryId;
-    private String useYn;
+    private Character useYn;
 
     private LocalDateTime createdAt;
     private Long createdBy;

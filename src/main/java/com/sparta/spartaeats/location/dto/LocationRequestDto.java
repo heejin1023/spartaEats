@@ -12,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class LocationRequestDto {
     private UUID locationId;
+    private Integer locationCode;
     private String locationName;
     private Character useYn;
     private Character delYn;

@@ -87,7 +87,7 @@ public class OrderService {
         ArrayList<OrderProduct> list = new ArrayList<>();
         for (OrderProductDto orderProductDto : orderProducts) {
             Product findProduct = productRepository.findByIdWithDel(orderProductDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("Product not found"));
-            if (findProduct.getDelYn() == "Y") {
+            if (findProduct.getDelYn() == 'Y') {
                 log.error("Order.getOrderProductList findProduct is Invalid");
                 throw new DeletedProductException("판매 중지 된 상품이 존재합니다, 상품명 : " + findProduct.getProductName());
             }

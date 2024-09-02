@@ -30,21 +30,20 @@ public class StoreCategoryService {
                 .id(UUID.randomUUID())
                 .categoryName(storeCategoryRequestDto.getCategoryName())
                 .categoryDescription(storeCategoryRequestDto.getCategoryDescription())
-                .delYn("N")
-                .useYn("Y")
+                .delYn('N')
+                .useYn('Y')
                 .build();
-        System.out.println(storeCategory);
         StoreCategory storeResponse = storeCategoryRepository.save(storeCategory);
-        System.out.println(storeResponse);
+
         ApiResult apiResult = new ApiResult();
-        apiResult.set(ApiResultError.NO_ERROR, "카테고리 등록 성공").setResultData(storeResponse);
+        apiResult.set(ApiResultError.NO_ERROR, "카테고리 등록 성공");
         return apiResult;
     }
 
     //카테고리 정보 수정
     public ApiResult updateStoreCategory(UUID store_category_id, StoreCategoryRequestDto storeCategoryRequestDto){
 
-        StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(store_category_id, "N")
+        StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(store_category_id, 'N')
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
 
         if(storeCategoryRequestDto.getCategoryName() != null){
@@ -56,20 +55,19 @@ public class StoreCategoryService {
         if(storeCategoryRequestDto.getUseYn() != null){
             storeCategory.setUseYn(storeCategoryRequestDto.getUseYn());
         }
-
         storeCategoryRepository.save(storeCategory);
-
         ApiResult apiResult = new ApiResult();
         apiResult.set(ApiResultError.NO_ERROR, "카테고리 정보 수정 성공");
         return apiResult;
     }
 
     //카테고리 삭제
-    public ApiResult deleteStoreCategory(UUID store_category_id) {
-        StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(store_category_id, "N")
+    public ApiResult deleteStoreCategory(Long loginUserIdx, UUID store_category_id) {
+        StoreCategory storeCategory = storeCategoryRepository.findByIdAndDelYn(store_category_id, 'N')
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
-        storeCategory.setDelYn("Y");
+        storeCategory.setDelYn('Y');
         storeCategory.setDeletedAt(LocalDateTime.now());
+        storeCategory.setDeletedBy(loginUserIdx);
         storeCategoryRepository.save(storeCategory);
         ApiResult apiResult = new ApiResult();
         apiResult.set(ApiResultError.NO_ERROR, "카테고리 삭제 성공");

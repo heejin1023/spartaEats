@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface StoreCategoryRepository extends JpaRepository<StoreCategory, UUID>, JpaSpecificationExecutor<StoreCategory> {
     Optional<StoreCategory> findById(UUID categoryId);
-    Optional<StoreCategory> findByIdAndDelYn(UUID storeId, String delYn);
+    Optional<StoreCategory> findByIdAndDelYn(UUID storeId, Character delYn);
 
 }

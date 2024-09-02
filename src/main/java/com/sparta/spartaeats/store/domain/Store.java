@@ -46,8 +46,8 @@ public class Store extends TimeStamped {
     @OneToMany(mappedBy = "store")
     private List<Order> orderList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "store")
-    private List<Product> productList = new ArrayList<>();
+//    @OneToMany(mappedBy = "store", cascade = CascadeType.REMOVE, orphanRemoval = true)
+//    private List<Product> productList = new ArrayList<>();
 
     @Column(name = "store_name", length = 200, nullable = false)
     private String storeName;
@@ -58,13 +58,11 @@ public class Store extends TimeStamped {
     @Column(name = "store_address", length = 200, nullable = false)
     private String storeAddress;
 
-    @ColumnDefault("'Y'")
     @Column(name = "use_yn", length = 1, nullable = false)
-    private String useYn;
+    private Character useYn;
 
-    @ColumnDefault("'N'")
     @Column(name = "del_yn", length = 1, nullable = false)
-    private String delYn;
+    private Character delYn;
 
 //    public void update(UUID store_id, StoreRequestDto storeRequestDto) {
 //        this.id = store_id;
