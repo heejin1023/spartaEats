@@ -37,4 +37,6 @@ public class AiArchive extends TimeStamped {
     @Column(name = "del_yn", length = 1, nullable = false)
     private Character delYn;
 
+
+
 }

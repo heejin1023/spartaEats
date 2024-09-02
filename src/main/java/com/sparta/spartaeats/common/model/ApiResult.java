@@ -123,7 +123,24 @@ public class ApiResult extends HashMap<String, Object>{
         return this;
     }
 
+//
+//    public ApiResult setPageInfo(Page<?> data) {
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        if(super.get(AR_KEY_RESULT_DATA) != null) {
+//            map = (HashMap<String, Object>) super.get(AR_KEY_RESULT_DATA);
+//        }
+//        PageInfo pi = new PageInfo(data);
+//        map.put(AR_KEY_PAGEINFO, pi);
+//
+//        super.put(AR_KEY_PAGEINFO);
+//        return this;
+//    }
 
+    public PageInfo getPageInfo() {
+        return (PageInfo)super.get(AR_KEY_PAGEINFO);
+    }
+
+    @SuppressWarnings("unchecked")
     public ApiResult setPageInfo(Page<?> data) {
         Map<String, Object> map = new HashMap<String, Object>();
         if(super.get(AR_KEY_RESULT_DATA) != null) {
