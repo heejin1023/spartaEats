@@ -242,7 +242,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         categoryEq(cond.getCategory()),
                         userNameEq(cond.getUsername()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        order.delYn.eq('N')
+                        order.delYn.eq('N').or(order.delYn.eq('n'))
                 )
                 .orderBy(orderSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .fetch();
