@@ -62,10 +62,10 @@ JAVA 버전 : 17
 
 **실행 방법**
 
-git clone repository-url
-chmod +x gradlew
-./gradlew build
-./gradlew run
+git clone repository-url  
+chmod +x gradlew  
+./gradlew build  
+./gradlew run  
 서비스 실행 방법은 아래 6. API DOCS 파일 참고
 
 ```
