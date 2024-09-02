@@ -10,6 +10,6 @@ public class StoreCategorySearchRequestDto {
     @JsonProperty("category_name")
     private String categoryName;
     @JsonProperty("use_yn")
-    private String useYn;
+    private Character useYn;
 
 }

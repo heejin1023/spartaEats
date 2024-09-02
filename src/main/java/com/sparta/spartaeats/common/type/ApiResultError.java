@@ -10,7 +10,7 @@ public enum ApiResultError {
     LOGIN_ERR_NOT_MATCH_PASSWD	("1401"	, "사용자 아이디 혹은 비밀번호가 틀렸습니다."),
     LOGIN_ERR_NOT_USED_USER 	("1405"	, "사용 할 수 없는 계정 입니다."),
     LOGIN_ERR_REQUIRED			("1500"	, "로그인이 필요합니다"),
-
+    PRODUCT_NO_STORE_ERROR      ("2603", "STORE_ID를 찾을 수 없습니다."),
     STORE_NO_OWNER              ("3603", "음식점 OWNER ID를 찾을 수 없습니다."),
 
     ERROR_INVALID_LOGIN			("9201" , "로그인정보가 유효하지 않습니다."),

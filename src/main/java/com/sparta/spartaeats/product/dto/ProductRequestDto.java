@@ -18,8 +18,6 @@ import java.util.UUID;
 @Getter
 public class ProductRequestDto {
 
-    @NotNull(groups = {ValidProduct001.class},
-            message = "store_id를 입력해 주세요.")
     @JsonProperty("store_id")
     private UUID storeId;
 
@@ -39,9 +37,6 @@ public class ProductRequestDto {
     @JsonProperty("product_description")
     private String productDescription;
 
-    @Pattern(regexp = "^(Y|N)$",
-            groups = {ValidProduct002.class},
-            message = "Y 또는 N 으로 입력하세요.")
     @JsonProperty("use_yn")
-    private String useYn;
+    private Character useYn;
 }

@@ -12,9 +12,9 @@ import java.util.UUID;
 
 
 @Entity
-@Data
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "p_store_category")
@@ -31,13 +31,11 @@ public class StoreCategory extends TimeStamped {
     @Column(name = "category_description", length = 200)
     private String categoryDescription;
 
-    @ColumnDefault("'Y'")
     @Column(name = "use_yn", nullable = false, length = 1)
-    private String useYn;
+    private Character useYn;
 
-    @ColumnDefault("'N'")
     @Column(name = "del_yn", nullable = false, length = 1)
-    private String delYn;
+    private Character delYn;
 
     // 연관 관계: Store (1:N)
     @OneToMany(mappedBy = "storeCategory")

@@ -16,5 +16,5 @@ public class ProductResponseDto {
     private String productName;
     private Integer price;
     private String productDescription;
-    private String use_yn;
+    private Character use_yn;
 }

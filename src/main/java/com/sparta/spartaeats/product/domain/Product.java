@@ -35,11 +35,9 @@ public class Product extends TimeStamped {
     @Column(name = "product_description", length = 1000)
     private String productDescription;
 
-    @ColumnDefault("'Y'")
     @Column(name = "use_yn", length = 1)
-    private String useYn;
+    private Character useYn;
 
-    @ColumnDefault("'N'")
     @Column(name = "del_yn", length = 1, nullable = false)
-    private String delYn;
+    private Character delYn;
 }

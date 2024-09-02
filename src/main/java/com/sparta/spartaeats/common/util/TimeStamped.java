@@ -32,7 +32,6 @@ public abstract class TimeStamped {
     private LocalDateTime modifiedAt;
 
     @LastModifiedBy
-    @Column(updatable = false)
     private Long modifiedBy;
 
     @Temporal(TemporalType.TIMESTAMP)

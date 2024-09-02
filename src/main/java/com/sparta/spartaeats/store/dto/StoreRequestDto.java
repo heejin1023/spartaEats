@@ -32,5 +32,5 @@ public class StoreRequestDto {
     @JsonProperty("location_id")
     private UUID locationId;
     @JsonProperty("use_yn")
-    private String useYn;
+    private Character useYn;
 }

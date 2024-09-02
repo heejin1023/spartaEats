@@ -15,8 +15,8 @@ public class StoreCategoryResponseDto {
     private UUID id;
     private String categoryName;
     private String categoryDescription;
-    private String useYn;
-    private String delYn;
+    private Character useYn;
+    private Character delYn;
     private LocalDateTime createdAt;
     private Long createdBy;
     private LocalDateTime modifiedAt;

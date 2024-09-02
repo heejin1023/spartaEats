@@ -12,5 +12,5 @@ public class ProductSearchRequestDto {
     @JsonProperty("store_name")
     private String storeName;
     @JsonProperty("use_yn")
-    private String useYn;
+    private Character useYn;
 }
