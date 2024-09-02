@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public interface AiArchiveRepository extends JpaRepository<AiArchive, UUID> {
@@ -24,14 +25,14 @@ public interface AiArchiveRepository extends JpaRepository<AiArchive, UUID> {
             "LEFT JOIN a.product p " +
             "LEFT JOIN User u ON a.createdBy = u.id " +
             "WHERE (:productName IS NULL OR p.productName LIKE %:productName%) " +
-            "AND (:userName IS NULL OR u.userName LIKE %:userName%) ")
-
-
+            "AND (:userName IS NULL OR u.userName LIKE %:userName%) " +
+            "AND (CAST(a.createdAt AS DATE) >= COALESCE(:startDate, CAST('2000-01-01' AS DATE))) " +
+            "AND (CAST(a.createdAt AS DATE) <= COALESCE(:endDate, CAST('9999-12-31' AS DATE)))")
     Page<AiArchiveResponseDto> searchWithJoinAndLike(
             @Param("productName") String productName,
             @Param("userName") String userName,
-//            @Param("startDate") LocalDateTime startDate,
-//            @Param("endDate") LocalDateTime endDate,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
             Pageable pageable);
 
 

@@ -19,6 +19,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Slf4j
@@ -107,9 +108,11 @@ public class AiArchiveService {
     public Page<AiArchiveResponseDto> getAiArchiveList(AiArchiveSearchCondition sc, Pageable pageable) {
         String productName = sc.getProductName();
         String userName = sc.getUserName();
+        LocalDate startDate = sc.getStartDate();
+        LocalDate endDate = sc.getEndDate();
 
         return aiArchiveRepository.searchWithJoinAndLike(
-                productName, userName, pageable);
+                productName, userName, startDate, endDate, pageable);
     }
 
     private AiArchiveResponseDto convertToResponseDto(AiArchive aiArchive) {
