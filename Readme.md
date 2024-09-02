@@ -45,9 +45,12 @@
 ---
 ## 3. 팀원 및 역할
 
-곽솔래: Location API CRUD
-박기도: 공통(Auditing, ResponseDto), Order API CRUD, Payment CRUD
-유희진: 공통(ApiLogging, Config, Exception, Jwt, model, type), User API CRUD, AI API CRD
+곽솔래: Location API CRUD  
+
+박기도: 공통(Auditing, ResponseDto), Order API CRUD, Payment CRUD   
+
+유희진: 공통(ApiLogging, Config, Exception, Jwt, model, type), User API CRUD, AI API CRD  
+
 임예이: Store API CRUD, StoreCategory API CRUD, Product API CRUD
 
 ---
