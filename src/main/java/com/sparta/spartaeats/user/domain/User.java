@@ -37,8 +37,8 @@ public class User extends TimeStamped {
     //@OneToMany(mappedBy = "user")
     //private List<Order> orderList = new ArrayList<>();
 
-    private String delYn;
-    private String useYn;
+    private Character delYn;
+    private Character useYn;
     private LocalDateTime joinDate;
 
 
@@ -48,8 +48,8 @@ public class User extends TimeStamped {
         this.password = loginRequestDto.getPassword();
         this.userName = loginRequestDto.getUserName();
         this.userEmail = loginRequestDto.getUserEmail();
-        this.delYn = "N";
-        this.useYn = "Y";
+        this.delYn = 'N';
+        this.useYn = 'Y';
         this.userRole = UserRoleEnum.valueOf(loginRequestDto.getUserRole());
     }
 }
