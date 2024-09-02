@@ -79,7 +79,7 @@ public class LocationController extends CustomApiController {
     public ApiResult getAllLocations(
             @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-            @RequestParam(value = "useYn", required = false) Character useYn,
+            @RequestParam(value = "useYn", defaultValue = "Y") Character useYn,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy, // 추가된 부분
             @RequestParam(value = "isAsc", defaultValue = "true") boolean isAsc, // 추가된 부분
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
