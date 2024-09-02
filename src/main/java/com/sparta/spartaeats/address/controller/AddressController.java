@@ -64,7 +64,7 @@ public class AddressController extends CustomApiController {
 
     // 배송지 삭제
     @ApiLogging
-    @PatchMapping("/{addressId}/delete")
+    @PatchMapping("/delete/{addressId}")
     public ApiResult deleteAddress(@PathVariable UUID addressId,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -101,6 +101,9 @@ public class AddressController extends CustomApiController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
             pageSize = 10;
+        }
+        if (!sortBy.equals("createdAt") && !sortBy.equals("modifiedAt")) {
+            sortBy = "createdAt";
         }
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
