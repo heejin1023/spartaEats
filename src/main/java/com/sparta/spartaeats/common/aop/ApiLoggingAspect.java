@@ -10,6 +10,7 @@ import com.sparta.spartaeats.apiLog.service.ApiLogService;
 import com.sparta.spartaeats.common.security.UserDetailsImpl;
 import com.sparta.spartaeats.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -17,10 +18,10 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -39,8 +40,9 @@ public class ApiLoggingAspect {
     private final ApiLogService apiLogService;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    private HttpServletRequest request;
+    private final HttpServletRequest request;
+
+    private final HttpServletResponse response;
 
     @Around("@annotation(apiLogging)")
     public Object logAround(ProceedingJoinPoint joinPoint, ApiLogging apiLogging) throws Throwable {
@@ -69,24 +71,25 @@ public class ApiLoggingAspect {
         String methodName = ((MethodSignature) signature).getMethod().getName();
         log.setApiName(methodName);
 
-
-        // Request Body 추출 로직
+        // Request Body 및 PathVariable 추출 로직
         Object[] args = joinPoint.getArgs();
-        for (Object arg : args) {
-            if (arg != null) {
-                // @RequestBody 어노테이션이 붙은 파라미터 찾기
-                Parameter[] parameters = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameters();
-                for (int i = 0; i < parameters.length; i++) {
-                    if (parameters[i].isAnnotationPresent(RequestBody.class)) {
-                        try {
-                            // RequestBody 객체를 JSON 문자열로 변환
-                            log.setRequestBody(objectMapper.writeValueAsString(args[i]));
-                        } catch (JsonProcessingException e) {
-                            log.setRequestBody("Error processing request body: " + e.getMessage());
-                        }
-                        break;
-                    }
+        Parameter[] parameters = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameters();
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+            if (parameter.isAnnotationPresent(RequestBody.class)) {
+                try {
+                    // @RequestBody 객체를 JSON 문자열로 변환
+                    log.setRequestBody(objectMapper.writeValueAsString(args[i]));
+                } catch (JsonProcessingException e) {
+                    log.setRequestBody("Error processing request body: " + e.getMessage());
                 }
+            } else if (parameter.isAnnotationPresent(PathVariable.class)) {
+                // @PathVariable 처리
+                PathVariable pathVariable = parameter.getAnnotation(PathVariable.class);
+                String pathVariableName = pathVariable.value();
+                // PathVariable을 URL에서 추출 (단, URL을 직접 파싱하는 방법이 필요할 수 있음)
+                // 경로 변수에 대한 값을 요청 매핑에서 추출하여 추가
+                log.setRequestBody(log.getRequestBody() + " PathVariable - " + pathVariableName + ": " + args[i]);
             }
         }
 
@@ -111,15 +114,12 @@ public class ApiLoggingAspect {
 
         // 메서드 실행 후 로깅
         log.setResponseBody(result != null ? result.toString() : "No response");
-
+        log.setResponseCode(String.valueOf(response.getStatus()));
         apiLogService.createLog(log);
         ApiLogContext.clear(); // Clear the context after logging
 
         return result;
     }
-
-
-
 
     private String getRequestPayload(HttpServletRequest request) {
         StringBuilder payload = new StringBuilder();
@@ -146,50 +146,6 @@ public class ApiLoggingAspect {
                 } catch (UnsupportedEncodingException | JsonProcessingException e) {
                     log.error("Error processing request payload", e);
                 }
-            }
-        }
-
-        // 요청 파라미터 읽기
-        StringBuilder params = new StringBuilder();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            String key = entry.getKey();
-            String[] values = entry.getValue();
-            if (values != null && values.length > 0) {
-                params.append(key).append("=").append(String.join(",", values)).append("&");
-            }
-        }
-        if (params.length() > 0) {
-            params.setLength(params.length() - 1); // 마지막 '&' 제거
-            payload.append(" RequestParams: ").append(params.toString());
-        }
-
-        return payload.toString();
-    }
-
-
-    private String getRequestPayload(ContentCachingRequestWrapper request) {
-        StringBuilder payload = new StringBuilder();
-
-        // 요청 본문 읽기
-        byte[] body = request.getContentAsByteArray();
-        if (body.length > 0) {
-            try {
-                String encoding = request.getCharacterEncoding();
-                if (encoding == null) {
-                    encoding = "UTF-8"; // 기본 문자 인코딩
-                }
-                String requestBody = new String(body, encoding);
-
-                // JSON 객체로 변환 및 빈 필드 필터링
-                JsonNode rootNode = objectMapper.readTree(requestBody);
-                JsonNode filteredNode = filterEmptyFields(rootNode);
-
-                // 필터링된 JSON 문자열로 변환
-                payload.append(objectMapper.writeValueAsString(filteredNode));
-
-            } catch (UnsupportedEncodingException | JsonProcessingException e) {
-                log.error("Error processing request payload", e);
             }
         }
 
@@ -244,24 +200,6 @@ public class ApiLoggingAspect {
         }
         return node;
     }
-
-    private boolean isEmpty(JsonNode node) {
-        if (node == null || node.isNull()) {
-            return true;
-        }
-        if (node.isTextual() && node.asText().isEmpty()) {
-            return true;
-        }
-        if (node.isObject() && !node.fields().hasNext()) {
-            return true;
-        }
-        if (node.isArray() && node.size() == 0) {
-            return true;
-        }
-        return false;
-    }
-
-
 
     public static class ApiLogContext {
         private static final ThreadLocal<ApiLog> apiLogThreadLocal = new ThreadLocal<>();

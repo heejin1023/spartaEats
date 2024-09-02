@@ -14,8 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -33,7 +36,6 @@ public class ApiLogController extends CustomApiController {
     @ApiLogging
     @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     @GetMapping
-    @RequestMapping
     public ApiResult getApiLogList(ApiLogSearchCondition sc) {
         ApiResult apiResult = new ApiResult();
 
@@ -46,4 +48,30 @@ public class ApiLogController extends CustomApiController {
         }
         return apiResult;
     }
+
+    /**
+     * API LOG 상세
+     * @param apiId
+     * @return
+     */
+    @ApiLogging
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
+    @GetMapping("/{api_id}")
+    public ApiResult getApiLog(@PathVariable("api_id") UUID apiId) {
+        ApiResult apiResult = new ApiResult();
+
+        if (apiId == null) {
+            apiResult.set(ApiResultError.ERROR_INVALID_ARGUMENT);
+        }
+
+        ApiLog apiLog = apiLogService.getApiLogById(apiId);
+
+        if(apiLog != null){
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(apiLog);
+        }
+
+        return apiResult;
+    }
+
+
 }

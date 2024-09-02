@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,10 @@ public class ApiLogService {
         LocalDate endDate = sc.getEndDate();
 
         return apiLogRepository.getApiLogList(startDate, endDate, pageable);
+    }
+
+    public ApiLog getApiLogById(UUID apiId) {
+        return apiLogRepository.findById(apiId).orElse(null);
     }
 
 
