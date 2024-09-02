@@ -47,7 +47,6 @@
 
 - 곽솔래
   - Location API CRUD
-  - Location API CRUD
   - Address API CRUD
   - ERD
 
