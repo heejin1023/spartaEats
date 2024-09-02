@@ -21,5 +21,5 @@ public class StoreCategoryRequestDto {
     private String categoryDescription;
 
     @JsonProperty("use_yn")
-    private String useYn;
+    private Character useYn;
 }

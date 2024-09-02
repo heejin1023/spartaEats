@@ -9,6 +9,7 @@ import com.sparta.spartaeats.product.dto.ProductRequestDto;
 import com.sparta.spartaeats.product.dto.ProductResponseDto;
 import com.sparta.spartaeats.product.dto.ProductSearchRequestDto;
 import com.sparta.spartaeats.store.domain.Store;
+import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,8 +35,8 @@ public class ProductService {
                 .productName(productRequestDto.getProductName())
                 .price(productRequestDto.getPrice())
                 .productDescription(productRequestDto.getProductDescription())
-                .delYn("N")
-                .useYn("Y")
+                .delYn('N')
+                .useYn('Y')
                 .build();
         productRepository.save(product);
         ApiResult apiResult = new ApiResult();
@@ -66,10 +67,11 @@ public class ProductService {
     }
 
     // 상품 삭제
-    public ApiResult deleteProduct(UUID productId) {
+    public ApiResult deleteProduct(Long loginUserIdx, UUID productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 음식점을 찾을 수 없습니다."));
-        product.setDelYn("Y");
+        product.setDelYn('Y');
+        product.setDeletedBy(loginUserIdx);
         productRepository.save(product);
         ApiResult apiResult = new ApiResult();
         apiResult.set(ApiResultError.NO_ERROR, "상품 삭제 성공");

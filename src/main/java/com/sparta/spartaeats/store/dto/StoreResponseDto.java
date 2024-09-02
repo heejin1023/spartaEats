@@ -17,7 +17,7 @@ public class StoreResponseDto {
     private String storeContact;
     private String storeAddress;
     private UUID storeCategoryId;
-    private String useYn;
+    private Character useYn;
 
     private LocalDateTime createdAt;
     private Long createdBy;
