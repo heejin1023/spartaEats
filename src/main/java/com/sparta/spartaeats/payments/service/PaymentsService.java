@@ -37,23 +37,30 @@ public class PaymentsService {
     private final StoreRepository storeRepository;
 
     public SingleResponseDto<PaymentResponseDto> pay(PayRequestDto payRequestDto) {
-          Order order = orderRepository.findById(payRequestDto.getOrderId()).orElseThrow(
-                () -> new IllegalArgumentException("order Not Found with orderId : " + payRequestDto.getOrderId()));
-        if (order.getOrderPrice() <= 0) {
-            throw new IllegalArgumentException("결제 금액이 0원입니다. orderId : " + payRequestDto.getOrderId());
-        }
+        try {
+            Order order = orderRepository.findById(payRequestDto.getOrderId()).orElseThrow(
+                  () -> new IllegalArgumentException("order Not Found with orderId : " + payRequestDto.getOrderId()));
+            if (order.getOrderPrice() <= 0) {
+                throw new IllegalArgumentException("결제 금액이 0원입니다. orderId : " + payRequestDto.getOrderId());
+            }
 
-        if (order.getOrderStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("이미 결제 완료된 주문입니다. orderId : " + payRequestDto.getOrderId());
-        }
+            if (order.getOrderStatus() != OrderStatus.PENDING) {
+                throw new IllegalStateException("이미 결제 완료된 주문입니다. orderId : " + payRequestDto.getOrderId());
+            }
             Payment payment = new Payment(order, order.getOrderPrice(), PaymentStatus.APPROVED, null, null, 'N', payRequestDto.getPgType() );
             paymentsRepository.save(payment);
             order.changeOrderStatus(order.getId(), OrderStatus.PREPARING);
             PaymentResponseDto paymentResponseDto = getPaymentResponseDto(payment);
             return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제가 완료되었습니다", paymentResponseDto);
+        } catch (IllegalArgumentException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage(), null);
+        } catch (IllegalStateException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_STATE, e.getMessage(), null);
+        }
     }
 
     public SingleResponseDto<PaymentUpdateResponseDto> updatePayment(UUID paymentId, PayUpdateRequestDto requestDto) {
+        try {
             Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
             if (payment.getPaymentStatus() == PaymentStatus.APPROVED) {
                 throw new IllegalStateException("이미 결제 완료되었습니다.");
@@ -67,22 +74,37 @@ public class PaymentsService {
             PaymentUpdateResponseDto responseDto = new PaymentUpdateResponseDto(paymentId, payment.getPaymentStatus());
 
             return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 상태 업데이트 완료", responseDto);
+        } catch (IllegalArgumentException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage(), null);
+        } catch (IllegalStateException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_STATE, e.getMessage(), null);
+        }
     }
 
     public SimpleResponseDto deletePayment(UUID paymentId) {
+        try {
             Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
             if (payment.getDelYn() == 'Y') {
                 throw new IllegalStateException("이미 삭제된 결제입니다");
             }
             payment.deletePayment();
             return new SimpleResponseDto(ApiResultError.NO_ERROR, "결제 내역이 삭제되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return new SimpleResponseDto(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage());
+        } catch (IllegalStateException e) {
+            return new SimpleResponseDto(ApiResultError.ERROR_INVALID_STATE, e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
     public SingleResponseDto<?> getOnePaymentResult(UUID paymentId, User user) {
-        Long userId = user.getId();
-        Payment payment = paymentsRepository.findByIdWithDelWithUser(paymentId,userId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
-        return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
+        try {
+            Long userId = user.getId();
+            Payment payment = paymentsRepository.findByIdWithDelWithUser(paymentId,userId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
+            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
+        } catch (IllegalArgumentException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage(), null);
+        }
     }
 
     @Transactional(readOnly = true)
