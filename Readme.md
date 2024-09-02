@@ -60,7 +60,7 @@ JAVA 버전 : 17
 스프링부트 버전 : 3.3.3  
 설정 파일 : application.yml  
 
-실행 방법
+**실행 방법**
 
 git clone repository-url
 chmod +x gradlew
