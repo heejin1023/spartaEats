@@ -104,16 +104,17 @@ public class StoreController extends CustomApiController {
     @GetMapping
     @ApiLogging
     public ApiResult getStores(@RequestParam(value = "store_name", required = false) String storeName,
-                               @RequestParam(value = "location_id", required = false) String locationId,
+                               @RequestParam(value = "location_id", required = false) UUID locationId,
                                @RequestParam(value = "store_address", required = false) String storeAddress,
-                               @RequestParam(value = "category_id", required = false) String categoryId,
+                               @RequestParam(value = "category_id", required = false) UUID categoryId,
                                @RequestParam(value = "use_yn", required = false) Character useYn,
+                               @RequestParam(value = "del_yn", required = false) Character delYn,
                                @RequestParam(value = "page", defaultValue = "1") int page,
                                @RequestParam(value = "size", defaultValue = "10") int size,
                                @RequestParam(value = "sort", defaultValue = "createdAt") String sort,
                                @RequestParam(value = "direction", defaultValue = "desc") String direction) {
 
-        StoreSearchRequestDto searchRequestDto = new StoreSearchRequestDto(storeName, locationId, storeAddress, categoryId, useYn);
+        StoreSearchRequestDto searchRequestDto = new StoreSearchRequestDto(storeName, locationId, storeAddress, categoryId, useYn, delYn);
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sortOption = Sort.by(sortDirection, sort);
         // size가 10, 20, 30이 아닌 경우 10으로 조정
