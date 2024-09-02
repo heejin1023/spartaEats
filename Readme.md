@@ -46,18 +46,25 @@
 ---
 ## 3. 팀원 및 역할
 
-- 유희진
-  - 
-- 곽솔래
-  - 
-- 임예이
-  - 
-- 박기도
-  - 
+곽솔래: Location API CRUD
+박기도: 공통(Auditing, ResponseDto), Order API CRUD, Payment CRUD
+유희진: 공통(ApiLogging, Config, Exception, Jwt, model, type), User API CRUD, AI API CRD
+임예이: Store API CRUD, StoreCategory API CRUD, Product API CRUD
 
 ---
 
 ## 4. 서비스 구성 및 실행 방법
+JAVA 버전 : 17
+스프링부트 버전 : 3.3.3
+설정 파일 : application.yml
+
+실행 방법
+
+git clone repository-url
+chmod +x gradlew
+./gradlew build
+./gradlew run
+서비스 실행 방법은 아래 6. API DOCS 파일 참고
 
 
 ## 5. ERD
