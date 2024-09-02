@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,12 +16,14 @@ public class StoreSearchRequestDto {
     @JsonProperty("store_name")
     private String storeName;
     @JsonProperty("location_id")
-    private String locationId;
+    private UUID locationId;
     @JsonProperty("store_address")
     private String storeAddress;
     @JsonProperty("category_id")
-    private String categoryId;
+    private UUID categoryId;
     @JsonProperty("use_yn")
     private Character useYn;
+    @JsonProperty("del_yn")
+    private Character delYn;
 
 }

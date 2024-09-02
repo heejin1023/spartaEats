@@ -42,11 +42,11 @@ public class User extends TimeStamped {
     @Column
     private UserRoleEnum userRole;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Delivery> deliveryList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Order> orderList = new ArrayList<>();
+    //@OneToMany(mappedBy = "user")
+    //private List<Delivery> deliveryList = new ArrayList<>();
+
+    //@OneToMany(mappedBy = "user")
+    //private List<Order> orderList = new ArrayList<>();
 
     @Column
     private Character delYn;
