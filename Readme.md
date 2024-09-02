@@ -25,7 +25,7 @@
 ### Detail
 - Spring Boot : 3.3.3
 - JAVA : 17
-- Hibernate
+- Hibernate 6
 
 
 
