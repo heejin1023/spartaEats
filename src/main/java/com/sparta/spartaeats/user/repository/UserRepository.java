@@ -22,4 +22,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
                            @Param("userEmail") String userEmail,
                            Pageable pageable);
 
+    User findByUserEmail(String email);
 }

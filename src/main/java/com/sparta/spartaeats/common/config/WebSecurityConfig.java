@@ -4,6 +4,8 @@ import com.sparta.spartaeats.common.jwt.JwtAuthenticationFilter;
 import com.sparta.spartaeats.common.jwt.JwtAuthorizationFilter;
 import com.sparta.spartaeats.common.jwt.JwtUtil;
 import com.sparta.spartaeats.common.security.UserDetailsServiceImpl;
+import com.sparta.spartaeats.token.service.TokenBlackListService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -31,11 +32,15 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final TokenBlackListService tokenBlackListService;;
 
-    public WebSecurityConfig(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, AuthenticationConfiguration authenticationConfiguration) {
+    public WebSecurityConfig(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService
+            , AuthenticationConfiguration authenticationConfiguration
+            , TokenBlackListService tokenBlackListService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.authenticationConfiguration = authenticationConfiguration;
+        this.tokenBlackListService = tokenBlackListService;
     }
 
     @Bean
@@ -52,7 +57,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, tokenBlackListService);
     }
 
     @Bean

@@ -5,10 +5,12 @@ import com.sparta.spartaeats.common.exception.UserException;
 import com.sparta.spartaeats.common.jwt.JwtUtil;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.common.type.UserRoleEnum;
+import com.sparta.spartaeats.token.service.TokenBlackListService;
 import com.sparta.spartaeats.user.domain.User;
 import com.sparta.spartaeats.user.domain.dto.UserRequestDto;
 import com.sparta.spartaeats.user.domain.dto.UserSearchCondition;
 import com.sparta.spartaeats.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,32 +28,30 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TokenBlackListService tokenBlackListService;
 
 
-    public User signup(UserRequestDto loginUserInfo) {
-        String userId = loginUserInfo.getUserId();
-        String password = passwordEncoder.encode(loginUserInfo.getPassword());
-        loginUserInfo.setPassword(password);
-        // TODO: 회원 중복 확인
-//        Optional<User> checkUsername = userRepository.findByUserId(userId);
-//        if (checkUsername.isPresent()) {
-//            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-//        }
+    public User signup(UserRequestDto userInfo) throws UserException{
+        String userId = userInfo.getUserId();
+        String password = passwordEncoder.encode(userInfo.getPassword());
+        userInfo.setPassword(password);
+
+        // 회원 중복 확인
+        User checkUserId = userRepository.findByUserId(userId);
+        if(checkUserId != null){
+            throw new UserException(ApiResultError.USER_ID_EXIST);
+        }
 
         // email 중복확인
-//        String email = requestDto.getEmail();
-//        Optional<User> checkEmail = userRepository.findByEmail(email);
-//        if (checkEmail.isPresent()) {
-//            throw new IllegalArgumentException("중복된 Email 입니다.");
-//        }
-        // TODO 권한 확인 후 가입 방법이 달라야 하는지
-        // 사용자 ROLE 확인
-        UserRoleEnum role = UserRoleEnum.USER;
-
+        String email = userInfo.getUserEmail();
+        User checkEmail = userRepository.findByUserEmail(email);
+        if (checkEmail != null) {
+            throw new UserException(ApiResultError.USER_EMAIL_EXIST);
+        }
 
         // 사용자 등록
         User user = User.SignUpUserInfoBuilder()
-                .loginRequestDto(loginUserInfo)
+                .loginRequestDto(userInfo)
                 .build();
         return userRepository.save(user);
     }
@@ -75,6 +75,8 @@ public class UserService {
         if(user.getUseYn() == 'N') {{
             throw new UserException(ApiResultError.LOGIN_ERR_NOT_USED_USER);
         }}
+
+        String token = jwtUtil.createToken(userId, user.getUserRole());
 
         return user;
 
@@ -164,11 +166,6 @@ public class UserService {
     }
 
     public Page<User> getUserList(UserSearchCondition sc, Pageable pageable, User loginUser) throws UserException {
-        // 일반 고객의 경우 고객 목록 조회 불가
-//        if(loginUser.getUserRole().equals(UserRoleEnum.USER)) {
-//            throw new UserException(ApiResultError.USER_INFO_ACCESS_DENIED);
-//        }
-
         String userName = sc.getUserName();
         String userContact = sc.getUserContact();
         String userEmail = sc.getUserEmail();
@@ -176,4 +173,13 @@ public class UserService {
         return userRepository.searchUsers(userName, userContact, userEmail, pageable);
 
     }
+
+    public void logout(HttpServletRequest req, User loginUser) {
+        String token = jwtUtil.getJwtFromHeader(req);
+        Long loginUserIdx = loginUser.getId();
+
+        tokenBlackListService.createTokenBlackList(loginUserIdx, token);
+    }
 }
+
+

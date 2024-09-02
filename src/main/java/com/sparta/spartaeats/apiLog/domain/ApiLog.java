@@ -21,13 +21,13 @@ public class ApiLog {
     @GeneratedValue(generator = "uuid2")
     private UUID apiId;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 200)
     private String apiName;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 50)
     private String httpMethod;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 200)
     private String endpoint;
 
     @Column(columnDefinition = "TEXT")
@@ -36,7 +36,7 @@ public class ApiLog {
     @Column(columnDefinition = "TEXT")
     private String responseBody;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 10)
     private String responseCode;
 
     private LocalDateTime createdAt;

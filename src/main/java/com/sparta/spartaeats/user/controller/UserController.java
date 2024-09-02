@@ -14,6 +14,7 @@ import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0001;
 import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0002;
 import com.sparta.spartaeats.user.domain.validationGroup.ValidUser0003;
 import com.sparta.spartaeats.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,6 @@ public class UserController extends CustomApiController {
 
     private final UserService userService;
 
-    private final UserService loginService;
     private final JwtUtil jwtUtil;
 
     /**
@@ -49,14 +49,14 @@ public class UserController extends CustomApiController {
             return bindError(errors, apiResult);
         }
 
-        User user = loginService.signup(loginRequestDto);
-        log.info("Login User {}", user);
-
-        if(user != null) {
+        try {
+            User user = userService.signup(loginRequestDto);
+            log.info("Login User {}", user);
             return apiResult.set(ApiResultError.NO_ERROR);
+        } catch(UserException e) {
+            return apiResult.set(e.getCode());
         }
 
-        return apiResult;
     }
 
     /**
@@ -185,5 +185,23 @@ public class UserController extends CustomApiController {
         } catch (UserException e) {
             return apiResult.set(e.getCode());
         }
+    }
+
+    /**
+     * 로그아웃
+     * @param req
+     * @return
+     */
+    @ApiLogging
+    @GetMapping("/logout")
+    public ApiResult logout(HttpServletRequest req) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+
+        User loginUser = getLoginedUserObject();
+
+        userService.logout(req, loginUser);
+
+        apiResult.set(ApiResultError.NO_ERROR).setResultMessage("로그아웃 되었습니다.");
+        return apiResult;
     }
 }
