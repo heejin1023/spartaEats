@@ -7,7 +7,6 @@
 
 ## :computer: 기술 스택
 ### Platform
-![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 ![IntelliJ](https://img.shields.io/badge/IntelliJ-0078D6.svg?style=for-the-badge&logo=intellijidea&logoColor=#000000)
 ![AWS](https://img.shields.io/badge/AWS-0078D6.svg?style=for-the-badge&logo=amazonwebservices&logoColor=#000000)
 
