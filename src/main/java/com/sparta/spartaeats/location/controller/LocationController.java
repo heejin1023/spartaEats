@@ -83,10 +83,16 @@ public class LocationController extends CustomApiController {
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy, // 추가된 부분
             @RequestParam(value = "isAsc", defaultValue = "true") boolean isAsc, // 추가된 부분
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        // 로그인 체크
+        if (userDetails == null) {
+            return new ApiResult(ApiResultError.LOGIN_ERR_REQUIRED);
+        }
+
         if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
             pageSize = 10;
         }
-        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
         // 정렬 방향 설정
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;

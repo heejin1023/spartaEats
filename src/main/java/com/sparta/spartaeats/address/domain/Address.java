@@ -54,6 +54,9 @@ public class Address extends TimeStamped {
     @Column(name = "created_by", nullable = false, updatable = false)
     private Long createdBy;
 
+    @Column(name = "modified_by")
+    private Long modifiedBy;
+
     private Long deletedBy;
     private LocalDateTime deletedAt;
 
@@ -76,6 +79,7 @@ public class Address extends TimeStamped {
         this.address2 = addressRequestDto.getAddress2() != null ? addressRequestDto.getAddress2() : this.address2;
         this.contact = addressRequestDto.getContact() != null ? addressRequestDto.getContact() : this.contact;
         this.useYn = addressRequestDto.getUseYn() != null ? addressRequestDto.getUseYn() : this.useYn;
+        this.modifiedBy = user.getId();
     }
 
     public void delete(User user) {
