@@ -18,7 +18,6 @@
 - 자동화된 서비스로 불필요한 인력 소모를 줄이는 것이 목적
 - 배달 및 포장 주문 관리
 - AI Open APi를 이용해 상품 설명을 추천 받아 쉽게 작성할 수 있도록 지원
-
 ---
 
 ## 2. 기술 스택
@@ -66,6 +65,112 @@ chmod +x gradlew
 ./gradlew run
 서비스 실행 방법은 아래 6. API DOCS 파일 참고
 
+```
+\---src
++---main
+|   +---java
+|   |   \---com
+|   |       \---sparta
+|   |           \---spartaeats
+|   |               +---address
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               +---ai
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---apiLog
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---auditing
+|   |               +---board
+|   |               +---common
+|   |               |   +---aop
+|   |               |   +---config
+|   |               |   +---controller
+|   |               |   +---dto
+|   |               |   +---exception
+|   |               |   +---interceptor
+|   |               |   +---jwt
+|   |               |   +---model
+|   |               |   +---security
+|   |               |   +---type
+|   |               |   \---util
+|   |               |
+|   |               +---location
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---order
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---payments
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---product
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   |   \---validationGroup
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---responseDto
+|   |               +---store
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   |   \---validationGroup
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---storeCategory
+|   |               |   +---controller
+|   |               |   +---domain
+|   |               |   |   \---validationGroup
+|   |               |   +---dto
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               +---token
+|   |               |   +---domain
+|   |               |   +---repository
+|   |               |   \---service
+|   |               |
+|   |               \---user
+|   |                   +---controller
+|   |                   +---domain
+|   |                   |   +---dto
+|   |                   |   \---validationGroup
+|   |                   +---repository
+|   |                   \---service
+|   |
+|   \---resources
+|           application.yml
+|
+SpartaEatsApplicationTests.java
+```
 
 ## 5. ERD
 
