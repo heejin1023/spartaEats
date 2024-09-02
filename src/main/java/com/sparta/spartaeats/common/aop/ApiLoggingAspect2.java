@@ -1,8 +1,8 @@
 package com.sparta.spartaeats.common.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.spartaeats.common.aop.domain.ApiLogVO;
-import com.sparta.spartaeats.common.aop.service.ApiLogService;
+import com.sparta.spartaeats.apiLog.domain.ApiLog;
+import com.sparta.spartaeats.apiLog.service.ApiLogService;
 import com.sparta.spartaeats.common.security.UserDetailsImpl;
 import com.sparta.spartaeats.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,11 +12,9 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,7 +34,7 @@ public class ApiLoggingAspect2 {
 
     @Around("@annotation(apiLogging)")
     public void logBefore(JoinPoint joinPoint, ApiLogging apiLogging) {
-        ApiLogVO log = new ApiLogVO();
+        ApiLog log = new ApiLog();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -61,7 +59,7 @@ public class ApiLoggingAspect2 {
 
     @AfterReturning(pointcut = "@annotation(apiLogging)", returning = "result")
     public void logAfter(JoinPoint joinPoint, ApiLogging apiLogging, Object result) {
-        ApiLogVO log = ApiLogContext.getLog();
+        ApiLog log = ApiLogContext.getLog();
         if (log != null) {
             log.setResponseBody(result != null ? result.toString() : "No response");
 
@@ -88,13 +86,13 @@ public class ApiLoggingAspect2 {
     }
 
     public static class ApiLogContext {
-        private static final ThreadLocal<ApiLogVO> apiLogThreadLocal = new ThreadLocal<>();
+        private static final ThreadLocal<ApiLog> apiLogThreadLocal = new ThreadLocal<>();
 
-        public static void setLog(ApiLogVO log) {
+        public static void setLog(ApiLog log) {
             apiLogThreadLocal.set(log);
         }
 
-        public static ApiLogVO getLog() {
+        public static ApiLog getLog() {
             return apiLogThreadLocal.get();
         }
 

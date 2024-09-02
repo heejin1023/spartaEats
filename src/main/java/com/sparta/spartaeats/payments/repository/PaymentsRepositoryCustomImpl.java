@@ -1,13 +1,18 @@
 package com.sparta.spartaeats.payments.repository;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.spartaeats.common.exception.EmptyDataException;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.order.domain.QOrder;
 import com.sparta.spartaeats.order.dto.OrderListResponseDto;
 import com.sparta.spartaeats.payments.domain.Payment;
+import com.sparta.spartaeats.payments.domain.QPayment;
 import com.sparta.spartaeats.payments.dto.PaymentResponseDto;
 import com.sparta.spartaeats.payments.dto.PaymentSearchCond;
 import com.sparta.spartaeats.payments.dto.QPaymentResponseDto;
@@ -20,10 +25,12 @@ import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +67,22 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();*/
+        int pageSize = pageable.getPageSize();
+        if (pageSize == 10 || pageSize == 30 || pageSize == 50) {
+            pageSize = 10;
+        }
+        List<OrderSpecifier<?>> paymentSpecifiers = new ArrayList<>();
+        pageable.getSort().forEach(sort -> {
+            OrderSpecifier<?> paymentSpecifier = null;
+            if (sort.getProperty().equalsIgnoreCase("modifiedAt")) {
+                paymentSpecifier = sort.isAscending() ? QPayment.payment.modifiedAt.asc() : QPayment.payment.modifiedAt.desc();
+            } else if (sort.getProperty().equalsIgnoreCase("createdAt")) {
+                paymentSpecifier = sort.isAscending() ? QPayment.payment.createdAt.asc() : QPayment.payment.createdAt.desc();
+            }
+            if (paymentSpecifier != null) {
+                paymentSpecifiers.add(paymentSpecifier);
+            }
+        });
         List<Payment> list = queryFactory
                 .selectFrom(payment)
                 .from(payment)
@@ -69,6 +92,7 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate())
                 )
+                .orderBy(paymentSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -105,18 +129,38 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
     @Override
     public MultiResponseDto<PaymentResponseDto> findPaymentListWithUserRole(Pageable pageable, PaymentSearchCond cond, Long userId) {
+        int pageSize = pageable.getPageSize();
+        if (pageSize == 10 || pageSize == 30 || pageSize == 50) {
+            pageSize = 10;
+        }
+        Pageable requestPage = PageRequest.of(pageable.getPageNumber(),pageSize,pageable.getSort());
+        List<OrderSpecifier<?>> paymentSpecifiers = new ArrayList<>();
+        pageable.getSort().forEach(sort -> {
+            OrderSpecifier<?> paymentSpecifier = null;
+            if (sort.getProperty().equalsIgnoreCase("modifiedAt")) {
+                paymentSpecifier = sort.isAscending() ? QPayment.payment.modifiedAt.asc() : QPayment.payment.modifiedAt.desc();
+            } else if (sort.getProperty().equalsIgnoreCase("createdAt")) {
+                paymentSpecifier = sort.isAscending() ? QPayment.payment.createdAt.asc() : QPayment.payment.createdAt.desc();
+            }
+            if (paymentSpecifier != null) {
+                paymentSpecifiers.add(paymentSpecifier);
+            }
+        });
+
         List<Payment> findPayment = queryFactory
                 .selectFrom(payment)
-                .leftJoin(payment.order, order)
+                .leftJoin(payment.order, QOrder.order)
                 .where(
                         paymentStatusEq(cond.getStatus()),
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.user.id.eq(userId)
+                        payment.order.user.id.eq(userId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .orderBy(paymentSpecifiers.toArray(new OrderSpecifier[0]))
+                .offset(requestPage.getOffset())
+                .limit(requestPage.getPageSize())
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory
@@ -128,7 +172,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.user.id.eq(userId)
+                        payment.order.user.id.eq(userId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 );
 //        Page<PaymentResponseDto> page = PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
@@ -155,6 +200,23 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
 
     @Override
     public MultiResponseDto<PaymentResponseDto> findPaymentListWithOwnerRole(Pageable pageable, PaymentSearchCond cond, UUID storeId) {
+        int pageSize = pageable.getPageSize();
+        if (pageSize == 10 || pageSize == 30 || pageSize == 50) {
+            pageSize = 10;
+        }
+        List<OrderSpecifier<?>> paymentSpecifiers = new ArrayList<>();
+        pageable.getSort().forEach(sort -> {
+            OrderSpecifier<?> paymentSpecifier = null;
+            if (sort.getProperty().equalsIgnoreCase("modifiedAt")) {
+                paymentSpecifier = sort.isAscending() ? QPayment.payment.modifiedAt.asc() : QPayment.payment.modifiedAt.desc();
+            } else if (sort.getProperty().equalsIgnoreCase("createdAt")) {
+                paymentSpecifier = sort.isAscending() ? QPayment.payment.createdAt.asc() : QPayment.payment.createdAt.desc();
+            }
+            if (paymentSpecifier != null) {
+                paymentSpecifiers.add(paymentSpecifier);
+            }
+        });
+
         List<Payment> findPayment = queryFactory
                 .selectFrom(payment)
                 .leftJoin(payment.order, order)
@@ -164,8 +226,10 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.store.id.eq(storeId)
+                        payment.order.store.id.eq(storeId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 )
+                .orderBy(paymentSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -180,7 +244,8 @@ public class PaymentsRepositoryCustomImpl implements PaymentsRepositoryCustom {
                         createdByEq(cond.getCreatedBy()),
                         pgTypeEq(cond.getPgType()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        payment.order.store.id.eq(storeId)
+                        payment.order.store.id.eq(storeId),
+                        payment.delYn.eq('n').or(payment.delYn.eq('N'))
                 );
         List<PaymentResponseDto> content = findPayment.stream()
                 .map(PaymentResponseDto::new).toList();

@@ -92,6 +92,8 @@ public class OrderController extends CustomApiController {
     @ApiLogging
     @DeleteMapping("/{orderId}")
     public ApiResult deleteOrder(@PathVariable UUID orderId) {
+        User user = getLoginedUserObject();
+        Long userId = user.getId();
         SimpleResponseDto responseDto = orderService.deleteOrder(orderId);
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage());
     }

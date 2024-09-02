@@ -10,9 +10,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "p_user")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString
 public class User extends TimeStamped {
 
@@ -21,24 +23,38 @@ public class User extends TimeStamped {
     @Column(name = "user_idx")
     private Long id;
 
+    @Column
     private String userId;
+
+    @Column
     private String password;
+
+    @Column(name = "user_name")
     private String userName;
+
+    @Column(name = "user_contact")
     private String userContact;
+
+    @Column(name = "user_email")
     private String userEmail;
 
     @Enumerated(EnumType.STRING)
     @Column
     private UserRoleEnum userRole;
 
-    //@OneToMany(mappedBy = "user")
-    //private List<Delivery> deliveryList = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")
+//    private List<Delivery> deliveryList = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "user")
+//    private List<Order> orderList = new ArrayList<>();
 
-    //@OneToMany(mappedBy = "user")
-    //private List<Order> orderList = new ArrayList<>();
+    @Column
+    private Character delYn;
 
-    private String delYn;
-    private String useYn;
+    @Column
+    private Character useYn;
+
+    @Column
     private LocalDateTime joinDate;
 
 
@@ -48,8 +64,8 @@ public class User extends TimeStamped {
         this.password = loginRequestDto.getPassword();
         this.userName = loginRequestDto.getUserName();
         this.userEmail = loginRequestDto.getUserEmail();
-        this.delYn = "N";
-        this.useYn = "Y";
+        this.delYn = 'N';
+        this.useYn = 'Y';
         this.userRole = UserRoleEnum.valueOf(loginRequestDto.getUserRole());
     }
 }

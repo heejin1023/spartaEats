@@ -83,6 +83,7 @@ public class Order extends TimeStamped {
 
     public void changeOrderStatus(UUID orderId, OrderStatus orderStatus) {
         if (this.orderStatus == OrderStatus.DELIVERED) {
+
             throw new IllegalStateException("Delivered Orders cannot be changed");
         }
         this.orderStatus = orderStatus;
@@ -105,17 +106,22 @@ public class Order extends TimeStamped {
         LocalDateTime now = LocalDateTime.now();
         Duration duration = Duration.between(createdAt, now);
         if (duration.toMinutes() > 5) {
-//            return new SimpleResponseDto(ApiResultError.ERROR_TIMEOUT, "주문 후 5분이 초과하여 취소할 수 없습니다");
+            try{
             throw new OrderTimeOutException("주문 후 5분이 초과하여 취소할 수 없습니다");
+            } catch (OrderTimeOutException e) {
+            return new SimpleResponseDto(ApiResultError.ERROR_TIMEOUT, "주문 후 5분이 초과하여 취소할 수 없습니다");
+            }
         }
-        this.orderStatus = OrderStatus.CANCELED;
+        this.orderStatus = OrderStatus.CANCELLED;
         return new SimpleResponseDto(ApiResultError.NO_ERROR, "주문이 취소되었습니다");
     }
 
     public SimpleResponseDto deleteOrder() {
         if (this.getDelYn() == 'Y') {
+            try{
             throw new IllegalArgumentException("이미 삭제된 주문 내역입니다");
-//            return new SimpleResponseDto(ApiResultError.ERROR_PARAMETERS, "이미 삭제된 주문 내역입니다");
+            } catch (IllegalArgumentException e) {}
+            return new SimpleResponseDto(ApiResultError.ERROR_PARAMETERS, "이미 삭제된 주문 내역입니다");
         }else {
             this.delYn = 'Y';
             this.deletedAt = LocalDateTime.now();

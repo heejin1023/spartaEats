@@ -6,24 +6,20 @@ import com.sparta.spartaeats.ai.dto.AiArchiveRequestDto;
 import com.sparta.spartaeats.ai.dto.AiArchiveResponseDto;
 import com.sparta.spartaeats.ai.dto.AiArchiveSearchCondition;
 import com.sparta.spartaeats.ai.repository.AiArchiveRepository;
+import com.sparta.spartaeats.common.exception.AiApiException;
+import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.product.domain.Product;
 import com.sparta.spartaeats.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -44,11 +40,14 @@ public class AiArchiveService {
     private String apiKey;
 
 
-    public AiArchive askQuestion(AiArchiveRequestDto aiArchiveRequestDto) {
+    public AiArchive askQuestion(AiArchiveRequestDto aiArchiveRequestDto) throws AiApiException {
         String url = apiUrl + apiKey;
 
-        System.out.println(url);
         String question = aiArchiveRequestDto.getQuestion();
+
+        UUID productId = aiArchiveRequestDto.getProductId();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new AiApiException(ApiResultError.ERROR_AI_API_NO_PRODUCT));
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
@@ -62,6 +61,7 @@ public class AiArchiveService {
         ResponseEntity<AiApiResponseDto> aiResponse = restTemplate.exchange(url, HttpMethod.POST, requestEntity, AiApiResponseDto.class);
 
         AiApiResponseDto responseDto = aiResponse.getBody();
+        log.debug(responseDto.toString());
 
         if (responseDto != null && !responseDto.getCandidates().isEmpty()) {
             AiApiResponseDto.Candidate candidate = responseDto.getCandidates().get(0);
@@ -69,9 +69,9 @@ public class AiArchiveService {
             log.info("AI Response Text: " + responseText);
             log.info("productId {}", aiArchiveRequestDto.getProductId());
 
-            // exception 만들어서 컨트롤러로 throw
-            Product product = productRepository.findById(aiArchiveRequestDto.getProductId())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 음식점을 찾을 수 없습니다."));
+            if(responseText.length() > 400) {
+                throw new AiApiException(ApiResultError.ERROR_AI_API_EXCEED_LENGTH);
+            }
 
             AiArchive aiArchive = AiArchive.builder()
                     .product(product)
@@ -84,10 +84,9 @@ public class AiArchiveService {
             return aiArchive;
 
         } else {
-            System.out.println("No response candidates found.");
+            throw new AiApiException(ApiResultError.ERROR_AI_API);
         }
 
-        return null;
     }
 
     public AiArchiveResponseDto getAiArchiveById(UUID aiId) {
@@ -108,14 +107,9 @@ public class AiArchiveService {
     public Page<AiArchiveResponseDto> getAiArchiveList(AiArchiveSearchCondition sc, Pageable pageable) {
         String productName = sc.getProductName();
         String userName = sc.getUserName();
-        Page<AiArchive> aiArchivePage = aiArchiveRepository.searchWithJoinAndLike(
-                productName, pageable);
 
-        List<AiArchiveResponseDto> aiArchiveDTOList = aiArchivePage.getContent().stream()
-                .map(this::convertToResponseDto)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(aiArchiveDTOList, pageable, aiArchivePage.getTotalElements());
+        return aiArchiveRepository.searchWithJoinAndLike(
+                productName, userName, pageable);
     }
 
     private AiArchiveResponseDto convertToResponseDto(AiArchive aiArchive) {

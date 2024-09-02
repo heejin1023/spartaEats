@@ -17,4 +17,9 @@ public class MultiResponseDto<T> {
     private String resultMessage;
     private List<T> resultData;
     private PageInfoDto pageInfo;
+
+    public MultiResponseDto(ApiResultError resultCode, String resultMessage) {
+        this.resultCode = resultCode;
+        this.resultMessage = resultMessage;
+    }
 }

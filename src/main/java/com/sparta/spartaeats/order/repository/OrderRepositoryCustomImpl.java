@@ -1,11 +1,13 @@
 package com.sparta.spartaeats.order.repository;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import com.sparta.spartaeats.order.domain.Order;
 import com.sparta.spartaeats.order.domain.OrderProduct;
+import com.sparta.spartaeats.order.domain.QOrder;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
 import com.sparta.spartaeats.common.exception.EmptyDataException;
@@ -15,13 +17,11 @@ import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.sparta.spartaeats.order.domain.QOrder.*;
@@ -44,6 +44,25 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
     @Override
     public MultiResponseDto searchOrdersWithUserRole(OrderSearchCondition cond, Pageable pageable, Long userId) {
+        int pageSize = pageable.getPageSize();
+        if (pageSize != 10 || pageSize != 30 || pageSize != 50) {
+            pageSize = 10;
+        }
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageSize, pageable.getSort());
+
+        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+        pageable.getSort().forEach(order -> {
+            OrderSpecifier<?> orderSpecifier = null;
+            if (order.getProperty().equalsIgnoreCase("modifiedAt")) {
+                orderSpecifier = order.isAscending() ? QOrder.order.modifiedAt.asc() : QOrder.order.modifiedAt.desc();
+            } else if (order.getProperty().equalsIgnoreCase("createdAt")) {
+                orderSpecifier = order.isAscending() ? QOrder.order.createdAt.asc() : QOrder.order.createdAt.desc();
+            }
+            if (orderSpecifier != null) {
+                orderSpecifiers.add(orderSpecifier);
+            }
+        });
+
         List<Order> orders = queryFactory
                 .select(order)
                 .from(order)
@@ -56,9 +75,10 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         categoryEq(cond.getCategory()),
                         userNameEq(cond.getUsername()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        order.delYn.eq('N'),
+                        order.delYn.eq('N').or(order.delYn.eq('n')),
                         order.user.id.eq(userId)
                 )
+                .orderBy(orderSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .fetch();
 
         if (orders.isEmpty()) {
@@ -91,7 +111,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), content.size());
-        Page<OrderListResponseDto> page = new PageImpl<>(content.subList(start, end), pageable, content.size());
+        Page<OrderListResponseDto> page = new PageImpl<>(content.subList(start, end), pageRequest, content.size());
 
         return new MultiResponseDto<>(
                 ApiResultError.NO_ERROR,
@@ -110,6 +130,23 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
     @Override
     public MultiResponseDto searchOrdersWithOwnerRole(OrderSearchCondition cond, Pageable pageable, Store findStore) {
+        int pageSize = pageable.getPageSize();
+        if (pageSize != 10 || pageSize != 30 || pageSize != 50) {
+            pageSize = 10;
+        }
+        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+        pageable.getSort().forEach(order -> {
+            OrderSpecifier<?> orderSpecifier = null;
+            if (order.getProperty().equalsIgnoreCase("modifiedAt")) {
+                orderSpecifier = order.isAscending() ? QOrder.order.modifiedAt.asc() : QOrder.order.modifiedAt.desc();
+            } else if (order.getProperty().equalsIgnoreCase("createdAt")) {
+                orderSpecifier = order.isAscending() ? QOrder.order.createdAt.asc() : QOrder.order.createdAt.desc();
+            }
+            if (orderSpecifier != null) {
+                orderSpecifiers.add(orderSpecifier);
+            }
+        });
+
         List<Order> orders = queryFactory
                 .select(order)
                 .from(order)
@@ -122,9 +159,10 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         categoryEq(cond.getCategory()),
                         userNameEq(cond.getUsername()),
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
-                        order.delYn.eq('N'),
+                        order.delYn.eq('N').or(order.delYn.eq('n')),
                         order.store.eq(findStore)
                 )
+                .orderBy(orderSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .fetch();
 
         if (orders.isEmpty()) {
@@ -176,6 +214,22 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
     @Override
     public MultiResponseDto searchOrders(OrderSearchCondition cond, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        if (pageSize != 10 || pageSize != 30 || pageSize != 50) {
+            pageSize = 10;
+        }
+        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+        pageable.getSort().forEach(order -> {
+            OrderSpecifier<?> orderSpecifier = null;
+            if (order.getProperty().equalsIgnoreCase("modifiedAt")) {
+                orderSpecifier = order.isAscending() ? QOrder.order.modifiedAt.asc() : QOrder.order.modifiedAt.desc();
+            } else if (order.getProperty().equalsIgnoreCase("createdAt")) {
+                orderSpecifier = order.isAscending() ? QOrder.order.createdAt.asc() : QOrder.order.createdAt.desc();
+            }
+            if (orderSpecifier != null) {
+                orderSpecifiers.add(orderSpecifier);
+            }
+        });
         List<Order> orders = queryFactory
                 .select(order)
                 .from(order)
@@ -190,6 +244,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         createdDateBetween(cond.getStartDate(), cond.getEndDate()),
                         order.delYn.eq('N')
                 )
+                .orderBy(orderSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .fetch();
 
         if (orders.isEmpty()) {
@@ -267,4 +322,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         }
         return order.createdAt.between(startDate, endDate);
     }
+
+
 }

@@ -1,13 +1,11 @@
-package com.sparta.spartaeats.common.aop.domain;
+package com.sparta.spartaeats.apiLog.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,11 +15,10 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiLogVO {
+public class ApiLog {
 
     @Id
     @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID apiId;
 
     @Column(columnDefinition = "TEXT")
@@ -45,4 +42,14 @@ public class ApiLogVO {
     private LocalDateTime createdAt;
 
     private Long clientId;
+
+    private static final int MAX_LENGTH = 3000; // 최대 길이 설정
+
+    public void setResponseBody(String responseBody) {
+        if (responseBody != null && responseBody.length() > MAX_LENGTH) {
+            this.responseBody = responseBody.substring(0, MAX_LENGTH) + "...";
+        } else {
+            this.responseBody = responseBody;
+        }
+    }
 }

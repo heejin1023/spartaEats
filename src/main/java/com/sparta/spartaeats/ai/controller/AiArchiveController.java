@@ -5,17 +5,20 @@ import com.sparta.spartaeats.ai.dto.AiArchiveRequestDto;
 import com.sparta.spartaeats.ai.dto.AiArchiveResponseDto;
 import com.sparta.spartaeats.ai.dto.AiArchiveSearchCondition;
 import com.sparta.spartaeats.ai.service.AiArchiveService;
+import com.sparta.spartaeats.common.aop.ApiLogging;
 import com.sparta.spartaeats.common.controller.CustomApiController;
+import com.sparta.spartaeats.common.exception.AiApiException;
 import com.sparta.spartaeats.common.model.ApiResult;
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,8 +38,11 @@ public class AiArchiveController extends CustomApiController {
      * @param errors
      * @return
      */
+    @ApiLogging
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     @PostMapping
-    public ApiResult apiTest(@RequestBody AiArchiveRequestDto aiArchiveRequestDto,
+    public ApiResult createAiDescription(
+                @RequestBody @Validated AiArchiveRequestDto aiArchiveRequestDto,
                              Errors errors) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) { // 파라미터 바인딩 오류시 리턴
@@ -45,11 +51,16 @@ public class AiArchiveController extends CustomApiController {
 
         User loginUser = getLoginedUserObject();
         aiArchiveRequestDto.setLoginUserIdx(loginUser.getId());
-        AiArchive aiArchive = aiArchiveService.askQuestion(aiArchiveRequestDto);
 
-        if (aiArchive != null) {
-            apiResult.set(ApiResultError.NO_ERROR).setResultData(aiArchive);
+        try {
+            AiArchive aiArchive = aiArchiveService.askQuestion(aiArchiveRequestDto);
+            if (aiArchive != null) {
+                apiResult.set(ApiResultError.NO_ERROR).setResultData(aiArchive);
+            }
+        } catch(AiApiException e) {
+            return apiResult.set(e.getCode());
         }
+
         return apiResult;
 
     }
@@ -59,6 +70,8 @@ public class AiArchiveController extends CustomApiController {
      * @param aiId
      * @return
      */
+    @ApiLogging
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     @GetMapping("/history/{aiId}")
     public ApiResult getAiArchive(@PathVariable UUID aiId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -77,21 +90,14 @@ public class AiArchiveController extends CustomApiController {
      * @param sc
      * @return
      */
+    @ApiLogging
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     @GetMapping("/history")
     public ApiResult getAiArchiveList(AiArchiveSearchCondition sc) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
-
-        log.info("AiArchiveSearchCondition {}", sc.toString());
-        int page = sc.getPageNumber();
-        int size = sc.getPageSize();
-        String sort = sc.getSort() == null ? "createdAt" : sc.getSort();
-        String direction = sc.getDirection()  == null ? "asc" : sc.getDirection();
-
-        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        Sort sortOption = Sort.by(sortDirection, sort);
-
-        Pageable pageable = PageRequest.of(page - 1, size, sortOption);
+        sc.validateAndSetDefaults();
+        Pageable pageable = sc.generatePageable();
 
         Page<AiArchiveResponseDto> aiArchivePage = aiArchiveService.getAiArchiveList(sc, pageable);
 
@@ -105,9 +111,14 @@ public class AiArchiveController extends CustomApiController {
      * @param aiId
      * @return
      */
+    @ApiLogging
+    @Secured({UserRoleEnum.Authority.OWNER, UserRoleEnum.Authority.ADMIN})
     @PatchMapping("{aiId}")
     public ApiResult deleteAiArchive(@PathVariable UUID aiId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if(aiId == null) {
+            apiResult.set(ApiResultError.ERROR_INVALID_ARGUMENT);
+        }
 
         User user = getLoginedUserObject();
         Long userIdx = user.getId();
