@@ -1,13 +1,15 @@
 package com.sparta.spartaeats.apiLog.dto;
 
 import com.sparta.spartaeats.common.dto.BaseSearchDto;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ApiLogSearchCondition extends BaseSearchDto {
 
     private LocalDate startDate = LocalDate.MIN;

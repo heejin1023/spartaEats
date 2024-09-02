@@ -1,11 +1,15 @@
 package com.sparta.spartaeats.ai.dto;
 
 import com.sparta.spartaeats.common.dto.BaseSearchDto;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class AiArchiveSearchCondition extends BaseSearchDto {
 
     private String userName;
