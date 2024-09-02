@@ -32,10 +32,9 @@ public class LocationService {
         Location location = findLocation(locationId);
 
         // 관리자 권한 확인
-//        if (!user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority())) {
-//            log.info("User {} is attempting to update location.", user.getUserRole());
-//            throw new IllegalArgumentException("해당 위치를 수정할 권한이 없습니다.");
-//        }
+        if (!user.getUserRole().equals(UserRoleEnum.ADMIN)) {
+            throw new IllegalArgumentException("해당 위치를 수정할 권한이 없습니다.");
+        }
         // DTO에서 받은 데이터로 엔티티를 업데이트
             location.update(requestDto, user);
 
@@ -47,7 +46,7 @@ public class LocationService {
     public void deleteLocation(UUID locationId, User user) {
         Location location = findLocation(locationId);
         // 관리자 권한 확인
-        if (!user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority())) {
+        if (!user.getUserRole().equals(UserRoleEnum.ADMIN)) {
             throw new IllegalArgumentException("해당 위치를 삭제할 권한이 없습니다.");
         }
         location.setDelYn('Y');

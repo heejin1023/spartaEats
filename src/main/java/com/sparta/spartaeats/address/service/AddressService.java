@@ -65,7 +65,7 @@ public class AddressService {
         // 관리자 > 가능
         // 그 외 > 생성자 idx랑 비교해서 동일할 경우
         // 관리자 또는 주소 생성자인 경우에만 수정 가능
-        if (user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority()) || address.getCreatedBy().equals(user.getId())) {
+        if (user.getUserRole().equals(UserRoleEnum.ADMIN) || address.getCreatedBy().equals(user.getId())) {
             // 주소 정보 수정
             address.update(addressRequestDto, user);
         } else {
@@ -81,7 +81,7 @@ public class AddressService {
         Address address = findAddress(addressId);
 
         // 관리자 또는 주소 생성자인 경우에만 삭제 가능
-        if (user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority()) || address.getCreatedBy().equals(user.getId())) {
+        if (user.getUserRole().equals(UserRoleEnum.ADMIN) || address.getCreatedBy().equals(user.getId())) {
             // 주소 삭제 처리 (소프트 삭제)
             address.delete(user);
         } else {
@@ -92,7 +92,7 @@ public class AddressService {
         addressRepository.save(address);
     }
 
-    public AddressResponseDto getAddressById(UUID addressId, Long userIdx) {
+    public AddressResponseDto getAddressById(UUID addressId, User user) {
         // 특정 주소 조회
         Address delivery = findAddress(addressId);
 
@@ -100,7 +100,13 @@ public class AddressService {
         // 역할별 수정 차이
         // 관리자, 가게주인 > 가능
         // 사용자 > 생성자 idx랑 비교해서 동일할 경우
-        return new AddressResponseDto(delivery);
+        // 관리자 또는 주소 생성자인 경우에만 조회 가능
+        if (user.getUserRole().equals(UserRoleEnum.ADMIN) || user.getUserRole().equals(UserRoleEnum.OWNER) || delivery.getCreatedBy().equals(user.getId())) {
+            // 조회된 주소 정보를 ResponseDto로 변환하여 반환
+            return new AddressResponseDto(delivery);
+        } else {
+            throw new IllegalArgumentException("해당 주소를 조회할 권한이 없습니다.");
+        }
     }
 
     // Address 조회 및 예외 처리

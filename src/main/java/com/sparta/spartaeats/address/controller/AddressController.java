@@ -81,8 +81,7 @@ public class AddressController extends CustomApiController {
     public ApiResult getAddressById(@PathVariable UUID addressId,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        Long userIdx = userDetails.getUser().getId(); // User 객체에서 userIdx 가져오기
-        AddressResponseDto responseDto = addressService.getAddressById(addressId, userIdx);
+        AddressResponseDto responseDto = addressService.getAddressById(addressId, user);
         ApiResult apiResult = new ApiResult(ApiResultError.NO_ERROR).setResultData(responseDto);
 
         return apiResult;
