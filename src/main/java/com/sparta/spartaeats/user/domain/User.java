@@ -6,8 +6,6 @@ import com.sparta.spartaeats.user.domain.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Setter
@@ -53,10 +51,6 @@ public class User extends TimeStamped {
 
     @Column
     private Character useYn;
-
-    @Column
-    private LocalDateTime joinDate;
-
 
     @Builder(builderClassName = "SignUpUserInfoBuilder", builderMethodName = "SignUpUserInfoBuilder")
     public User(UserRequestDto loginRequestDto) {
