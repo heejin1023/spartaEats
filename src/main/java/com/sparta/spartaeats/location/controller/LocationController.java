@@ -63,7 +63,7 @@ public class LocationController extends CustomApiController {
 
     //지역 삭제
     @ApiLogging
-    @PatchMapping("/{locationId}/delete")
+    @PatchMapping("/delete/{locationId}")
     public ApiResult deleteLocation(@PathVariable UUID locationId,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
@@ -92,6 +92,9 @@ public class LocationController extends CustomApiController {
 
         if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
             pageSize = 10;
+        }
+        if (!sortBy.equals("createdAt") && !sortBy.equals("modifiedAt")) {
+            sortBy = "createdAt";
         }
 
         // 정렬 방향 설정
