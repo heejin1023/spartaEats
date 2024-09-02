@@ -14,7 +14,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Table(name = "p_store_location")
+@Table(name = "p_location")
 @NoArgsConstructor
 public class Location extends TimeStamped {
     @Id
