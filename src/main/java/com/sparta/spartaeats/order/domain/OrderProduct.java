@@ -32,7 +32,6 @@ public class OrderProduct extends TimeStamped {
     private Product product;
 
     private Integer price;
-    private Integer orders;
     private Integer amount;
     private Character delYn;
 
