@@ -42,13 +42,6 @@ public class UserService {
             throw new UserException(ApiResultError.USER_ID_EXIST);
         }
 
-        // email 중복확인
-        String email = userInfo.getUserEmail();
-        User checkEmail = userRepository.findByUserEmail(email);
-        if (checkEmail != null) {
-            throw new UserException(ApiResultError.USER_EMAIL_EXIST);
-        }
-
         // 사용자 등록
         User user = User.SignUpUserInfoBuilder()
                 .loginRequestDto(userInfo)
