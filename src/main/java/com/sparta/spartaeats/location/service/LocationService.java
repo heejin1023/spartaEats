@@ -8,6 +8,7 @@ import com.sparta.spartaeats.location.dto.LocationResponseDto;
 import com.sparta.spartaeats.location.repository.LocationRepository;
 import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LocationService {
@@ -30,19 +32,15 @@ public class LocationService {
         Location location = findLocation(locationId);
 
         // 관리자 권한 확인
-        if (!user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority())) {
-            throw new IllegalArgumentException("해당 위치를 수정할 권한이 없습니다.");
-        }
+//        if (!user.getUserRole().equals(UserRoleEnum.ADMIN.getAuthority())) {
+//            log.info("User {} is attempting to update location.", user.getUserRole());
+//            throw new IllegalArgumentException("해당 위치를 수정할 권한이 없습니다.");
+//        }
         // DTO에서 받은 데이터로 엔티티를 업데이트
-        location.setLocationName(requestDto.getLocationName());
-        location.setUseYn(requestDto.getUseYn());
-        location.setDelYn(requestDto.getDelYn());
-
-        // 업데이트된 엔티티를 저장
-        Location updatedLocation = locationRepository.save(location);
+            location.update(requestDto, user);
 
         // 업데이트된 엔티티를 DTO로 변환하여 반환
-        return new LocationResponseDto(updatedLocation);
+        return new LocationResponseDto(location);
     }
 
 
