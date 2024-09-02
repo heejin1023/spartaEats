@@ -45,13 +45,28 @@
 ---
 ## 3. 팀원 및 역할
 
-곽솔래: Location API CRUD  
+- 곽솔래
+  - Location API CRUD
+  - Location API CRUD
+  - Address API CRUD
+  - ERD
 
-박기도: 공통(Auditing, ResponseDto), Order API CRUD, Payment CRUD   
+- 박기도
+  - 공통(Auditing, ResponseDto)
+  - Order API CRUD
+  - Payment CRUD   
 
-유희진: 공통(AOP(ApiLogging), Config, Exception, Jwt, model, type), User API CRUD, AI API CRD, ApiLog CR  
+- 유희진
+  - 공통(AOP(ApiLogging)
+  - Config, Exception, Jwt, model, type)
+  - User API CRUD
+  - AI API CRD
+  - ApiLog CR  
 
-임예이: Store API CRUD, StoreCategory API CRUD, Product API CRUD
+- 임예이
+  - Store API CRUD
+  - StoreCategory API CRUD
+  - Product API CRUD
 
 ---
 
