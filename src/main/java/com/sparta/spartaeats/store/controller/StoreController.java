@@ -54,7 +54,7 @@ public class StoreController extends CustomApiController {
             storeRequestDto.setUserIdx(loginUser.getId());
         }
         if (storeRequestDto.getUserIdx() == null){
-            result.set(ApiResultError.STORE_NO_OWNER);
+            result.set(ApiResultError.STORE_NO_OWNER_ERROR);
         }
 
         //authority가 admin이라면 storeRequestDto 그대로 넘기기
