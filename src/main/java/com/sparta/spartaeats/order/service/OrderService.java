@@ -170,8 +170,8 @@ public class OrderService {
             return order.cancelOrder();
     }
 
-    public SimpleResponseDto deleteOrder(UUID orderId) {
+    public SimpleResponseDto deleteOrder(UUID orderId, Long userId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
-        return order.deleteOrder();
+        return order.deleteOrder(userId);
     }
 }
