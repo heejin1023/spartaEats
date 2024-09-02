@@ -17,6 +17,8 @@ import com.sparta.spartaeats.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,8 +144,21 @@ public class StoreService {
     // 음식점 전체 조회 및 검색
     @Transactional(readOnly = true)
     public Page<StoreResponseDto> getStores(StoreSearchRequestDto searchRequestDto, Pageable pageable) {
-        System.out.println(searchRequestDto.getUseYn());
-        Page<Store> storePage = storeRepository.findAll(StoreSpecification.searchWith(searchRequestDto), pageable);
+        // 현재 인증 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"));
+
+        if(searchRequestDto.getCategoryId() != null) {
+            storeCategoryRepository.findByIdAndDelYn(searchRequestDto.getCategoryId(), 'N')
+                    .orElseThrow(() -> new IllegalArgumentException("잘못된 카테고리 ID 입력"));
+        }
+        if(searchRequestDto.getLocationId() != null) {
+            locationRepository.findByIdAndDelYn(searchRequestDto.getLocationId(), 'N')
+                    .orElseThrow(() -> new IllegalArgumentException("잘못된 location_id 입력"));
+        }
+
+        Page<Store> storePage = storeRepository.findAll(StoreSpecification.searchWith(searchRequestDto, isAdmin), pageable);
 
         // Store 엔티티를 StoreResponseDto로 변환
         Page<StoreResponseDto> storeResponseDtoPage = storePage.map(store -> new StoreResponseDto(
@@ -153,7 +168,9 @@ public class StoreService {
                 store.getStoreContact(),
                 store.getStoreAddress(),
                 store.getStoreCategory().getId(),  // StoreCategory 객체 대신 ID만 가져옴
+                store.getLocation() != null ? store.getLocation().getId() : null,  // Location이 null이면 null 반환
                 store.getUseYn(),
+                store.getDelYn(),
                 store.getCreatedAt(),
                 store.getCreatedBy(),
                 store.getModifiedAt(),

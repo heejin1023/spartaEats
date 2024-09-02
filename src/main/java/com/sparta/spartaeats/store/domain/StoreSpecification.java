@@ -5,10 +5,17 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class StoreSpecification {
-    public static Specification<Store> searchWith(StoreSearchRequestDto searchRequestDto) {
+    public static Specification<Store> searchWith(StoreSearchRequestDto searchRequestDto, boolean isAdmin) {
         return (root, query, criteriaBuilder) -> {
-            // 기본 조건: 삭제되지 않은(delYn = 'N') 레코드만 검색
-            Predicate predicate = criteriaBuilder.equal(root.get("delYn"), "N");
+            Predicate predicate;
+
+            // 관리자 권한이 없는 경우 기본 조건: 삭제되지 않은(delYn = 'N') 레코드만 검색
+            if (!isAdmin || searchRequestDto.getDelYn() != null) {
+                predicate = criteriaBuilder.equal(root.get("delYn"), searchRequestDto.getDelYn() != null ? searchRequestDto.getDelYn() : "N");
+            } else {
+                // ADMIN이면서 delYn 파라미터가 없는 경우 모든 레코드를 검색
+                predicate = criteriaBuilder.conjunction();  // 기본 조건 없음
+            }
 
             // 검색 조건 1: 상점 이름(storeName)이 null이 아닌 경우, 해당 이름을 포함하는 레코드 추가
             if (searchRequestDto.getStoreName() != null) {
