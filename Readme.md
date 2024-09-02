@@ -52,13 +52,12 @@
   - ERD
 
 - 박기도
-  - 공통(Auditing, ResponseDto)
+  - 공통(Auditing, ResponseDto, Exception)
   - Order API CRUD
   - Payment CRUD   
 
 - 유희진
-  - 공통(AOP(ApiLogging)
-  - Config, Exception, Jwt, model, type)
+  - 공통(AOP(ApiLogging, Config, Exception, Jwt, model, type)
   - User API CRUD
   - AI API CRD
   - ApiLog CR  
