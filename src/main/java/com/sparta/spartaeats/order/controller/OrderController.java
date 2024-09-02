@@ -94,7 +94,7 @@ public class OrderController extends CustomApiController {
     public ApiResult deleteOrder(@PathVariable UUID orderId) {
         User user = getLoginedUserObject();
         Long userId = user.getId();
-        SimpleResponseDto responseDto = orderService.deleteOrder(orderId);
+        SimpleResponseDto responseDto = orderService.deleteOrder(orderId,userId);
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage());
     }
 

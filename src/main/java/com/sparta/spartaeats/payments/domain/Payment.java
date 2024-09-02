@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -53,7 +54,9 @@ public class Payment extends TimeStamped {
         this.paymentStatus = status;
     }
 
-    public void deletePayment() {
+    public void deletePayment(Long userId) {
+        this.deletedAt = LocalDateTime.now();
+        this.setDeletedBy(userId);
         this.delYn = 'Y';
     }
 }

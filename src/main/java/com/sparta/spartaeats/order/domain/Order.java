@@ -83,7 +83,6 @@ public class Order extends TimeStamped {
 
     public void changeOrderStatus(UUID orderId, OrderStatus orderStatus) {
         if (this.orderStatus == OrderStatus.DELIVERED) {
-
             throw new IllegalStateException("Delivered Orders cannot be changed");
         }
         this.orderStatus = orderStatus;
@@ -116,7 +115,7 @@ public class Order extends TimeStamped {
         return new SimpleResponseDto(ApiResultError.NO_ERROR, "주문이 취소되었습니다");
     }
 
-    public SimpleResponseDto deleteOrder() {
+    public SimpleResponseDto deleteOrder(Long userId) {
         if (this.getDelYn() == 'Y') {
             try{
             throw new IllegalArgumentException("이미 삭제된 주문 내역입니다");
@@ -125,6 +124,7 @@ public class Order extends TimeStamped {
         }else {
             this.delYn = 'Y';
             this.deletedAt = LocalDateTime.now();
+            this.setDeletedBy(userId);
             return new SimpleResponseDto(ApiResultError.NO_ERROR, "주문 내역이 삭제되었습니다");
         }
     }

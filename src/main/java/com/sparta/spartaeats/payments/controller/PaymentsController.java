@@ -59,7 +59,8 @@ public class PaymentsController extends CustomApiController {
     @Secured(UserRoleEnum.Authority.USER)
     @DeleteMapping("/{paymentId}")
     public ApiResult deletePayment(@PathVariable UUID paymentId) {
-        SimpleResponseDto responseDto = paymentsService.deletePayment(paymentId);
+        User user = getLoginedUserObject();
+        SimpleResponseDto responseDto = paymentsService.deletePayment(paymentId,user.getId());
         return new ApiResult().set(responseDto.getResultCode(), responseDto.getResultMessage());
     }
 
