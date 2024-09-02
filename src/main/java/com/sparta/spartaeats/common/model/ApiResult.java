@@ -1,15 +1,16 @@
 package com.sparta.spartaeats.common.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sparta.spartaeats.common.type.ApiResultError;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class ApiResult extends HashMap<String, Object>{
@@ -36,7 +37,7 @@ public class ApiResult extends HashMap<String, Object>{
     public ApiResult() {
         this.set(ApiResultError.ERROR_DEFAULT);
         objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     public ApiResult set(ApiResultError err) {
@@ -60,10 +61,29 @@ public class ApiResult extends HashMap<String, Object>{
     }
 
     public ApiResult setResultData(Object data) {
-        Map<String, String> map = objectMapper.convertValue(data, new TypeReference<Map<String, String>>() {});
-
-        super.put(AR_KEY_RESULT_DATA, map);
+        //Map<String, Object> map = this.convertToMap(data);
+        super.put(AR_KEY_RESULT_DATA, data);
         return this;
+    }
+
+    public static Map<String, Object> convertToMap(Object object) {
+        Map<String, Object> map = new HashMap<>();
+        if (object == null) {
+            return map;
+        }
+
+        Class<?> objClass = object.getClass();
+        Field[] fields = objClass.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            try {
+                Object value = field.get(object);
+                map.put(field.getName(), value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return map;
     }
 
     public Object getResultData() {
@@ -103,7 +123,24 @@ public class ApiResult extends HashMap<String, Object>{
         return this;
     }
 
+//
+//    public ApiResult setPageInfo(Page<?> data) {
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        if(super.get(AR_KEY_RESULT_DATA) != null) {
+//            map = (HashMap<String, Object>) super.get(AR_KEY_RESULT_DATA);
+//        }
+//        PageInfo pi = new PageInfo(data);
+//        map.put(AR_KEY_PAGEINFO, pi);
+//
+//        super.put(AR_KEY_PAGEINFO);
+//        return this;
+//    }
 
+    public PageInfo getPageInfo() {
+        return (PageInfo)super.get(AR_KEY_PAGEINFO);
+    }
+
+    @SuppressWarnings("unchecked")
     public ApiResult setPageInfo(Page<?> data) {
         Map<String, Object> map = new HashMap<String, Object>();
         if(super.get(AR_KEY_RESULT_DATA) != null) {

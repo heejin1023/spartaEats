@@ -1,6 +1,7 @@
 package com.sparta.spartaeats.payments.service;
 
 import com.sparta.spartaeats.common.type.ApiResultError;
+import com.sparta.spartaeats.common.type.UserRoleEnum;
 import com.sparta.spartaeats.responseDto.MultiResponseDto;
 import com.sparta.spartaeats.responseDto.PageInfoDto;
 import com.sparta.spartaeats.responseDto.SimpleResponseDto;
@@ -13,6 +14,8 @@ import com.sparta.spartaeats.payments.dto.*;
 import com.sparta.spartaeats.payments.repository.PaymentsRepository;
 import com.sparta.spartaeats.common.type.OrderStatus;
 import com.sparta.spartaeats.common.type.PaymentStatus;
+import com.sparta.spartaeats.store.domain.Store;
+import com.sparta.spartaeats.store.repository.StoreRepository;
 import com.sparta.spartaeats.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,26 +34,38 @@ public class PaymentsService {
 
     private final PaymentsRepository paymentsRepository;
     private final OrderRepository orderRepository;
+    private final StoreRepository storeRepository;
 
     public SingleResponseDto<PaymentResponseDto> pay(PayRequestDto payRequestDto) {
-          Order order = orderRepository.findById(payRequestDto.getOrderId()).orElseThrow(
-                () -> new IllegalArgumentException("order Not Found with orderId : " + payRequestDto.getOrderId()));
-        if (order.getOrderPrice() <= 0) {
-            throw new IllegalArgumentException("결제 금액이 0원입니다. orderId : " + payRequestDto.getOrderId());
-        }
+        try {
+            Order order = orderRepository.findById(payRequestDto.getOrderId()).orElseThrow(
+                  () -> new EmptyDataException("order Not Found with orderId : " + payRequestDto.getOrderId()));
+            if (order.getOrderPrice() <= 0) {
+                throw new IllegalArgumentException("결제 금액이 0원입니다. orderId : " + payRequestDto.getOrderId());
+            }
 
-        if (order.getOrderStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("이미 결제 완료된 주문입니다. orderId : " + payRequestDto.getOrderId());
-        }
+            if (order.getOrderStatus() != OrderStatus.PENDING) {
+                throw new IllegalStateException("이미 결제 완료된 주문입니다. orderId : " + payRequestDto.getOrderId());
+            }
             Payment payment = new Payment(order, order.getOrderPrice(), PaymentStatus.APPROVED, null, null, 'N', payRequestDto.getPgType() );
             paymentsRepository.save(payment);
             order.changeOrderStatus(order.getId(), OrderStatus.PREPARING);
             PaymentResponseDto paymentResponseDto = getPaymentResponseDto(payment);
             return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제가 완료되었습니다", paymentResponseDto);
+        } catch (IllegalArgumentException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage(), null);
+        } catch (IllegalStateException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_STATE, e.getMessage(), null);
+        } catch (EmptyDataException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_EMPTY_DATA, e.getMessage(), null);
+        } catch (Exception e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_DEFAULT, e.getMessage(), null);
+        }
     }
 
     public SingleResponseDto<PaymentUpdateResponseDto> updatePayment(UUID paymentId, PayUpdateRequestDto requestDto) {
-            Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
+        try {
+            Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new EmptyDataException("payment Not Found with id : " + paymentId));
             if (payment.getPaymentStatus() == PaymentStatus.APPROVED) {
                 throw new IllegalStateException("이미 결제 완료되었습니다.");
             }
@@ -63,45 +78,66 @@ public class PaymentsService {
             PaymentUpdateResponseDto responseDto = new PaymentUpdateResponseDto(paymentId, payment.getPaymentStatus());
 
             return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 상태 업데이트 완료", responseDto);
+        } catch (EmptyDataException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_EMPTY_DATA, e.getMessage(), null);
+        } catch (IllegalArgumentException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_INVALID_STATE, e.getMessage(), null);
+        } catch (Exception e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_DEFAULT, e.getMessage(),null);
+        }
     }
 
-    public SimpleResponseDto deletePayment(UUID paymentId) {
-            Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
+    public SimpleResponseDto deletePayment(UUID paymentId, Long userId) {
+        try {
+            Payment payment = paymentsRepository.findByIdWithDel(paymentId).orElseThrow(() -> new EmptyDataException("payment Not Found with id : " + paymentId));
             if (payment.getDelYn() == 'Y') {
                 throw new IllegalStateException("이미 삭제된 결제입니다");
             }
-            payment.deletePayment();
+            payment.deletePayment(userId);
             return new SimpleResponseDto(ApiResultError.NO_ERROR, "결제 내역이 삭제되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return new SimpleResponseDto(ApiResultError.ERROR_INVALID_ARGUMENT, e.getMessage());
+        } catch (EmptyDataException e) {
+            return new SimpleResponseDto(ApiResultError.ERROR_EMPTY_DATA, e.getMessage());
+        } catch (Exception e) {
+            return new SimpleResponseDto(ApiResultError.ERROR_DEFAULT, e.getMessage());
+        }
     }
 
+    @Transactional(readOnly = true)
     public SingleResponseDto<?> getOnePaymentResult(UUID paymentId, User user) {
-        Long userId = user.getId();
-        Payment payment = paymentsRepository.findByIdWithDelWithUser(paymentId,userId).orElseThrow(() -> new IllegalArgumentException("payment Not Found with id : " + paymentId));
-        return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
+        try {
+            Long userId = user.getId();
+            Payment payment = paymentsRepository.findByIdWithDelWithUser(paymentId, userId).orElseThrow(() -> new EmptyDataException("payment Not Found with id : " + paymentId));
+            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "결제 내역 단건 조회", getPaymentResponseDto(payment));
+        } catch (EmptyDataException e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_EMPTY_DATA, e.getMessage(), null);
+        } catch (Exception e) {
+            return new SingleResponseDto<>(ApiResultError.ERROR_DEFAULT, e.getMessage(), null);
+        }
     }
 
+    @Transactional(readOnly = true)
     public MultiResponseDto<PaymentResponseDto> getAllPayments(Pageable pageable, PaymentSearchCond cond,User user) {
-        Long userId = user.getId();
-        String userRole = String.valueOf(user.getUserRole());
-//        Page<PaymentResponseDto> page = new
-//        if (userRole.contains("USER")) {
-//            Page<PaymentResponseDto> page = paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);
-//        }else{
-        Page<PaymentResponseDto> page = paymentsRepository.findPaymentList(pageable,cond);
-//        }
-            if(page.isEmpty()){
-                log.error("PaymentService.getAllPayments");
-                throw new EmptyDataException("결제 내역이 존재하지 않습니다");
+        try {
+            Long userId = user.getId();
+            String userRole = String.valueOf(user.getUserRole());
+            if (userRole.contains("USER")) {
+                log.info("userId = {}", userId);
+                return paymentsRepository.findPaymentListWithUserRole(pageable, cond, userId);
+            } else if (userRole.contains("OWNER")) {
+                Store store = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Not Found Store with Owner Id : " + userId));
+                UUID storeId = store.getId();
+                return paymentsRepository.findPaymentListWithOwnerRole(pageable, cond, storeId);
+            } else {
+                return paymentsRepository.findPaymentList(pageable, cond);
             }
-            return new MultiResponseDto<>(ApiResultError.NO_ERROR, "결제 목록 조회", page,
-                    new PageInfoDto(
-                            (int) page.getTotalElements(),
-                            page.getSize(),
-                            page.getNumber(),
-                            page.getTotalPages(),
-                            page.hasPrevious(),
-                            page.hasNext()
-                    ));
+        } catch (EmptyDataException e) {
+            return new MultiResponseDto<>(ApiResultError.ERROR_EMPTY_DATA, e.getMessage());
+        } catch (Exception e) {
+            return new MultiResponseDto<>(ApiResultError.ERROR_DEFAULT, e.getMessage());
+        }
+
     }
 
     private PaymentResponseDto getPaymentResponseDto(Payment payment) {

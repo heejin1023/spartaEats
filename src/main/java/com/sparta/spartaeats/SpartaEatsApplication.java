@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication(scanBasePackages = "com.sparta.spartaeats")
 @EnableAspectJAutoProxy
-@EnableJpaAuditing
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class SpartaEatsApplication {
 
     public static void main(String[] args) {
@@ -18,7 +18,7 @@ public class SpartaEatsApplication {
     }
 
     @Bean
-    public AuditorAware<Long> auditorProvider() {
+    public AuditorAware<Long> auditorAware() {
         return new AuditorAwareImpl();
     }
 }

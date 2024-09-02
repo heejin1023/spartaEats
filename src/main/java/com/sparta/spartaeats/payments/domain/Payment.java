@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -21,9 +22,10 @@ public class Payment extends TimeStamped {
     @Column(name = "payment_id")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
     private Integer payment_amount;
 
     @Enumerated(EnumType.STRING)
@@ -52,7 +54,9 @@ public class Payment extends TimeStamped {
         this.paymentStatus = status;
     }
 
-    public void deletePayment() {
+    public void deletePayment(Long userId) {
+        this.deletedAt = LocalDateTime.now();
+        this.setDeletedBy(userId);
         this.delYn = 'Y';
     }
 }

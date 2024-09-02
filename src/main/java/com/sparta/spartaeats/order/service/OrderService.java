@@ -46,7 +46,7 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
 
 
-    public SingleResponseDto order(OrderRequestDto orderRequestDto){ // , User user
+    public SingleResponseDto order(OrderRequestDto orderRequestDto,User user){ // , User user
 
             Store findStore = storeRepository.findByIdWithDel(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다"));
             Address delivery = deliveryRepository.findByIdWithDel(orderRequestDto.getDeliveryId()).orElseThrow(() -> new IllegalArgumentException("해당 배달 주소를 찾을 수 없습니다"));
@@ -54,8 +54,13 @@ public class OrderService {
             //OrderProductDto 로 OrderProduct List 생성
             ArrayList<OrderProduct> orderProductsList = getOrderProductsList(orderProducts);
             if (orderProductsList.isEmpty()) {
-                log.error("Order.order orderProductsList is empty");
-                throw new EmptyDataException("주문 상품이 존재 하지 않습니다");
+                try {
+                    log.error("Order.order orderProductsList is empty");
+                    throw new EmptyDataException("주문 상품이 존재 하지 않습니다");
+                } catch (EmptyDataException e) {
+                    return new SingleResponseDto(ApiResultError.ERROR_EMPTY_DATA, e.getMessage(), null);
+                }
+
             }
             for (OrderProduct orderProduct : orderProductsList) {
                 if (orderProduct.getDelYn() == 'Y') {
@@ -63,9 +68,8 @@ public class OrderService {
                     throw new DeletedProductException("판매 중지 된 상품이 존재합니다, 상품명 : " + orderProduct.getProduct().getProductName());
                 }
             }
-        User user = userRepository.findById(252L).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
         Order order = new Order(user, findStore, orderProductsList,
-                    orderRequestDto.getMemo(), orderRequestDto.getOrderType(), Order.calculatePrice(orderProductsList), delivery, OrderStatus.PREPARING, 'N');
+                    orderRequestDto.getMemo(), orderRequestDto.getOrderType(), Order.calculatePrice(orderProductsList), delivery, OrderStatus.PENDING, 'N');
             // 연관관계 설정
             // 루프 내에서 Iterable 직접 수정 시 발생하는 에러로 인해 복제
             ArrayList<OrderProduct> list = new ArrayList<>(orderProductsList);
@@ -95,7 +99,11 @@ public class OrderService {
 
     public SingleResponseDto updateOrder(UUID orderId, UpdateOrderDto requestDto) {
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
-        findOrder.changeOrderStatus(orderId,requestDto.getOrderStatus());
+        try {
+            findOrder.changeOrderStatus(orderId, requestDto.getOrderStatus());
+        } catch (IllegalStateException e) {
+            return new SingleResponseDto(ApiResultError.ERROR_INVALID_STATE, e.getMessage(), null);
+        }
         return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 상태 변경 완료", new UpdateOrderResponseDto(orderId, requestDto.getOrderStatus()));
     }
 
@@ -106,15 +114,24 @@ public class OrderService {
         Long userId = user.getId();
         // 권한이 USER 일땐 자기가 주문한 내역만
         if (userRole.contains("USER")) {
-            Order findOrder = orderRepository.findByIdAndUser(orderId, user).orElseThrow(() -> new EmptyDataException("Order not found with" + orderId));
-            OrderListResponseDto responseDto = getResponseDto(orderId, findOrder);
-            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 내역 단일 조회", responseDto);
-        // 권한이 OWNER 이면 자기 가게의 주문 중에서
+            try {
+                Order findOrder = orderRepository.findByIdAndUser(orderId, user).orElseThrow(() -> new EmptyDataException("Order not found with" + orderId));
+                OrderListResponseDto responseDto = getResponseDto(orderId, findOrder);
+                return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 내역 단일 조회", responseDto);
+            } catch (EmptyDataException e) {
+                return new SingleResponseDto(ApiResultError.ERROR_EMPTY_DATA, e.getMessage(), null);
+            }
+            // 권한이 OWNER 이면 자기 가게의 주문 중에서
         }else if(userRole.contains("OWNER")) {
-            Store store = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Store not found with owner"));
-            Order findOrder = orderRepository.findByIdAndStore(orderId,store).orElseThrow(() -> new EmptyDataException("Order not found with" + orderId));
-            OrderListResponseDto responseDto = getResponseDto(orderId, findOrder);
-            return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 내역 단일 조회", responseDto);
+            try {
+                Store store = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Store not found with owner"));
+                Order findOrder = orderRepository.findByIdAndStore(orderId, store).orElseThrow(() -> new EmptyDataException("Order not found with" + orderId));
+                OrderListResponseDto responseDto = getResponseDto(orderId, findOrder);
+                return new SingleResponseDto<>(ApiResultError.NO_ERROR, "주문 내역 단일 조회", responseDto);
+            }
+            catch (EmptyDataException e) {
+                return new SingleResponseDto(ApiResultError.ERROR_EMPTY_DATA, e.getMessage(), null);
+            }
             // ADMIN은 전체 중에서 검색
         }else {
             Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
@@ -133,24 +150,28 @@ public class OrderService {
     @Transactional(readOnly = true)
     public MultiResponseDto getOrderList(OrderSearchCondition cond, Pageable pageable,User user) {
         log.info("userRole = {}", user.getUserId());
-        String userRole = String.valueOf(user.getUserRole());
-        Long userId = user.getId();
-        if(userRole.contains("USER")) {
-            return orderRepository.searchOrdersWithUserRole(cond, pageable, userId);
-        } else if (userRole.contains("OWNER")) {
-            Store findStore = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Store not found with owner"));
-            return orderRepository.searchOrdersWithOwnerRole(cond,pageable,findStore);
-        } else
-            return orderRepository.searchOrders(cond, pageable);
+        try {
+            String userRole = String.valueOf(user.getUserRole());
+            Long userId = user.getId();
+            if(userRole.contains("USER")) {
+                return orderRepository.searchOrdersWithUserRole(cond, pageable, userId);
+            } else if (userRole.contains("OWNER")) {
+                Store findStore = storeRepository.findByOwner(user).orElseThrow(() -> new EmptyDataException("Store not found with owner"));
+                return orderRepository.searchOrdersWithOwnerRole(cond,pageable,findStore);
+            } else
+                return orderRepository.searchOrders(cond, pageable);
+        } catch (EmptyDataException e) {
+            return new MultiResponseDto(ApiResultError.ERROR_EMPTY_DATA, e.getMessage());
         }
+    }
 
     public SimpleResponseDto cancelOrder(UUID orderId) {
             Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
             return order.cancelOrder();
     }
 
-    public SimpleResponseDto deleteOrder(UUID orderId) {
+    public SimpleResponseDto deleteOrder(UUID orderId, Long userId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found with" + orderId));
-        return order.deleteOrder();
+        return order.deleteOrder(userId);
     }
 }

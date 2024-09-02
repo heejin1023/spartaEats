@@ -2,6 +2,7 @@ package com.sparta.spartaeats.payments.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.sparta.spartaeats.common.type.PaymentStatus;
+import com.sparta.spartaeats.payments.domain.Payment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,5 +21,11 @@ public class PaymentResponseDto {
         this.paymentId = paymentId;
         this.price = price;
         this.status = status;
+    }
+
+    public PaymentResponseDto(Payment payment) {
+        paymentId = payment.getId();
+        price = payment.getPayment_amount();
+        status = payment.getPaymentStatus();
     }
 }
